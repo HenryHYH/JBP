@@ -83,6 +83,7 @@ namespace Nop.Web.Infrastructure
             builder.RegisterType<VendorAttributeModelFactory>().As<IVendorAttributeModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<VendorModelFactory>().As<IVendorModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<WidgetModelFactory>().As<IWidgetModelFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<GoodsFactory>().As<IGoodsFactory>().InstancePerLifetimeScope();
 
             //factories
             builder.RegisterType<Factories.AddressModelFactory>().As<Factories.IAddressModelFactory>().InstancePerLifetimeScope();
@@ -111,9 +112,6 @@ namespace Nop.Web.Infrastructure
         /// <summary>
         /// Gets order of this dependency registrar implementation
         /// </summary>
-        public int Order
-        {
-            get { return 2; }
-        }
+        public int Order => 2;
     }
 }

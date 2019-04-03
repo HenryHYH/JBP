@@ -119,6 +119,6 @@ namespace Nop.Data.Mapping
         /// <summary>
         /// Consignment Goods mapping table
         /// </summary>
-        public static string ConsignmentGoodsTable => "Consignment_Goods_Mapping";
+        public static string ConsignmentGoodsTable => "ConsignmentOrder_Goods_Mapping";
     }
 }

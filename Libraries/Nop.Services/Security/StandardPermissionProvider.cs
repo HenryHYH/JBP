@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Security;
+using System.Collections.Generic;
 
 namespace Nop.Services.Security
 {
@@ -55,7 +55,14 @@ namespace Nop.Services.Security
         public static readonly PermissionRecord ManageMaintenance = new PermissionRecord { Name = "Admin area. Manage Maintenance", SystemName = "ManageMaintenance", Category = "Configuration" };
         public static readonly PermissionRecord HtmlEditorManagePictures = new PermissionRecord { Name = "Admin area. HTML Editor. Manage pictures", SystemName = "HtmlEditor.ManagePictures", Category = "Configuration" };
         public static readonly PermissionRecord ManageScheduleTasks = new PermissionRecord { Name = "Admin area. Manage Schedule Tasks", SystemName = "ManageScheduleTasks", Category = "Configuration" };
-        
+
+        //Logistics
+        public static readonly PermissionRecord ManageGoods = new PermissionRecord { Name = "Admin area. Manage Goods", SystemName = "ManageGoods", Category = "Logistics" };
+        public static readonly PermissionRecord ManageCars = new PermissionRecord { Name = "Admin area. Manage Cars", SystemName = "ManageCars", Category = "Logistics" };
+        public static readonly PermissionRecord ManageDrivers = new PermissionRecord { Name = "Admin area. Manage Drivers", SystemName = "ManageDrivers", Category = "Logistics" };
+        public static readonly PermissionRecord ManageConsignmentOrders = new PermissionRecord { Name = "Admin area. Manage Consignment Orders", SystemName = "ManageConsignmentOrders", Category = "Logistics" };
+        public static readonly PermissionRecord ManageTrips = new PermissionRecord { Name = "Admin area. Manage Trips", SystemName = "ManageTrips", Category = "Logistics" };
+
         //public store permissions
         public static readonly PermissionRecord DisplayPrices = new PermissionRecord { Name = "Public store. Display Prices", SystemName = "DisplayPrices", Category = "PublicStore" };
         public static readonly PermissionRecord EnableShoppingCart = new PermissionRecord { Name = "Public store. Enable shopping cart", SystemName = "EnableShoppingCart", Category = "PublicStore" };
@@ -69,7 +76,7 @@ namespace Nop.Services.Security
         /// <returns>Permissions</returns>
         public virtual IEnumerable<PermissionRecord> GetPermissions()
         {
-            return new[] 
+            return new[]
             {
                 AccessAdminPanel,
                 AllowCustomerImpersonation,
@@ -116,6 +123,13 @@ namespace Nop.Services.Security
                 ManageMaintenance,
                 HtmlEditorManagePictures,
                 ManageScheduleTasks,
+
+                ManageGoods,
+                ManageCars,
+                ManageDrivers,
+                ManageConsignmentOrders,
+                ManageTrips,
+
                 DisplayPrices,
                 EnableShoppingCart,
                 EnableWishlist,
@@ -130,12 +144,12 @@ namespace Nop.Services.Security
         /// <returns>Permissions</returns>
         public virtual IEnumerable<DefaultPermissionRecord> GetDefaultPermissions()
         {
-            return new[] 
+            return new[]
             {
-                new DefaultPermissionRecord 
+                new DefaultPermissionRecord
                 {
                     CustomerRoleSystemName = NopCustomerDefaults.AdministratorsRoleName,
-                    PermissionRecords = new[] 
+                    PermissionRecords = new[]
                     {
                         AccessAdminPanel,
                         AllowCustomerImpersonation,
@@ -189,10 +203,10 @@ namespace Nop.Services.Security
                         AccessClosedStore
                     }
                 },
-                new DefaultPermissionRecord 
+                new DefaultPermissionRecord
                 {
                     CustomerRoleSystemName = NopCustomerDefaults.ForumModeratorsRoleName,
-                    PermissionRecords = new[] 
+                    PermissionRecords = new[]
                     {
                         DisplayPrices,
                         EnableShoppingCart,
@@ -200,10 +214,10 @@ namespace Nop.Services.Security
                         PublicStoreAllowNavigation
                     }
                 },
-                new DefaultPermissionRecord 
+                new DefaultPermissionRecord
                 {
                     CustomerRoleSystemName = NopCustomerDefaults.GuestsRoleName,
-                    PermissionRecords = new[] 
+                    PermissionRecords = new[]
                     {
                         DisplayPrices,
                         EnableShoppingCart,
@@ -211,10 +225,10 @@ namespace Nop.Services.Security
                         PublicStoreAllowNavigation
                     }
                 },
-                new DefaultPermissionRecord 
+                new DefaultPermissionRecord
                 {
                     CustomerRoleSystemName = NopCustomerDefaults.RegisteredRoleName,
-                    PermissionRecords = new[] 
+                    PermissionRecords = new[]
                     {
                         DisplayPrices,
                         EnableShoppingCart,
@@ -222,10 +236,10 @@ namespace Nop.Services.Security
                         PublicStoreAllowNavigation
                     }
                 },
-                new DefaultPermissionRecord 
+                new DefaultPermissionRecord
                 {
                     CustomerRoleSystemName = NopCustomerDefaults.VendorsRoleName,
-                    PermissionRecords = new[] 
+                    PermissionRecords = new[]
                     {
                         AccessAdminPanel,
                         ManageProducts,
