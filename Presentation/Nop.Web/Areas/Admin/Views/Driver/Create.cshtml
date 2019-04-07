@@ -1,0 +1,30 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.DriverModel
+
+@{
+    ViewBag.Title = T("Admin.Logistics.Driver.AddNew").Text;
+    Html.SetActiveMenuItemSystemName("Driver");
+}
+
+<form asp-controller="Driver" asp-action="Create" method="post">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.Logistics.Driver.AddNew")
+            <small>
+                <i class="fa fa-arrow-circle-left"></i>
+                <a asp-action="List">@T("Admin.Logistics.Driver.BackToList")</a>
+            </small>
+        </h1>
+        <div class="pull-right">
+            <button type="submit" name="save" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn bg-blue">
+                <i class="fa fa-floppy-o"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+        </div>
+    </div>
+    @await Html.PartialAsync("_CreateOrUpdate", Model)
+</form>
+

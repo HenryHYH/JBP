@@ -227,11 +227,8 @@ namespace Nop.Web.Framework.Infrastructure
             builder.RegisterType<SubscriptionService>().As<ISubscriptionService>().SingleInstance();
             builder.RegisterType<SettingService>().As<ISettingService>().InstancePerLifetimeScope();
             builder.RegisterType<CarService>().As<ICarService>().InstancePerLifetimeScope();
-            builder.RegisterType<ConsignmentOrderService>().As<IConsignmentOrderService>().InstancePerLifetimeScope();
             builder.RegisterType<DriverService>().As<IDriverService>().InstancePerLifetimeScope();
-            builder.RegisterType<GoodsService>().As<IGoodsService>().InstancePerLifetimeScope();
-            builder.RegisterType<TripService>().As<ITripService>().InstancePerLifetimeScope();
-
+            builder.RegisterType<ConsignmentOrderService>().As<IConsignmentOrderService>().InstancePerLifetimeScope();
 
             builder.RegisterType<ActionContextAccessor>().As<IActionContextAccessor>().InstancePerLifetimeScope();
 

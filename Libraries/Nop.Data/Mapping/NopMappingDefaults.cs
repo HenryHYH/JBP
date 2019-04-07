@@ -115,10 +115,5 @@ namespace Nop.Data.Mapping
         /// Gets a name of the ShippingMethod-Restrictions mapping table
         /// </summary>
         public static string ShippingMethodRestrictionsTable => "ShippingMethodRestrictions";
-
-        /// <summary>
-        /// Consignment Goods mapping table
-        /// </summary>
-        public static string ConsignmentGoodsTable => "ConsignmentOrder_Goods_Mapping";
     }
 }

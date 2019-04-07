@@ -1,15 +1,15 @@
-﻿@model Nop.Web.Areas.Admin.Models.Logistics.GoodsSearchModel
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderSearchModel
 
 @{
-    ViewBag.Title = T("Admin.Logistics.Goods").Text;
-    Html.SetActiveMenuItemSystemName("Goods");
+    ViewBag.Title = T("Admin.Logistics.ConsignmentOrder").Text;
+    Html.SetActiveMenuItemSystemName("ConsignmentOrder");
 }
 
 <nop-antiforgery-token />
-<form asp-controller="Goods" asp-action="List" method="post">
+<form asp-controller="ConsignmentOrder" asp-action="List" method="post">
     <div class="content-header clearfix">
         <h1 class="pull-left">
-            @T("Admin.Logistics.Goods")
+            @T("Admin.Logistics.ConsignmentOrder")
         </h1>
         <div class="pull-right">
             <a asp-action="Create" class="btn bg-blue">
@@ -28,10 +28,76 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="col-md-4">
-                                        <nop-label asp-for="SearchName" />
+                                        <nop-label asp-for="SearchConsignor" />
                                     </div>
                                     <div class="col-md-8">
-                                        <nop-editor asp-for="SearchName" />
+                                        <nop-editor asp-for="SearchConsignor" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchStartPoint" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchStartPoint" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchConsignee" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchConsignee" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchTerminal" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchTerminal" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchCarLicense" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchCarLicense" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchDriverName" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchDriverName" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchShipmentMethod" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
                                     </div>
                                 </div>
                             </div>
@@ -58,12 +124,18 @@
                                         type: "json",
                                         transport: {
                                             read: {
-                                                url: "@Html.Raw(Url.Action("List", "Goods"))",
+                                                url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
                                                 type: "POST",
                                                 dataType: "json",
                                                 data: function () {
                                                     var data = {
-                                                        SearchName: $("#@Html.IdFor(x=>x.SearchName)").val()
+                                                        SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
+                                                        SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
+                                                        SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
+                                                        SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
+                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val(),
+                                                        SearchCarLicense: $("#@Html.IdFor(x => x.SearchCarLicense)").val(),
+                                                        SearchDriverName: $("#@Html.IdFor(x => x.SearchDriverName)").val()
                                                     };
                                                     addAntiForgeryToken(data);
                                                     return data;
@@ -101,12 +173,42 @@
                                             width: 50
                                         },
                                         {
-                                            field: "Name",
-                                            title: "@T("Admin.Logistics.Goods.Fields.Name")"
+                                            field: "ConsignorId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
+                                            template:
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
                                         },
                                         {
-                                            field: "Price",
-                                            title: "@T("Admin.Logistics.Goods.Fields.Price")"
+                                            field: "ConsigneeId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
+                                            template:
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
+                                        },
+                                        {
+                                            field: "ShipmentMethodName",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")"
+                                        },
+                                        {
+                                            field: "StartPoint",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
+                                        },
+                                        {
+                                            field: "Terminal",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
+                                        },
+                                        {
+                                            field: "CarId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Car")",
+                                            template: "@T("Admin.Logistics.Car.Fields.License"): #=Car.License#"
+                                        },
+                                        {
+                                            field: "DriverId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Driver")",
+                                            template: "@T("Admin.Logistics.Driver.Fields.Name"): #=Driver.Name#"
                                         },
                                         {
                                             field: "Id",
@@ -133,7 +235,14 @@
                                     return false;
                                 });
 
-                                $(["#@Html.IdFor(x=>x.SearchName)"].join(",")).keydown(function (event) {
+                                $([
+                                    "#@Html.IdFor(x => x.SearchStartPoint)",
+                                    "#@Html.IdFor(x => x.SearchTerminal)",
+                                    "#@Html.IdFor(x => x.SearchConsignor)",
+                                    "#@Html.IdFor(x => x.SearchConsignee)",
+                                    "#@Html.IdFor(x => x.SearchCarLicense)",
+                                    "#@Html.IdFor(x => x.SearchDriverName)"
+                                ].join(",")).keydown(function (event) {
                                     if (event.keyCode === 13) {
                                         $("#search").click();
                                         return false;

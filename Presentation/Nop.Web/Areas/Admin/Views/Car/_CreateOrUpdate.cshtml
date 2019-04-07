@@ -1,4 +1,4 @@
-﻿@model Nop.Web.Areas.Admin.Models.Logistics.GoodsModel
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.CarModel
 
 @inject IEventPublisher eventPublisher
 
@@ -7,14 +7,14 @@
 
 <div class="content">
     <div class="form-horizontal">
-        <nop-tabs id="goods-edit">
-            <nop-tab asp-name="tab-info" asp-title="@T("Admin.Logistics.Goods.Info")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Info", Model)</nop-tab>
+        <nop-tabs id="car-edit">
+            <nop-tab asp-name="tab-info" asp-title="@T("Admin.Logistics.Car.Info")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Info", Model)</nop-tab>
         </nop-tabs>
     </div>
 </div>
 
 @{
-    var eventMessage = new AdminTabStripCreated(this.Html, "goods-edit");
+    var eventMessage = new AdminTabStripCreated(this.Html, "car-edit");
     eventPublisher.Publish(eventMessage);
     foreach (var eventBlock in eventMessage.BlocksToRender)
     {

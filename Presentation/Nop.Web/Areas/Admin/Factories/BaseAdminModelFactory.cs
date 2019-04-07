@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Gdpr;
 using Nop.Core.Domain.Logging;
+using Nop.Core.Domain.Logistics;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Payments;
 using Nop.Core.Domain.Shipping;
@@ -19,6 +17,7 @@ using Nop.Services.Directory;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Nop.Services.Logistics;
 using Nop.Services.Messages;
 using Nop.Services.Plugins;
 using Nop.Services.Shipping;
@@ -28,6 +27,9 @@ using Nop.Services.Tax;
 using Nop.Services.Topics;
 using Nop.Services.Vendors;
 using Nop.Web.Areas.Admin.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -60,6 +62,8 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly ITopicTemplateService _topicTemplateService;
         private readonly IVendorService _vendorService;
+        private readonly ICarService carService;
+        private readonly IDriverService driverService;
 
         #endregion
 
@@ -86,30 +90,34 @@ namespace Nop.Web.Areas.Admin.Factories
             IStoreService storeService,
             ITaxCategoryService taxCategoryService,
             ITopicTemplateService topicTemplateService,
-            IVendorService vendorService)
+            IVendorService vendorService,
+            ICarService carService,
+            IDriverService driverService)
         {
-            this._categoryService = categoryService;
-            this._categoryTemplateService = categoryTemplateService;
-            this._countryService = countryService;
-            this._currencyService = currencyService;
-            this._customerActivityService = customerActivityService;
-            this._customerService = customerService;
-            this._dateRangeService = dateRangeService;
-            this._dateTimeHelper = dateTimeHelper;
-            this._emailAccountService = emailAccountService;
-            this._languageService = languageService;
-            this._localizationService = localizationService;
-            this._manufacturerService = manufacturerService;
-            this._manufacturerTemplateService = manufacturerTemplateService;
-            this._pluginFinder = pluginFinder;
-            this._productTemplateService = productTemplateService;
-            this._shippingService = shippingService;
-            this._stateProvinceService = stateProvinceService;
-            this._cacheManager = cacheManager;
-            this._storeService = storeService;
-            this._taxCategoryService = taxCategoryService;
-            this._topicTemplateService = topicTemplateService;
-            this._vendorService = vendorService;
+            _categoryService = categoryService;
+            _categoryTemplateService = categoryTemplateService;
+            _countryService = countryService;
+            _currencyService = currencyService;
+            _customerActivityService = customerActivityService;
+            _customerService = customerService;
+            _dateRangeService = dateRangeService;
+            _dateTimeHelper = dateTimeHelper;
+            _emailAccountService = emailAccountService;
+            _languageService = languageService;
+            _localizationService = localizationService;
+            _manufacturerService = manufacturerService;
+            _manufacturerTemplateService = manufacturerTemplateService;
+            _pluginFinder = pluginFinder;
+            _productTemplateService = productTemplateService;
+            _shippingService = shippingService;
+            _stateProvinceService = stateProvinceService;
+            _cacheManager = cacheManager;
+            _storeService = storeService;
+            _taxCategoryService = taxCategoryService;
+            _topicTemplateService = topicTemplateService;
+            _vendorService = vendorService;
+            this.carService = carService;
+            this.driverService = driverService;
         }
 
         #endregion
@@ -122,7 +130,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="items">Available items</param>
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use "All" text</param>
-        protected virtual void PrepareDefaultItem(IList<SelectListItem> items, bool withSpecialDefaultItem, string defaultItemText = null)
+        protected virtual void PrepareDefaultItem(IList<SelectListItem> items, bool withSpecialDefaultItem, string defaultItemText = null, string defaultItemValue = "0")
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
@@ -131,14 +139,11 @@ namespace Nop.Web.Areas.Admin.Factories
             if (!withSpecialDefaultItem)
                 return;
 
-            //at now we use "0" as the default value
-            const string value = "0";
-
             //prepare item text
             defaultItemText = defaultItemText ?? _localizationService.GetResource("Admin.Common.All");
 
             //insert this default item at first
-            items.Insert(0, new SelectListItem { Text = defaultItemText, Value = value });
+            items.Insert(0, new SelectListItem { Text = defaultItemText, Value = defaultItemValue });
         }
 
         #endregion
@@ -394,7 +399,7 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             //insert special item for the default value
-            PrepareDefaultItem(items, withSpecialDefaultItem, 
+            PrepareDefaultItem(items, withSpecialDefaultItem,
                 defaultItemText ?? _localizationService.GetResource("Admin.Configuration.Settings.Tax.TaxCategories.None"));
         }
 
@@ -646,7 +651,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="items">Manufacturer template items</param>
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
-        public virtual void PrepareManufacturerTemplates(IList<SelectListItem> items, 
+        public virtual void PrepareManufacturerTemplates(IList<SelectListItem> items,
             bool withSpecialDefaultItem = true, string defaultItemText = null)
         {
             if (items == null)
@@ -713,7 +718,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="items">Return request status items</param>
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
-        public virtual void PrepareReturnRequestStatuses(IList<SelectListItem> items, 
+        public virtual void PrepareReturnRequestStatuses(IList<SelectListItem> items,
             bool withSpecialDefaultItem = true, string defaultItemText = null)
         {
             if (items == null)
@@ -824,7 +829,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="items">Product availability range items</param>
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
-        public virtual void PrepareProductAvailabilityRanges(IList<SelectListItem> items, 
+        public virtual void PrepareProductAvailabilityRanges(IList<SelectListItem> items,
             bool withSpecialDefaultItem = true, string defaultItemText = null)
         {
             if (items == null)
@@ -862,6 +867,62 @@ namespace Nop.Web.Areas.Admin.Factories
             //insert special item for the default value
             PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
+
+        public virtual void PrepareEnabledOptions(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            items.Add(new SelectListItem
+            {
+                Value = "true",
+                Text = _localizationService.GetResource("Admin.Common.SearchEnabled.Enabled")
+            });
+            items.Add(new SelectListItem
+            {
+                Value = "false",
+                Text = _localizationService.GetResource("Admin.Common.SearchEnabled.Disabled")
+            });
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText, string.Empty);
+        }
+
+        public virtual void PrepareShipmentMethods(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = ShipmentMethod.Highway.ToSelectList(false);
+            foreach (var item in list)
+                items.Add(item);
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareCars(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = carService.GetAll();
+            foreach (var item in list)
+                items.Add(new SelectListItem { Text = item.License, Value = item.Id.ToString() });
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareDrivers(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = driverService.GetAll();
+            foreach (var item in list)
+                items.Add(new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
         #endregion
     }
 }

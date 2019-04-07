@@ -8,14 +8,14 @@ namespace Nop.Core.Domain.Logistics
     /// </summary>
     public partial class ConsignmentOrder : BaseEntity
     {
-        private ICollection<ConsignmentGoods> goods;
+        private ICollection<Goods> goods;
 
         /// <summary>
         /// 货物
         /// </summary>
-        public virtual ICollection<ConsignmentGoods> Goods
+        public virtual ICollection<Goods> Goods
         {
-            get => goods ?? (goods = new List<ConsignmentGoods>());
+            get => goods ?? (goods = new List<Goods>());
             protected set => goods = value;
         }
 
@@ -53,6 +53,26 @@ namespace Nop.Core.Domain.Logistics
         /// 终点站
         /// </summary>
         public string Terminal { get; set; }
+
+        /// <summary>
+        /// 司机ID
+        /// </summary>
+        public int DriverId { get; set; }
+
+        /// <summary>
+        /// 司机
+        /// </summary>
+        public virtual Driver Driver { get; set; }
+
+        /// <summary>
+        /// 车辆ID
+        /// </summary>
+        public int CarId { get; set; }
+
+        /// <summary>
+        /// 车辆
+        /// </summary>
+        public virtual Car Car { get; set; }
 
         /// <summary>
         /// 是否已删除

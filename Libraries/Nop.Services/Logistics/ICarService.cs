@@ -5,7 +5,13 @@ namespace Nop.Services.Logistics
 {
     public partial interface ICarService
     {
-        IPagedList<Car> GetAll(int pageIndex = 0, int pageSize = int.MaxValue);
+        IPagedList<Car> GetAll(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            string license = null,
+            bool? enabled = null);
+
+        Car Get(int id);
 
         void Insert(Car entity);
 

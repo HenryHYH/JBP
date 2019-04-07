@@ -83,7 +83,9 @@ namespace Nop.Web.Infrastructure
             builder.RegisterType<VendorAttributeModelFactory>().As<IVendorAttributeModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<VendorModelFactory>().As<IVendorModelFactory>().InstancePerLifetimeScope();
             builder.RegisterType<WidgetModelFactory>().As<IWidgetModelFactory>().InstancePerLifetimeScope();
-            builder.RegisterType<GoodsFactory>().As<IGoodsFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<CarFactory>().As<ICarFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<DriverFactory>().As<IDriverFactory>().InstancePerLifetimeScope();
+            builder.RegisterType<ConsignmentOrderFactory>().As<IConsignmentOrderFactory>().InstancePerLifetimeScope();
 
             //factories
             builder.RegisterType<Factories.AddressModelFactory>().As<Factories.IAddressModelFactory>().InstancePerLifetimeScope();

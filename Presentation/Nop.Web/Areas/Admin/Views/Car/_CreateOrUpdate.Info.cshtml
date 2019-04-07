@@ -1,0 +1,25 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.CarModel
+<div class="panel-group">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="License" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="License" asp-required="true" />
+                    <span asp-validation-for="License"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Enabled" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Enabled" />
+                    <span asp-validation-for="Enabled"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

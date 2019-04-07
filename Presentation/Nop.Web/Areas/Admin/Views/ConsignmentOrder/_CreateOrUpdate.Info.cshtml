@@ -1,0 +1,133 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderModel
+@using Nop.Services
+<div class="panel-group">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @T("Admin.Logistics.ConsignmentOrder.Fields.BaseInfo")
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="ShipmentMethod" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="ShipmentMethod" asp-items="Model.ShipmentMethod.ToSelectList()" />
+                    <span asp-validation-for="ShipmentMethod"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="StartPoint" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="StartPoint" asp-required="true" />
+                    <span asp-validation-for="StartPoint"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Terminal" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Terminal" asp-required="true" />
+                    <span asp-validation-for="Terminal"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")
+            <input asp-for="ConsignorId" type="hidden" />
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignor.Name" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignor.Name" asp-required="true" />
+                    <span asp-validation-for="Consignor.Name"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignor.Address" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignor.Address" />
+                    <span asp-validation-for="Consignor.Address"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignor.Phone" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignor.Phone" />
+                    <span asp-validation-for="Consignor.Phone"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")
+            <input asp-for="ConsigneeId" type="hidden" />
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignee.Name" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignee.Name" asp-required="true" />
+                    <span asp-validation-for="Consignee.Name"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignee.Address" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignee.Address" />
+                    <span asp-validation-for="Consignee.Address"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Consignee.Phone" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Consignee.Phone" />
+                    <span asp-validation-for="Consignee.Phone"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @T("Admin.Logistics.ConsignmentOrder.Fields.Ship")
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="CarId" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="CarId" asp-items="Model.AvailableCars" />
+                    <span asp-validation-for="CarId"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="DriverId" />
+                </div>
+                <div class="col-md-9">
+                    <nop-select asp-for="DriverId" asp-items="Model.AvailableDrivers" />
+                    <span asp-validation-for="DriverId"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

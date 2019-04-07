@@ -1,0 +1,176 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderModel
+<div class="panel-group">
+    @if (Model.Id > 0)
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="goods-grid"></div>
+
+                <script>
+                    $(function () {
+                        $("#goods-grid").kendoGrid({
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("GetGoods", "ConsignmentOrder"))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: function () {
+                                            var data = {
+                                                OrderId: "@(Model.Id)"
+                                            };
+                                            addAntiForgeryToken(data);
+                                            return data;
+                                        }
+                                    },
+                                    destroy: {
+                                        url: "@Html.Raw(Url.Action("DeleteGoods", "ConsignmentOrder", new { orderId = Model.Id }))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: addAntiForgeryToken
+                                    }
+                                },
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors",
+                                    model: {
+                                        id: "Id",
+                                        fields: {
+                                            CTime: { type: "date" }
+                                        }
+                                    }
+                                },
+                                error: function (e) {
+                                    display_kendoui_grid_error(e);
+                                    this.cancelChanges();
+                                },
+                                pageSize: @(Model.GoodsSearchModel.PageSize),
+                                serverPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true
+                            },
+                            pageable: {
+                                refresh: true,
+                                pageSizes: [@(Model.GoodsSearchModel.AvailablePageSizes)],
+                                @await Html.PartialAsync("_GridPagerMessages")
+                            },
+                            editable: {
+                                confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                mode: "inline"
+                            },
+                            scrollable: false,
+                            columns: [
+                                {
+                                    field: "CTime",
+                                    title: "@T("Admin.Logistics.Goods.Fields.CTime")",
+                                    width: 200,
+                                    type: "date",
+                                    attributes: { style: "text-align:center" },
+                                    format: "{0:yyyy-MM-dd HH:mm:ss}"
+                                },
+                                {
+                                    field: "Name",
+                                    title: "@T("Admin.Logistics.Goods.Fields.Name")"
+                                },
+                                {
+                                    field: "Price",
+                                    title: "@T("Admin.Logistics.Goods.Fields.Price")"
+                                },
+                                {
+                                    command: { name: "destroy", text: "@T("Admin.Common.Delete")" },
+                                    title: "@T("Admin.Common.Delete")",
+                                    width: 100
+                                }
+                            ]
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                @T("Admin.Logistics.Goods.AddTitle")
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AddGoodsName" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AddGoodsName" asp-required="true" />
+                        <span asp-validation-for="AddGoodsName"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="AddGoodsPrice" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="AddGoodsPrice" />
+                        <span asp-validation-for="AddGoodsPrice"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <button type="button" id="addGoods" class="btn btn-primary">@T("Admin.Logistics.Goods.AddButton")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(function () {
+                $("#addGoods").click(function () {
+                    $("#addGoods").attr("disabled", true);
+
+                    var postData = {
+                        OrderId: "@Model.Id",
+                        Name: $("#@Html.IdFor(x => x.AddGoodsName)").val(),
+                        Price: $("#@Html.IdFor(x => x.AddGoodsPrice)").val()
+                    };
+                    addAntiForgeryToken(postData);
+
+                    $.ajax({
+                        cache: false,
+                        type: "POST",
+                        url: "@Url.Action("AddGoods", "ConsignmentOrder")",
+                        data: postData,
+                        complete: function () {
+                            $([
+                                "#@Html.IdFor(x => x.AddGoodsName)",
+                                "#@Html.IdFor(x => x.AddGoodsPrice)"
+                            ].join(",")).val("");
+                        },
+                        success: function (data) {
+                            if (data.Error) {
+                                alert(data.Error);
+                            }
+
+                            if (data.Result) {
+                                var grid = $("#goods-grid").data("kendoGrid");
+                                grid.dataSource.read();
+                            }
+
+                            $("#addGoods").attr("disabled", false);
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert("@T("Admin.Logistics.Goods.AddFailed")");
+                            $("#addGoods").attr("disabled", false);
+                        }
+                    });
+                });
+            });
+        </script>
+    }
+    else
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @T("Admin.Logistics.ConsignmentOrder.Goods.SaveBeforeEdit")
+            </div>
+        </div>
+    }
+</div>

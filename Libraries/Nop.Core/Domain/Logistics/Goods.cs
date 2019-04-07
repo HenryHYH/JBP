@@ -18,23 +18,18 @@ namespace Nop.Core.Domain.Logistics
         public decimal? Price { get; set; }
 
         /// <summary>
-        /// 是否已删除
-        /// </summary>
-        public bool Deleted { get; set; }
-
-        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CTime { get; set; }
 
         /// <summary>
-        /// 编辑时间
+        /// 订单号
         /// </summary>
-        public DateTime? UTime { get; set; }
+        public int OrderId { get; set; }
 
         /// <summary>
-        /// 删除时间
+        /// 订单
         /// </summary>
-        public DateTime? DTime { get; set; }
+        public virtual ConsignmentOrder Ordr { get; set; }
     }
 }

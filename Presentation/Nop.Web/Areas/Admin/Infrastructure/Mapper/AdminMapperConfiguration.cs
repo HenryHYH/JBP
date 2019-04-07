@@ -1241,8 +1241,21 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
 
         protected virtual void CreateLogisticsMaps()
         {
+            CreateMap<Car, CarModel>();
+            CreateMap<CarModel, Car>();
+
+            CreateMap<Driver, DriverModel>();
+            CreateMap<DriverModel, Driver>();
+
             CreateMap<Goods, GoodsModel>();
-            CreateMap<GoodsModel, Goods>();
+            CreateMap<GoodsModel, Goods>()
+                .ForMember(x => x.Id, o => o.Ignore());
+
+            CreateMap<ConsignmentUser, ConsignmentUserModel>();
+            CreateMap<ConsignmentUserModel, ConsignmentUser>()
+                .ForMember(x => x.Id, o => o.Ignore());
+            CreateMap<ConsignmentOrder, ConsignmentOrderModel>();
+            CreateMap<ConsignmentOrderModel, ConsignmentOrder>();
         }
 
         #endregion

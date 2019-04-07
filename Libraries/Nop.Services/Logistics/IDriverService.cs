@@ -5,7 +5,9 @@ namespace Nop.Services.Logistics
 {
     public partial interface IDriverService
     {
-        IPagedList<Driver> GetAll(int pageIndex = 0, int pageSize = int.MaxValue);
+        IPagedList<Driver> GetAll(int pageIndex = 0, int pageSize = int.MaxValue, string name = null, bool? enabled = null);
+
+        Driver Get(int id);
 
         void Insert(Driver entity);
 

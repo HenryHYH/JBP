@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace Nop.Web.Areas.Admin.Factories
 {
@@ -55,7 +55,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="countryId">Country identifier; pass null to don't load states and provinces</param>
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
-        void PrepareStatesAndProvinces(IList<SelectListItem> items, int? countryId, 
+        void PrepareStatesAndProvinces(IList<SelectListItem> items, int? countryId,
             bool withSpecialDefaultItem = true, string defaultItemText = null);
 
         /// <summary>
@@ -268,5 +268,13 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <param name="withSpecialDefaultItem">Whether to insert the first special item for the default value</param>
         /// <param name="defaultItemText">Default item text; pass null to use default value of the default item text</param>
         void PrepareGdprRequestTypes(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareEnabledOptions(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareShipmentMethods(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareCars(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareDrivers(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
 }

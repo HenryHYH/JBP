@@ -11,9 +11,6 @@ namespace Nop.Data.Mapping.Logistics
             builder.ToTable(nameof(ConsignmentUser));
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Deleted).IsRequired().HasDefaultValue(false);
-            builder.Property(x => x.CTime).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
-
             base.Configure(builder);
         }
     }

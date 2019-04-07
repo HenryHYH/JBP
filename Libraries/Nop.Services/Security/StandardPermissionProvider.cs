@@ -57,11 +57,9 @@ namespace Nop.Services.Security
         public static readonly PermissionRecord ManageScheduleTasks = new PermissionRecord { Name = "Admin area. Manage Schedule Tasks", SystemName = "ManageScheduleTasks", Category = "Configuration" };
 
         //Logistics
-        public static readonly PermissionRecord ManageGoods = new PermissionRecord { Name = "Admin area. Manage Goods", SystemName = "ManageGoods", Category = "Logistics" };
         public static readonly PermissionRecord ManageCars = new PermissionRecord { Name = "Admin area. Manage Cars", SystemName = "ManageCars", Category = "Logistics" };
         public static readonly PermissionRecord ManageDrivers = new PermissionRecord { Name = "Admin area. Manage Drivers", SystemName = "ManageDrivers", Category = "Logistics" };
         public static readonly PermissionRecord ManageConsignmentOrders = new PermissionRecord { Name = "Admin area. Manage Consignment Orders", SystemName = "ManageConsignmentOrders", Category = "Logistics" };
-        public static readonly PermissionRecord ManageTrips = new PermissionRecord { Name = "Admin area. Manage Trips", SystemName = "ManageTrips", Category = "Logistics" };
 
         //public store permissions
         public static readonly PermissionRecord DisplayPrices = new PermissionRecord { Name = "Public store. Display Prices", SystemName = "DisplayPrices", Category = "PublicStore" };
@@ -124,11 +122,9 @@ namespace Nop.Services.Security
                 HtmlEditorManagePictures,
                 ManageScheduleTasks,
 
-                ManageGoods,
                 ManageCars,
                 ManageDrivers,
                 ManageConsignmentOrders,
-                ManageTrips,
 
                 DisplayPrices,
                 EnableShoppingCart,
