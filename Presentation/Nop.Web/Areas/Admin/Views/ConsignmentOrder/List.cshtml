@@ -6,118 +6,121 @@
 }
 
 <nop-antiforgery-token />
-<form asp-controller="ConsignmentOrder" asp-action="List" method="post">
-    <div class="content-header clearfix">
-        <h1 class="pull-left">
-            @T("Admin.Logistics.ConsignmentOrder")
-        </h1>
-        <div class="pull-right">
-            <a asp-action="Create" class="btn bg-blue">
-                <i class="fa fa-plus-square"></i>
-                @T("Admin.Common.AddNew")
-            </a>
-        </div>
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @T("Admin.Logistics.ConsignmentOrder")
+    </h1>
+    <div class="pull-right">
+        <a asp-action="Create" class="btn bg-blue">
+            <i class="fa fa-plus-square"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+        <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+            <i class="fa fa-upload"></i>
+            @T("Admin.Common.Import")
+        </button>
     </div>
+</div>
 
-    <div class="content">
-        <div class="form-horizontal">
-            <div class="panel-group">
-                <div class="panel panel-default panel-search">
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchConsignor" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchConsignor" />
-                                    </div>
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchConsignor" />
                                 </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchStartPoint" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchStartPoint" />
-                                    </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchConsignor" />
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchConsignee" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchConsignee" />
-                                    </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchStartPoint" />
                                 </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchTerminal" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchTerminal" />
-                                    </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchStartPoint" />
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchCarLicense" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchCarLicense" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchDriverName" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchDriverName" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchShipmentMethod" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-7 col-md-offset-5">
-                                <button type="button" id="search" class="btn btn-primary btn-search">
-                                    <i class="fa fa-search"></i>
-                                    @T("Admin.Common.Search")
-                                </button>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchConsignee" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchConsignee" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchTerminal" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchTerminal" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchCarLicense" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchCarLicense" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchDriverName" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchDriverName" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchShipmentMethod" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-md-offset-5">
+                            <button type="button" id="search" class="btn btn-primary btn-search">
+                                <i class="fa fa-search"></i>
+                                @T("Admin.Common.Search")
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div id="grid"></div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid"></div>
 
-                        <script>
+                    <script>
                             $(function () {
                                 $("#grid").kendoGrid({
                                     dataSource: {
@@ -189,10 +192,6 @@
                                                 "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
                                         },
                                         {
-                                            field: "ShipmentMethodName",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")"
-                                        },
-                                        {
                                             field: "StartPoint",
                                             title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
                                         },
@@ -211,6 +210,13 @@
                                             template: "@T("Admin.Logistics.Driver.Fields.Name"): #=Driver.Name#"
                                         },
                                         {
+                                            field: "ShipmentMethodName",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
+                                            width: 100,
+                                            headerAttributes: { style: "text-align: center" },
+                                            attributes: { style: "text-align: center" }
+                                        },
+                                        {
                                             field: "Id",
                                             title: "@T("Admin.Common.Edit")",
                                             width: 50,
@@ -221,9 +227,9 @@
                                     ]
                                 });
                             });
-                        </script>
+                    </script>
 
-                        <script>
+                    <script>
                             var selectedIds = [];
 
                             $(function () {
@@ -285,10 +291,51 @@
                                 var numChkBoxesChecked = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked").length;
                                 $("#mastercheckbox").attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
                             }
-                        </script>
-                    </div>
+                    </script>
                 </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+<div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
+            </div>
+            <form asp-controller="ConsignmentOrder" asp-action="ImportFromXlsx" method="post" enctype="multipart/form-data">
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <ul class="common-list">
+                            <li>
+                                <em>@T("Admin.Logistics.ConsignmentOrders.List.ImportFromExcelTip")</em>
+                            </li>
+                            <li>
+                                <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <div class="label-wrapper">
+                                    <label class="control-label">
+                                        @T("Admin.Common.ExcelFile")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="file" id="importexcelfile" name="importexcelfile" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            @T("Admin.Common.ImportFromExcel")
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

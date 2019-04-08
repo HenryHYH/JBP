@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Nop.Core;
 using Nop.Core.Data;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Directory;
+using Nop.Core.Domain.Logistics;
 using Nop.Core.Domain.Media;
 using Nop.Core.Domain.Messages;
 using Nop.Core.Domain.Shipping;
@@ -20,6 +16,7 @@ using Nop.Services.Directory;
 using Nop.Services.ExportImport.Help;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Nop.Services.Logistics;
 using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Security;
@@ -30,6 +27,11 @@ using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
 using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 
 namespace Nop.Services.ExportImport
 {
@@ -44,6 +46,8 @@ namespace Nop.Services.ExportImport
         private const string IMAGE_HASH_ALGORITHM = "SHA1";
 
         private const string UPLOADS_TEMP_PATH = "~/App_Data/TempUploads";
+
+        private const int GOODS_CELL_NUM_OFFSET = 1;
 
         #endregion
 
@@ -79,6 +83,9 @@ namespace Nop.Services.ExportImport
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly VendorSettings _vendorSettings;
+        private readonly ICarService carService;
+        private readonly IDriverService driverService;
+        private readonly IConsignmentOrderService consignmentOrderService;
 
         #endregion
 
@@ -113,7 +120,10 @@ namespace Nop.Services.ExportImport
             IVendorService vendorService,
             IWorkContext workContext,
             MediaSettings mediaSettings,
-            VendorSettings vendorSettings)
+            VendorSettings vendorSettings,
+            ICarService carService,
+            IDriverService driverService,
+            IConsignmentOrderService consignmentOrderService)
         {
             this._catalogSettings = catalogSettings;
             this._categoryService = categoryService;
@@ -145,6 +155,9 @@ namespace Nop.Services.ExportImport
             this._workContext = workContext;
             this._mediaSettings = mediaSettings;
             this._vendorSettings = vendorSettings;
+            this.carService = carService;
+            this.driverService = driverService;
+            this.consignmentOrderService = consignmentOrderService;
         }
 
         #endregion
@@ -235,7 +248,7 @@ namespace Nop.Services.ExportImport
         protected virtual string GetMimeTypeFromFilePath(string filePath)
         {
             new FileExtensionContentTypeProvider().TryGetContentType(filePath, out var mimeType);
-            
+
             //set to jpeg in case mime type cannot be found
             return mimeType ?? MimeTypes.ImageJpeg;
         }
@@ -692,7 +705,7 @@ namespace Nop.Services.ExportImport
                 _productAttributeService.UpdateProductAttributeValue(pav);
             }
         }
-        
+
         private void ImportSpecificationAttribute(PropertyManager<ExportSpecificationAttribute> specificationAttributeManager, Product lastLoadedProduct)
         {
             if (!_catalogSettings.ExportImportProductSpecificationAttributes || lastLoadedProduct == null || specificationAttributeManager.IsCaption)
@@ -1114,6 +1127,127 @@ namespace Nop.Services.ExportImport
             }
 
             return filePaths;
+        }
+
+        protected virtual void SetOutlineForGoods(object cellValue, ExcelWorksheet worksheet, int endRow)
+        {
+            if ((cellValue ?? string.Empty).ToString().Equals(_localizationService.GetResource("Admin.Logistics.Goods.Fields.Name"), StringComparison.InvariantCultureIgnoreCase))
+                worksheet.Row(endRow).OutlineLevel = 1;
+        }
+
+        protected virtual void ImportGoods(PropertyManager<Goods> goodsManager,
+            ConsignmentOrder lastLoadedConsignmentOrder,
+            IDictionary<string, Action<Goods, PropertyByName<Goods>>> converters)
+        {
+            if (null == lastLoadedConsignmentOrder || goodsManager.IsCaption)
+                return;
+
+            var entity = new Goods
+            {
+                OrderId = lastLoadedConsignmentOrder.Id,
+                CTime = DateTime.UtcNow
+            };
+            foreach (var property in goodsManager.GetProperties)
+            {
+                if (converters.TryGetValue(property.PropertyName, out Action<Goods, PropertyByName<Goods>> converter))
+                    converter(entity, property);
+            }
+
+            consignmentOrderService.InsertGoods(entity);
+        }
+
+        private ImportConsignmentOrderMetaData PrepareImportConsignmentOrderData(ExcelWorksheet worksheet)
+        {
+            var properties = GetPropertiesByExcelCells<ConsignmentOrder>(worksheet);
+
+            var manager = new PropertyManager<ConsignmentOrder>(properties, _catalogSettings);
+
+            var goodsProperties = new[]
+            {
+                new PropertyByName<Goods>(_localizationService.GetResource("Admin.Logistics.Goods.Fields.Name")),
+                new PropertyByName<Goods>(_localizationService.GetResource("Admin.Logistics.Goods.Fields.Price"))
+            };
+
+            var goodsManager = new PropertyManager<Goods>(goodsProperties, _catalogSettings);
+
+            var endRow = 2;
+
+            var allCars = new List<string>();
+            var carProperty = manager.GetProperty(
+                $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
+                $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}");
+            var carCellNum = carProperty?.PropertyOrderPosition ?? -1;
+
+            var allDrivers = new List<string>();
+            var driverProperty = manager.GetProperty(
+                $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
+                $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}");
+            var driverCellNum = driverProperty?.PropertyOrderPosition ?? -1;
+
+            var goodsCellNum = 1 + GOODS_CELL_NUM_OFFSET;
+
+            var consignmentOrdersInFile = new List<int>();
+
+            while (true)
+            {
+                var allColumnsAreEmpty = manager.GetProperties
+                    .Select(x => worksheet.Cells[endRow, x.PropertyOrderPosition])
+                    .All(x => string.IsNullOrWhiteSpace(x?.Value?.ToString()));
+
+                if (allColumnsAreEmpty)
+                    break;
+
+                if (new[] { 1 }.Select(x => worksheet.Cells[endRow, x])
+                        .All(x => string.IsNullOrWhiteSpace(x?.Value?.ToString())) &&
+                    worksheet.Row(endRow).OutlineLevel == 0)
+                {
+                    var cellValue = worksheet.Cells[endRow, goodsCellNum].Value;
+                    SetOutlineForGoods(cellValue, worksheet, endRow);
+                }
+
+                if (worksheet.Row(endRow).OutlineLevel != 0)
+                {
+                    endRow++;
+                    continue;
+                }
+
+                if (carCellNum > 0)
+                {
+                    var carName = worksheet.Cells[endRow, carCellNum].Value?.ToString() ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(carName))
+                        allCars.Add(carName);
+                }
+
+                if (driverCellNum > 0)
+                {
+                    var driverName = worksheet.Cells[endRow, driverCellNum].Value?.ToString() ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(driverName))
+                        allDrivers.Add(driverName);
+                }
+
+                consignmentOrdersInFile.Add(endRow);
+
+                endRow++;
+            }
+
+            var notExistingCars = carService.GetNotExistings(allCars.ToArray());
+            if (notExistingCars.Any())
+                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.CarNotExists"), string.Join(",", notExistingCars)));
+
+            var notExistingDrivers = driverService.GetNotExistings(allDrivers.ToArray());
+            if (notExistingDrivers.Any())
+                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
+
+            return new ImportConsignmentOrderMetaData
+            {
+                EndRow = endRow,
+                Manager = manager,
+                Properties = properties,
+                GoodsManager = goodsManager,
+                ConsignmentOrdersInFile = consignmentOrdersInFile,
+                DriverNames = allDrivers.ToArray(),
+                CarLicenses = allCars.ToArray()
+            };
         }
 
         #endregion
@@ -2098,6 +2232,154 @@ namespace Nop.Services.ExportImport
             }
         }
 
+        public virtual void ImportConsignmentOrdersFromXlsx(Stream stream)
+        {
+            using (var xlPackage = new ExcelPackage(stream))
+            {
+                var worksheet = xlPackage.Workbook.Worksheets.FirstOrDefault();
+                if (null == worksheet)
+                    throw new NopException("No worksheet found");
+
+                var metadata = PrepareImportConsignmentOrderData(worksheet);
+
+                var allCars = carService.GetAll(enabled: true, licenses: metadata.CarLicenses);
+                var allDrivers = driverService.GetAll(enabled: true, names: metadata.DriverNames);
+
+                var consignmentOrderDataConverter = new Dictionary<string, Action<ConsignmentOrder, PropertyByName<ConsignmentOrder>>>
+                {
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Name")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignor)
+                                e.Consignor = new ConsignmentUser();
+                            e.Consignor.Name = p.StringValue;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignor)
+                                e.Consignor = new ConsignmentUser();
+                            e.Consignor.Phone = p.StringValue;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Address")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignor)
+                                e.Consignor = new ConsignmentUser();
+                            e.Consignor.Address = p.StringValue;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Name")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignee)
+                                e.Consignee = new ConsignmentUser();
+                            e.Consignee.Name = p.StringValue;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignee)
+                                e.Consignee = new ConsignmentUser();
+                            e.Consignee.Phone = p.StringValue;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Address")}",
+                        (e, p) =>
+                        {
+                            if (null == e.Consignee)
+                                e.Consignee = new ConsignmentUser();
+                            e.Consignee.Address = p.StringValue;
+                        }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.StartPoint"),
+                        (e, p) => { e.StartPoint = p.StringValue; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Terminal"),
+                        (e, p) => { e.Terminal = p.StringValue; }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}",
+                        (e, p) => { e.CarId = allCars.FirstOrDefault(x => x.License == p.StringValue)?.Id ?? 0; }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}",
+                        (e, p) => { e.DriverId = allDrivers.FirstOrDefault(x => x.Name == p.StringValue)?.Id ?? 0; }
+                    }
+                };
+                var goodsDataConverter = new Dictionary<string, Action<Goods, PropertyByName<Goods>>>
+                {
+                    {
+                        _localizationService.GetResource("Admin.Logistics.Goods.Fields.Name"),
+                        (e, p) => { e.Name = p.StringValue; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.Goods.Fields.Price"),
+                        (e, p) => { e.Price = p.DecimalValueNullable; }
+                    }
+                };
+
+                ConsignmentOrder lastLoadedConsignmentOrder = null;
+
+                for (var iRow = 2; iRow < metadata.EndRow; iRow++)
+                {
+                    if (worksheet.Row(iRow).OutlineLevel != 0)
+                    {
+                        if (lastLoadedConsignmentOrder == null)
+                            continue;
+
+                        metadata.GoodsManager.ReadFromXlsx(worksheet, iRow, GOODS_CELL_NUM_OFFSET);
+                        if (!metadata.GoodsManager.IsCaption)
+                            ImportGoods(metadata.GoodsManager, lastLoadedConsignmentOrder, goodsDataConverter);
+
+                        continue;
+                    }
+
+                    metadata.Manager.ReadFromXlsx(worksheet, iRow);
+
+                    var consignmentOrder = new ConsignmentOrder
+                    {
+                        ShipmentMethod = ShipmentMethod.Highway,
+                        CTime = DateTime.UtcNow
+                    };
+
+                    foreach (var property in metadata.Manager.GetProperties)
+                    {
+                        if (consignmentOrderDataConverter.TryGetValue(
+                                property.PropertyName,
+                                out Action<ConsignmentOrder, PropertyByName<ConsignmentOrder>> action))
+                            action(consignmentOrder, property);
+                    }
+
+                    consignmentOrderService.Insert(consignmentOrder);
+
+                    lastLoadedConsignmentOrder = consignmentOrder;
+                }
+
+                _customerActivityService.InsertActivity("ImportConsignmentOrders",
+                    string.Format(_localizationService.GetResource("ActivityLog.ImportConsignmentOrders"), metadata.ConsignmentOrdersInFile.Count));
+            }
+        }
+
         #endregion
 
         #region Nested classes
@@ -2153,7 +2435,7 @@ namespace Nop.Services.ExportImport
 
             public override int GetHashCode()
             {
-                if (!StoresIds.Any()) 
+                if (!StoresIds.Any())
                     return Key.GetHashCode();
 
                 var storesIds = StoresIds.Select(id => id.ToString())

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Nop.Core.Domain.Logistics;
+using Nop.Services.ExportImport;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
 using Nop.Services.Logistics;
@@ -23,6 +25,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly IConsignmentOrderService consignmentOrderService;
         private readonly ICustomerActivityService customerActivityService;
         private readonly ILocalizationService localizationService;
+        private readonly IImportManager importManager;
 
         #endregion
 
@@ -33,13 +36,15 @@ namespace Nop.Web.Areas.Admin.Controllers
             IConsignmentOrderFactory consignmentOrderFactory,
             IConsignmentOrderService consignmentOrderService,
             ICustomerActivityService customerActivityService,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IImportManager importManager)
         {
             this.permissionService = permissionService;
             this.consignmentOrderFactory = consignmentOrderFactory;
             this.consignmentOrderService = consignmentOrderService;
             this.customerActivityService = customerActivityService;
             this.localizationService = localizationService;
+            this.importManager = importManager;
         }
 
         #endregion
@@ -182,6 +187,35 @@ namespace Nop.Web.Areas.Admin.Controllers
             SuccessNotification(localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Deleted"));
 
             return RedirectToAction("List");
+        }
+
+        [HttpPost]
+        public virtual IActionResult ImportFromXlsx(IFormFile importexcelfile)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageConsignmentOrders))
+                return AccessDeniedView();
+
+            try
+            {
+                if (null != importexcelfile && importexcelfile.Length > 0)
+                {
+                    importManager.ImportConsignmentOrdersFromXlsx(importexcelfile.OpenReadStream());
+                }
+                else
+                {
+                    ErrorNotification(localizationService.GetResource("Admin.Common.UploadFile"));
+                    return RedirectToAction("List");
+                }
+
+                SuccessNotification(localizationService.GetResource("Admin.Logistics.ConsignmentOrders.Imported"));
+
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex);
+                return RedirectToAction("List");
+            }
         }
 
         #endregion

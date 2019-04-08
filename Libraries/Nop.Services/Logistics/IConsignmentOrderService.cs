@@ -24,6 +24,8 @@ namespace Nop.Services.Logistics
 
         void Delete(ConsignmentOrder entity);
 
-        void DeleteGoods(Goods entityItem);
+        void DeleteGoods(Goods entity);
+
+        void InsertGoods(Goods entity);
     }
 }

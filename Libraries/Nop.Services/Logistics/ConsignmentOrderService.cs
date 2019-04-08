@@ -141,6 +141,16 @@ namespace Nop.Services.Logistics
             eventPublisher.EntityDeleted(entity);
         }
 
+        public virtual void InsertGoods(Goods entity)
+        {
+            if (null == entity)
+                throw new ArgumentNullException(nameof(entity));
+
+            goodsRepository.Insert(entity);
+
+            eventPublisher.EntityInserted(entity);
+        }
+
         #endregion
 
         #endregion

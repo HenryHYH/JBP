@@ -34,7 +34,8 @@ namespace Nop.Services.Logistics
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             string license = null,
-            bool? enabled = null)
+            bool? enabled = null,
+            string[] licenses = null)
         {
             var query = repository.TableNoTracking.Where(x => !x.Deleted);
 
@@ -43,6 +44,8 @@ namespace Nop.Services.Logistics
                 license = license.Trim();
                 query = query.Where(x => x.License.Contains(license));
             }
+            if (null != licenses && licenses.Any())
+                query = query.Where(x => licenses.Contains(x.License));
             if (enabled.HasValue)
                 query = query.Where(x => x.Enabled == enabled.Value);
 
@@ -95,6 +98,28 @@ namespace Nop.Services.Logistics
             repository.Update(entity);
 
             eventPublisher.EntityDeleted(entity);
+        }
+
+        public virtual string[] GetNotExistings(params string[] idOrLicenses)
+        {
+            if (null == idOrLicenses)
+                throw new ArgumentNullException(nameof(idOrLicenses));
+
+            var query = repository.TableNoTracking;
+            var queryFilter = idOrLicenses.Distinct().ToArray();
+
+            // License
+            var filter = query.Where(x => x.Enabled).Select(x => x.License).Where(x => queryFilter.Contains(x)).ToList();
+            queryFilter = queryFilter.Except(filter).ToArray();
+
+            if (!queryFilter.Any())
+                return queryFilter;
+
+            // ID
+            filter = query.Where(x => x.Enabled).Select(x => x.Id.ToString()).Where(x => queryFilter.Contains(x)).ToList();
+            queryFilter = queryFilter.Except(filter).ToArray();
+
+            return queryFilter;
         }
 
         #endregion
