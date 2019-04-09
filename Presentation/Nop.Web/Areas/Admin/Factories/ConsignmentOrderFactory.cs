@@ -64,8 +64,8 @@ namespace Nop.Web.Areas.Admin.Factories
                 terminal: searchModel.SearchTerminal,
                 consignor: searchModel.SearchConsignor,
                 consignee: searchModel.SearchConsignee,
-                carLicense: searchModel.SearchCarLicense,
-                driverName: searchModel.SearchDriverName);
+                tripId: searchModel.TripId,
+                noRelatedTrip: searchModel.SearchNoRelatedTrip);
 
             var model = new ConsignmentOrderListModel
             {
@@ -94,9 +94,6 @@ namespace Nop.Web.Areas.Admin.Factories
 
             if (null == model)
                 model = new ConsignmentOrderModel();
-
-            baseAdminModelFactory.PrepareCars(model.AvailableCars, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
-            baseAdminModelFactory.PrepareDrivers(model.AvailableDrivers, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
 
             return model;
         }

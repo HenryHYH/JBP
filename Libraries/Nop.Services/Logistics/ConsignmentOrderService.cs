@@ -41,8 +41,8 @@ namespace Nop.Services.Logistics
             string terminal = null,
             string consignor = null,
             string consignee = null,
-            string carLicense = null,
-            string driverName = null)
+            int? tripId = null,
+            bool? noRelatedTrip = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
@@ -68,16 +68,10 @@ namespace Nop.Services.Logistics
                 consignor = consignor.Trim();
                 query = query.Where(x => x.Consignor.Name.Contains(consignor));
             }
-            if (!string.IsNullOrWhiteSpace(carLicense))
-            {
-                carLicense = carLicense.Trim();
-                query = query.Where(x => x.Car.License.Contains(carLicense));
-            }
-            if (!string.IsNullOrWhiteSpace(driverName))
-            {
-                driverName = driverName.Trim();
-                query = query.Where(x => x.Driver.Name.Contains(driverName));
-            }
+            if (tripId.HasValue && tripId.Value > 0)
+                query = query.Where(x => x.TripId == tripId.Value);
+            if (noRelatedTrip.HasValue && noRelatedTrip.Value)
+                query = query.Where(x => null == x.TripId || 0 == x.TripId);
 
             query = query.OrderByDescending(x => x.UTime ?? x.CTime);
 

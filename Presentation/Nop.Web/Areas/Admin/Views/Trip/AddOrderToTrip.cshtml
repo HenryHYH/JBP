@@ -1,0 +1,299 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderSearchModel
+
+@{
+    ViewBag.Title = string.Format(T("Admin.Logistics.Trip.Orders.AddNew.Title").Text, Model.TripId);
+    Html.SetActiveMenuItemSystemName("Trip");
+}
+
+<nop-antiforgery-token />
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @string.Format(T("Admin.Logistics.Trip.Orders.AddNew.Title").Text, Model.TripId)
+        <small>
+            <i class="fa fa-arrow-circle-left"></i>
+            <a id="lnkBackToTrip" asp-action="Edit" asp-route-id="@Model.TripId">@T("Admin.Logistics.Trip.Orders.AddNew.BackToTrip")</a>
+        </small>
+    </h1>
+    <div class="pull-right">
+        <button type="button" class="btn btn-success" id="add-order-to-trip-selected">
+            <i class="fa fa-floppy-o"></i>
+            @T("Admin.Logistics.Trip.Orders.AddNew") (共<span class="text-bold">0</span>条)
+        </button>
+    </div>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchConsignor" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchConsignor" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchStartPoint" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchStartPoint" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchConsignee" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchConsignee" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchTerminal" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="SearchTerminal" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="SearchShipmentMethod" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-md-offset-5">
+                            <button type="button" id="search" class="btn btn-primary btn-search">
+                                <i class="fa fa-search"></i>
+                                @T("Admin.Common.Search")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid"></div>
+
+                    <script>
+                        $(function () {
+                            $("#grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: function () {
+                                                var data = {
+                                                    SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
+                                                    SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
+                                                    SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
+                                                    SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
+                                                    SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val(),
+                                                    SearchNoRelatedTrip: true,
+                                                };
+                                                addAntiForgeryToken(data);
+                                                return data;
+                                            }
+                                        }
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors:"Errors"
+                                    },
+                                    error: function (e) {
+                                        display_kendoui_grid_error(e);
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(Model.PageSize),
+                                    serverPaging: true,
+                                    serverFiltering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [@(Model.AvailablePageSizes)],
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                scrollable: false,
+                                dataBound: onDataBound,
+                                columns: [
+                                    {
+                                        field: "Id",
+                                        width: 50,
+                                        headerAttributes: { style: "text-align:center" },
+                                        attributes: { style: "text-align:center" },
+                                        headerTemplate: "<input type='checkbox' id='mastercheckbox' />",
+                                        template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />"
+                                    },
+                                    {
+                                        field: "ConsignorId",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
+                                        template:
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
+                                    },
+                                    {
+                                        field: "ConsigneeId",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
+                                        template:
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
+                                    },
+                                    {
+                                        field: "StartPoint",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
+                                    },
+                                    {
+                                        field: "Terminal",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
+                                    },
+                                    {
+                                        field: "ShipmentMethodName",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
+                                        width: 100,
+                                        headerAttributes: { style: "text-align: center" },
+                                        attributes: { style: "text-align: center" }
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        var selectedIds = [];
+
+                        $(function () {
+                            $("#search").click(function () {
+                                var grid = $("#grid").data("kendoGrid");
+                                grid.dataSource.page(1);
+                                return false;
+                            });
+
+                            $([
+                                "#@Html.IdFor(x => x.SearchStartPoint)",
+                                "#@Html.IdFor(x => x.SearchTerminal)",
+                                "#@Html.IdFor(x => x.SearchConsignor)",
+                                "#@Html.IdFor(x => x.SearchConsignee)"
+                            ].join(",")).keydown(function (event) {
+                                if (event.keyCode === 13) {
+                                    $("#search").click();
+                                    return false;
+                                }
+                            });
+
+                            $("#mastercheckbox").click(function () {
+                                $(".checkboxGroups").attr("checked", $(this).is(":checked")).change();
+                            });
+
+                            $("#grid").on("change", "input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]", function (e) {
+                                var $check = $(this);
+                                var checked = $.inArray($check.val(), selectedIds);
+                                if ($check.is(":checked") == true) {
+                                    if (-1 == checked) {
+                                        selectedIds.push($check.val());
+                                    }
+                                } else if (checked > -1) {
+                                    selectedIds = $.grep(selectedIds, function (item, index) {
+                                        return item != $check.val();
+                                    });
+                                }
+                                updateMasterCheckbox();
+                            });
+                        });
+
+                        function onDataBound(e) {
+                            $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").each(function () {
+                                var currentId = $(this).val();
+                                var checked = $.inArray(currentId, selectedIds);
+                                $(this).attr("checked", checked > -1);
+                            });
+
+                            updateMasterCheckbox();
+                        }
+
+                        function updateMasterCheckbox() {
+                            var numChkBoxes = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").length;
+                            var numChkBoxesChecked = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked").length;
+                            $("#mastercheckbox").attr("checked", numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+
+                            updateSaveButtonMessage();
+                        }
+
+                        function updateSaveButtonMessage() {
+                            $("#add-order-to-trip-selected span").text(selectedIds.length);
+                        }
+
+                        function addOrderToTrip(orderId) {
+                            var postData = {
+                                OrderId: orderId
+                            };
+                            addAntiForgeryToken(postData);
+
+                            $.ajax({
+                                cache: false,
+                                type: "POST",
+                                url: "@Url.Action("AddOrderToTrip", "Trip", new { tripId = Model.TripId })",
+                                data: postData,
+                                success: function (data) {
+                                    if (data.Error)
+                                        alert(data.Error);
+                                    else
+                                        setLocation($("#lnkBackToTrip").attr("href"));
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    alert("@T("Admin.Logistics.Trip.AddOrderToTripFailed")");
+                                }
+                            });
+                        }
+
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="Trip" asp-action="AddOrderToTrip" asp-route-id="@Model.TripId" method="post" id="add-order-to-trip-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+<script>
+    $(function () {
+        $("#add-order-to-trip-selected").click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $("#add-order-to-trip-form #selectedIds").val(ids);
+            $("#add-order-to-trip-form").submit();
+
+            return false;
+        });
+    });
+</script>

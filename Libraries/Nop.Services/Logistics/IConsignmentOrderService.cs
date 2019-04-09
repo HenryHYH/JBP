@@ -13,8 +13,8 @@ namespace Nop.Services.Logistics
             string terminal = null,
             string consignor = null,
             string consignee = null,
-            string carLicense = null,
-            string driverName = null);
+            int? tripId = null,
+            bool? noRelatedTrip = null);
 
         ConsignmentOrder Get(int id);
 

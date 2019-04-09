@@ -40,5 +40,7 @@ namespace Nop.Services.ExportImport
         void ImportCategoriesFromXlsx(Stream stream);
 
         void ImportConsignmentOrdersFromXlsx(Stream stream);
+
+        void ImportTripsFromXlsx(Stream stream);
     }
 }

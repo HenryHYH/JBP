@@ -24,13 +24,9 @@ namespace Nop.Data.Mapping.Logistics
                 .HasForeignKey(x => x.ConsigneeId)
                 .IsRequired();
 
-            builder.HasOne(x => x.Car)
-                .WithMany()
-                .HasForeignKey(x => x.CarId);
-
-            builder.HasOne(x => x.Driver)
-                .WithMany()
-                .HasForeignKey(x => x.DriverId);
+            builder.HasOne(x => x.Trip)
+                .WithMany(x => x.Orders)
+                .HasForeignKey(x => x.TripId);
 
             base.Configure(builder);
         }

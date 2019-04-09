@@ -107,27 +107,38 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            @T("Admin.Logistics.ConsignmentOrder.Fields.Ship")
+            @T("Admin.Logistics.ConsignmentOrder.Fields.Trip")
         </div>
         <div class="panel-body">
-            <div class="form-group">
-                <div class="col-md-3">
-                    <nop-label asp-for="CarId" />
+            @if (null != Model.Trip)
+            {
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Trip.Car.License" />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-text-row">@(Model.Trip?.Car?.License ?? string.Empty)</div>
+                    </div>
                 </div>
-                <div class="col-md-9">
-                    <nop-select asp-for="CarId" asp-items="Model.AvailableCars" />
-                    <span asp-validation-for="CarId"></span>
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Trip.Driver.Name" />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-text-row">@(Model.Trip?.Driver?.Name ?? string.Empty)</div>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-3">
-                    <nop-label asp-for="DriverId" />
+            }
+            else
+            {
+                <div class="form-group">
+                    <div class="col-md-9 col-md-offset-3">
+                        <div class="form-text-row">
+                            @T("Admin.Logistics.ConsignmentOrder.NoTrip")
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-9">
-                    <nop-select asp-for="DriverId" asp-items="Model.AvailableDrivers" />
-                    <span asp-validation-for="DriverId"></span>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

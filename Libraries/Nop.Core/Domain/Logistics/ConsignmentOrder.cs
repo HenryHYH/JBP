@@ -55,24 +55,14 @@ namespace Nop.Core.Domain.Logistics
         public string Terminal { get; set; }
 
         /// <summary>
-        /// 司机ID
+        /// 行程ID
         /// </summary>
-        public int DriverId { get; set; }
+        public int? TripId { get; set; }
 
         /// <summary>
-        /// 司机
+        /// 行程
         /// </summary>
-        public virtual Driver Driver { get; set; }
-
-        /// <summary>
-        /// 车辆ID
-        /// </summary>
-        public int CarId { get; set; }
-
-        /// <summary>
-        /// 车辆
-        /// </summary>
-        public virtual Car Car { get; set; }
+        public virtual Trip Trip { get; set; }
 
         /// <summary>
         /// 是否已删除

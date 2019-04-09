@@ -1,10 +1,9 @@
 ﻿using FluentValidation.Attributes;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core.Domain.Logistics;
 using Nop.Web.Areas.Admin.Validators.Logistics;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nop.Web.Areas.Admin.Models.Logistics
@@ -16,14 +15,15 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public ConsignmentOrderModel()
         {
-            AvailableCars = new List<SelectListItem>();
-            AvailableDrivers = new List<SelectListItem>();
             GoodsSearchModel = new GoodsSearchModel();
         }
 
         #endregion
 
         #region Properties
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.CTime")]
+        public DateTime CTime { get; set; }
 
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")]
         public string StartPoint { get; set; }
@@ -47,19 +47,10 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public virtual ConsignmentUserModel Consignee { get; set; }
 
-        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Car")]
-        public int CarId { get; set; }
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Trip")]
+        public int TripId { get; set; }
 
-        public virtual CarModel Car { get; set; }
-
-        public virtual IList<SelectListItem> AvailableCars { get; set; }
-
-        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Driver")]
-        public int DriverId { get; set; }
-
-        public virtual DriverModel Driver { get; set; }
-
-        public virtual IList<SelectListItem> AvailableDrivers { get; set; }
+        public virtual TripModel Trip { get; set; }
 
         #region Goods
 

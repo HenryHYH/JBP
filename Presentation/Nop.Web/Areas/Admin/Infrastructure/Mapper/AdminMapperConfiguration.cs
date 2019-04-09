@@ -1255,7 +1255,12 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<ConsignmentUserModel, ConsignmentUser>()
                 .ForMember(x => x.Id, o => o.Ignore());
             CreateMap<ConsignmentOrder, ConsignmentOrderModel>();
-            CreateMap<ConsignmentOrderModel, ConsignmentOrder>();
+            CreateMap<ConsignmentOrderModel, ConsignmentOrder>()
+                .ForMember(x => x.TripId, o => o.Ignore())
+                .ForMember(x => x.Trip, o => o.Ignore());
+
+            CreateMap<Trip, TripModel>();
+            CreateMap<TripModel, Trip>();
         }
 
         #endregion

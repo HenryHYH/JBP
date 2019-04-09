@@ -1,14 +1,14 @@
-﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderSearchModel
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.TripSearchModel
 
 @{
-    ViewBag.Title = T("Admin.Logistics.ConsignmentOrder").Text;
-    Html.SetActiveMenuItemSystemName("ConsignmentOrder");
+    ViewBag.Title = T("Admin.Logistics.Trip").Text;
+    Html.SetActiveMenuItemSystemName("Trip");
 }
 
 <nop-antiforgery-token />
 <div class="content-header clearfix">
     <h1 class="pull-left">
-        @T("Admin.Logistics.ConsignmentOrder")
+        @T("Admin.Logistics.Trip")
     </h1>
     <div class="pull-right">
         <a asp-action="Create" class="btn bg-blue">
@@ -31,54 +31,20 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="SearchConsignor" />
+                                    <nop-label asp-for="SearchCarLicense" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="SearchConsignor" />
+                                    <nop-editor asp-for="SearchCarLicense" />
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-7">
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="SearchStartPoint" />
+                                    <nop-label asp-for="SearchDriverName" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="SearchStartPoint" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchConsignee" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchConsignee" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchTerminal" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchTerminal" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchShipmentMethod" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
+                                    <nop-editor asp-for="SearchDriverName" />
                                 </div>
                             </div>
                         </div>
@@ -105,16 +71,13 @@
                                         type: "json",
                                         transport: {
                                             read: {
-                                                url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
+                                                url: "@Html.Raw(Url.Action("List", "Trip"))",
                                                 type: "POST",
                                                 dataType: "json",
                                                 data: function () {
                                                     var data = {
-                                                        SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
-                                                        SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
-                                                        SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
-                                                        SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
-                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
+                                                        SearchCarLicense: $("#@Html.IdFor(x => x.SearchCarLicense)").val(),
+                                                        SearchDriverName: $("#@Html.IdFor(x => x.SearchDriverName)").val()
                                                     };
                                                     addAntiForgeryToken(data);
                                                     return data;
@@ -152,44 +115,14 @@
                                             width: 50
                                         },
                                         {
-                                            field: "ConsignorId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
-                                            template:
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
+                                            field: "CarId",
+                                            title: "@T("Admin.Logistics.Trip.Fields.Car")",
+                                            template: "@T("Admin.Logistics.Car.Fields.License"): #=Car.License#"
                                         },
                                         {
-                                            field: "ConsigneeId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
-                                            template:
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
-                                        },
-                                        {
-                                            field: "StartPoint",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
-                                        },
-                                        {
-                                            field: "Terminal",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
-                                        },
-                                        {
-                                            field: "TripId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
-                                            template:
-                                                "# if (null != Trip) {# " +
-                                                "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : ''#<br />" +
-                                                "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : ''#" +
-                                                " #} else {# #} #"
-                                        },
-                                        {
-                                            field: "ShipmentMethodName",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
-                                            width: 100,
-                                            headerAttributes: { style: "text-align: center" },
-                                            attributes: { style: "text-align: center" }
+                                            field: "DriverId",
+                                            title: "@T("Admin.Logistics.Trip.Fields.Driver")",
+                                            template: "@T("Admin.Logistics.Driver.Fields.Name"): #=Driver.Name#"
                                         },
                                         {
                                             field: "Id",
@@ -217,10 +150,8 @@
                                 });
 
                                 $([
-                                    "#@Html.IdFor(x => x.SearchStartPoint)",
-                                    "#@Html.IdFor(x => x.SearchTerminal)",
-                                    "#@Html.IdFor(x => x.SearchConsignor)",
-                                    "#@Html.IdFor(x => x.SearchConsignee)"
+                                    "#@Html.IdFor(x => x.SearchCarLicense)",
+                                    "#@Html.IdFor(x => x.SearchDriverName)"
                                 ].join(",")).keydown(function (event) {
                                     if (event.keyCode === 13) {
                                         $("#search").click();
@@ -278,12 +209,12 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="importexcel-window-title">@T("Admin.Common.ImportFromExcel")</h4>
             </div>
-            <form asp-controller="ConsignmentOrder" asp-action="ImportFromXlsx" method="post" enctype="multipart/form-data">
+            <form asp-controller="Trip" asp-action="ImportFromXlsx" method="post" enctype="multipart/form-data">
                 <div class="form-horizontal">
                     <div class="modal-body">
                         <ul class="common-list">
                             <li>
-                                <em>@T("Admin.Logistics.ConsignmentOrders.List.ImportFromExcelTip")</em>
+                                <em>@T("Admin.Logistics.Trips.List.ImportFromExcelTip")</em>
                             </li>
                             <li>
                                 <em>@T("Admin.Common.ImportFromExcel.ManyRecordsWarning")</em>

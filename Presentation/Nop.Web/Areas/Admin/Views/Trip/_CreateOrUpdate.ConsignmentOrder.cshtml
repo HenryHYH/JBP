@@ -1,0 +1,107 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.TripModel
+<div class="panel-group">
+    @if (Model.Id > 0)
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="goods-grid"></div>
+
+                <script>
+                    $(function () {
+                        $("#goods-grid").kendoGrid({
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: {
+                                        url: "@Html.Raw(Url.Action("GetConsignmentOrder", "Trip"))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: function () {
+                                            var data = {
+                                                TripId: "@(Model.Id)"
+                                            };
+                                            addAntiForgeryToken(data);
+                                            return data;
+                                        }
+                                    },
+                                    destroy: {
+                                        url: "@Html.Raw(Url.Action("DeleteConsignmentOrder", "Trip", new { tripId = Model.Id }))",
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: addAntiForgeryToken
+                                    }
+                                },
+                                schema: {
+                                    data: "Data",
+                                    total: "Total",
+                                    errors: "Errors",
+                                    model: {
+                                        id: "Id",
+                                        fields: {
+                                            CTime: { type: "date" }
+                                        }
+                                    }
+                                },
+                                error: function (e) {
+                                    display_kendoui_grid_error(e);
+                                    this.cancelChanges();
+                                },
+                                pageSize: @(Model.ConsignmentOrderSearchModel.PageSize),
+                                serverPaging: true,
+                                serverFiltering: true,
+                                serverSorting: true
+                            },
+                            pageable: {
+                                refresh: true,
+                                pageSizes: [@(Model.ConsignmentOrderSearchModel.AvailablePageSizes)],
+                                @await Html.PartialAsync("_GridPagerMessages")
+                            },
+                            editable: {
+                                confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                mode: "inline"
+                            },
+                            scrollable: false,
+                            columns: [
+                                {
+                                    field: "CTime",
+                                    title: "@T("Admin.Logistics.ConsignmentOrder.Fields.CTime")",
+                                    width: 200,
+                                    type: "date",
+                                    attributes: { style: "text-align:center" },
+                                    format: "{0:yyyy-MM-dd HH:mm:ss}"
+                                },
+                                {
+                                    field: "StartPoint",
+                                    title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
+                                },
+                                {
+                                    field: "Terminal",
+                                    title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
+                                },
+                                {
+                                    command: { name: "destroy", text: "@T("Admin.Common.Delete")" },
+                                    title: "@T("Admin.Common.Delete")",
+                                    width: 100
+                                }
+                            ]
+                        });
+                    });
+                </script>
+            </div>
+            <div class="panel-footer">
+                <button type="button" id="btnAddNewOrder" name="btnAddNewOrder" class="btn btn-primary"
+                        onclick="javascript:setLocation('@Url.Action("AddOrderToTrip", "Trip", new { id = Model.Id })'); return false;">
+                    @T("Admin.Logistics.Trip.Orders.AddNew")
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                @T("Admin.Logistics.Trip.ConsignmentOrder.SaveBeforeEdit")
+            </div>
+        </div>
+    }
+</div>

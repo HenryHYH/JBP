@@ -2314,16 +2314,6 @@ namespace Nop.Services.ExportImport
                     {
                         _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Terminal"),
                         (e, p) => { e.Terminal = p.StringValue; }
-                    },
-                    {
-                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
-                        $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}",
-                        (e, p) => { e.CarId = allCars.FirstOrDefault(x => x.License == p.StringValue)?.Id ?? 0; }
-                    },
-                    {
-                        $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
-                        $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}",
-                        (e, p) => { e.DriverId = allDrivers.FirstOrDefault(x => x.Name == p.StringValue)?.Id ?? 0; }
                     }
                 };
                 var goodsDataConverter = new Dictionary<string, Action<Goods, PropertyByName<Goods>>>
@@ -2378,6 +2368,11 @@ namespace Nop.Services.ExportImport
                 _customerActivityService.InsertActivity("ImportConsignmentOrders",
                     string.Format(_localizationService.GetResource("ActivityLog.ImportConsignmentOrders"), metadata.ConsignmentOrdersInFile.Count));
             }
+        }
+
+        public virtual void ImportTripsFromXlsx(Stream stream)
+        {
+
         }
 
         #endregion

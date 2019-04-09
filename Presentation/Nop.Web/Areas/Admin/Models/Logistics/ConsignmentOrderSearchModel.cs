@@ -36,11 +36,9 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.List.SearchConsignee")]
         public string SearchConsignee { get; set; }
 
-        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.List.SearchCarLicense")]
-        public string SearchCarLicense { get; set; }
+        public int TripId { get; set; }
 
-        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.List.SearchDriverName")]
-        public string SearchDriverName { get; set; }
+        public bool? SearchNoRelatedTrip { get; set; }
 
         #endregion
     }
