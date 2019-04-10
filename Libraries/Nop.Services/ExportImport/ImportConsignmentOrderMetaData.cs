@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Nop.Services.ExportImport
 {
-    public partial class ImportConsignmentOrderMetaData
+    public partial class ImportConsignmentOrderMetadata
     {
         public int EndRow { get; internal set; }
 

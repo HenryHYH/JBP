@@ -1257,10 +1257,17 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<ConsignmentOrder, ConsignmentOrderModel>();
             CreateMap<ConsignmentOrderModel, ConsignmentOrder>()
                 .ForMember(x => x.TripId, o => o.Ignore())
+                .ForMember(x => x.Trip, o => o.Ignore())
+                .ForMember(x => x.CTime, o => o.Ignore());
+
+            CreateMap<Fee, FeeModel>();
+            CreateMap<FeeModel, Fee>()
+                .ForMember(x => x.TripId, o => o.Ignore())
                 .ForMember(x => x.Trip, o => o.Ignore());
 
             CreateMap<Trip, TripModel>();
-            CreateMap<TripModel, Trip>();
+            CreateMap<TripModel, Trip>()
+                .ForMember(x => x.CTime, o => o.Ignore());
         }
 
         #endregion

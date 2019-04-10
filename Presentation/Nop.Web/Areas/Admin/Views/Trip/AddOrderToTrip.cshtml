@@ -125,7 +125,13 @@
                                     schema: {
                                         data: "Data",
                                         total: "Total",
-                                        errors:"Errors"
+                                        errors: "Errors",
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                CTime: { type: "date" }
+                                            }
+                                        }
                                     },
                                     error: function (e) {
                                         display_kendoui_grid_error(e);
@@ -151,6 +157,15 @@
                                         attributes: { style: "text-align:center" },
                                         headerTemplate: "<input type='checkbox' id='mastercheckbox' />",
                                         template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />"
+                                    },
+                                    {
+                                        field: "CTime",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.CTime")",
+                                        width: 200,
+                                        type: "date",
+                                        attributes: { style: "text-align: center" },
+                                        headerAttributes: { style: "text-align: center" },
+                                        format: "{0:yyyy-MM-dd HH:mm:ss}"
                                     },
                                     {
                                         field: "ConsignorId",

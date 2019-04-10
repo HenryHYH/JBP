@@ -64,6 +64,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IVendorService _vendorService;
         private readonly ICarService carService;
         private readonly IDriverService driverService;
+        private readonly IFeeService feeService;
 
         #endregion
 
@@ -92,7 +93,8 @@ namespace Nop.Web.Areas.Admin.Factories
             ITopicTemplateService topicTemplateService,
             IVendorService vendorService,
             ICarService carService,
-            IDriverService driverService)
+            IDriverService driverService,
+            IFeeService feeService)
         {
             _categoryService = categoryService;
             _categoryTemplateService = categoryTemplateService;
@@ -118,6 +120,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _vendorService = vendorService;
             this.carService = carService;
             this.driverService = driverService;
+            this.feeService = feeService;
         }
 
         #endregion
@@ -917,6 +920,18 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             var list = driverService.GetAll();
+            foreach (var item in list)
+                items.Add(new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareFeeCategories(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = feeService.GetFeeCategories();
             foreach (var item in list)
                 items.Add(new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
 

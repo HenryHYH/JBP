@@ -22,8 +22,8 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         #region Properties
 
-        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.CTime")]
-        public DateTime CTime { get; set; }
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.SerialNum")]
+        public string SerialNum { get; set; }
 
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")]
         public string StartPoint { get; set; }
@@ -46,6 +46,9 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
         public int ConsigneeId { get; set; }
 
         public virtual ConsignmentUserModel Consignee { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.CTime")]
+        public DateTime CTime { get; set; }
 
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Trip")]
         public int TripId { get; set; }

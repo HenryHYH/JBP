@@ -87,7 +87,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
                 return AccessDeniedView();
 
-            var model = tripFactory.PrepareModel(new TripModel(), null);
+            var model = tripFactory.PrepareModel(null, null);
 
             return View(model);
         }

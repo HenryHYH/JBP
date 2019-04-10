@@ -8,7 +8,18 @@ namespace Nop.Core.Domain.Logistics
     /// </summary>
     public partial class ConsignmentOrder : BaseEntity
     {
+        #region Fields
+
         private ICollection<Goods> goods;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 流水号
+        /// </summary>
+        public string SerialNum { get; set; }
 
         /// <summary>
         /// 货物
@@ -83,5 +94,7 @@ namespace Nop.Core.Domain.Logistics
         /// 删除时间
         /// </summary>
         public DateTime? DTime { get; set; }
+
+        #endregion
     }
 }

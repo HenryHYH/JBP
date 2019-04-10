@@ -5,7 +5,19 @@ namespace Nop.Core.Domain.Logistics
 {
     public partial class Trip : BaseEntity
     {
+        #region Fields
+
         private ICollection<ConsignmentOrder> orders;
+        private ICollection<Fee> fees;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 流水号
+        /// </summary>
+        public string SerialNum { get; set; }
 
         /// <summary>
         /// 托运单
@@ -14,6 +26,15 @@ namespace Nop.Core.Domain.Logistics
         {
             get => orders ?? (orders = new List<ConsignmentOrder>());
             protected set => orders = value;
+        }
+
+        /// <summary>
+        /// 费用信息
+        /// </summary>
+        public virtual ICollection<Fee> Fees
+        {
+            get => fees ?? (fees = new List<Fee>());
+            protected set => fees = value;
         }
 
         /// <summary>
@@ -55,5 +76,7 @@ namespace Nop.Core.Domain.Logistics
         /// 删除时间
         /// </summary>
         public DateTime? DTime { get; set; }
+
+        #endregion
     }
 }

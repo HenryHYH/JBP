@@ -1156,7 +1156,7 @@ namespace Nop.Services.ExportImport
             consignmentOrderService.InsertGoods(entity);
         }
 
-        private ImportConsignmentOrderMetaData PrepareImportConsignmentOrderData(ExcelWorksheet worksheet)
+        private ImportConsignmentOrderMetadata PrepareImportConsignmentOrderData(ExcelWorksheet worksheet)
         {
             var properties = GetPropertiesByExcelCells<ConsignmentOrder>(worksheet);
 
@@ -1238,7 +1238,7 @@ namespace Nop.Services.ExportImport
             if (notExistingDrivers.Any())
                 throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
 
-            return new ImportConsignmentOrderMetaData
+            return new ImportConsignmentOrderMetadata
             {
                 EndRow = endRow,
                 Manager = manager,
@@ -2372,7 +2372,15 @@ namespace Nop.Services.ExportImport
 
         public virtual void ImportTripsFromXlsx(Stream stream)
         {
+            using (var xlPackage = new ExcelPackage(stream))
+            {
+                var workSheet = xlPackage.Workbook.Worksheets.FirstOrDefault();
+                if (null == workSheet)
+                    throw new NopException("No worksheet found");
 
+                _customerActivityService.InsertActivity("ImportTrips",
+                    string.Format(_localizationService.GetResource("ActivityLog.ImportTrips")));
+            }
         }
 
         #endregion

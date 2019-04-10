@@ -1,6 +1,5 @@
 ﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
-using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logistics;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
@@ -19,8 +18,8 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly ITripService tripService;
         private readonly IBaseAdminModelFactory baseAdminModelFactory;
         private readonly ILocalizationService localizationService;
-        private readonly IDateTimeHelper dateTimeHelper;
         private readonly IConsignmentOrderService consignmentOrderService;
+        private readonly IFeeService feeService;
 
         #endregion
 
@@ -30,14 +29,14 @@ namespace Nop.Web.Areas.Admin.Factories
             ITripService tripService,
             IBaseAdminModelFactory baseAdminModelFactory,
             ILocalizationService localizationService,
-            IDateTimeHelper dateTimeHelper,
-            IConsignmentOrderService consignmentOrderService)
+            IConsignmentOrderService consignmentOrderService,
+            IFeeService feeService)
         {
             this.tripService = tripService;
             this.baseAdminModelFactory = baseAdminModelFactory;
             this.localizationService = localizationService;
-            this.dateTimeHelper = dateTimeHelper;
             this.consignmentOrderService = consignmentOrderService;
+            this.feeService = feeService;
         }
 
         #endregion
@@ -89,10 +88,21 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             if (null == model)
-                model = new TripModel();
+                model = new TripModel
+                {
+                    SerialNum = CommonHelper.GenerateSerialNumber()
+                };
 
             baseAdminModelFactory.PrepareCars(model.AvailableCars, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
             baseAdminModelFactory.PrepareDrivers(model.AvailableDrivers, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
+            baseAdminModelFactory.PrepareFeeCategories(model.AvaliableFeeCategories, withSpecialDefaultItem: false);
+
+            if (model.Fees.Count != model.AvaliableFeeCategories.Count)
+            {
+                model.Fees.Clear();
+                foreach (var item in model.AvaliableFeeCategories)
+                    model.Fees.Add(new FeeModel { CategoryId = int.Parse(item.Value) });
+            }
 
             return model;
         }

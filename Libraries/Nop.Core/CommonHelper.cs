@@ -1,3 +1,4 @@
+using Nop.Core.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,6 @@ using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
-using Nop.Core.Infrastructure;
 
 namespace Nop.Core
 {
@@ -67,7 +67,7 @@ namespace Nop.Core
 
             email = email.Trim();
 
-           return _emailRegex.IsMatch(email);
+            return _emailRegex.IsMatch(email);
         }
 
         /// <summary>
@@ -78,6 +78,17 @@ namespace Nop.Core
         public static bool IsValidIpAddress(string ipAddress)
         {
             return IPAddress.TryParse(ipAddress, out IPAddress _);
+        }
+
+        /// <summary>
+        /// 生成流水号：日期+N位随机数
+        /// </summary>
+        /// <param name="length">随机数位数</param>
+        /// <param name="datetimeFormat">日期格式</param>
+        /// <returns></returns>
+        public static string GenerateSerialNumber(int length = 4, string datetimeFormat = "yyyyMMddHHmmss")
+        {
+            return $"{DateTime.Now.ToString(datetimeFormat)}{CommonHelper.GenerateRandomDigitCode(length)}";
         }
 
         /// <summary>
@@ -119,7 +130,7 @@ namespace Nop.Core
             if (string.IsNullOrEmpty(str))
                 return str;
 
-            if (str.Length <= maxLength) 
+            if (str.Length <= maxLength)
                 return str;
 
             var pLen = postfix?.Length ?? 0;
@@ -185,7 +196,7 @@ namespace Nop.Core
             var comparer = EqualityComparer<T>.Default;
             return !a1.Where((t, i) => !comparer.Equals(t, a2[i])).Any();
         }
-        
+
         /// <summary>
         /// Sets a property on an object to a value.
         /// </summary>
@@ -228,7 +239,7 @@ namespace Nop.Core
         /// <returns>The converted value.</returns>
         public static object To(object value, Type destinationType, CultureInfo culture)
         {
-            if (value == null) 
+            if (value == null)
                 return null;
 
             var sourceType = value.GetType();

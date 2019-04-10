@@ -84,7 +84,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             if (!permissionService.Authorize(StandardPermissionProvider.ManageConsignmentOrders))
                 return AccessDeniedView();
 
-            var model = consignmentOrderFactory.PrepareModel(new ConsignmentOrderModel(), null);
+            var model = consignmentOrderFactory.PrepareModel(null, null);
 
             return View(model);
         }

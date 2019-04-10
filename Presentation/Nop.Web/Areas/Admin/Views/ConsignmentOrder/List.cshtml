@@ -99,171 +99,144 @@
                     <div id="grid"></div>
 
                     <script>
-                            $(function () {
-                                $("#grid").kendoGrid({
-                                    dataSource: {
-                                        type: "json",
-                                        transport: {
-                                            read: {
-                                                url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
-                                                type: "POST",
-                                                dataType: "json",
-                                                data: function () {
-                                                    var data = {
-                                                        SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
-                                                        SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
-                                                        SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
-                                                        SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
-                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
-                                                    };
-                                                    addAntiForgeryToken(data);
-                                                    return data;
-                                                }
+                        $(function () {
+                            $("#grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: function () {
+                                                var data = {
+                                                    SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
+                                                    SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
+                                                    SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
+                                                    SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
+                                                    SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
+                                                };
+                                                addAntiForgeryToken(data);
+                                                return data;
                                             }
-                                        },
-                                        schema: {
-                                            data: "Data",
-                                            total: "Total",
-                                            errors:"Errors"
-                                        },
-                                        error: function (e) {
-                                            display_kendoui_grid_error(e);
-                                            this.cancelChanges();
-                                        },
-                                        pageSize: @(Model.PageSize),
-                                        serverPaging: true,
-                                        serverFiltering: true,
-                                        serverSorting: true
-                                    },
-                                    pageable: {
-                                        refresh: true,
-                                        pageSizes: [@(Model.AvailablePageSizes)],
-                                        @await Html.PartialAsync("_GridPagerMessages")
-                                    },
-                                    scrollable: false,
-                                    dataBound: onDataBound,
-                                    columns: [
-                                        {
-                                            field: "Id",
-                                            headerTemplate: "<input id='mastercheckbox' type='checkbox' />",
-                                            headerAttributes: { style: "text-align:center" },
-                                            attributes: { style: "text-align:center" },
-                                            template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />",
-                                            width: 50
-                                        },
-                                        {
-                                            field: "ConsignorId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
-                                            template:
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
-                                        },
-                                        {
-                                            field: "ConsigneeId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
-                                            template:
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
-                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
-                                        },
-                                        {
-                                            field: "StartPoint",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
-                                        },
-                                        {
-                                            field: "Terminal",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
-                                        },
-                                        {
-                                            field: "TripId",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
-                                            template:
-                                                "# if (null != Trip) {# " +
-                                                "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : ''#<br />" +
-                                                "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : ''#" +
-                                                " #} else {# #} #"
-                                        },
-                                        {
-                                            field: "ShipmentMethodName",
-                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
-                                            width: 100,
-                                            headerAttributes: { style: "text-align: center" },
-                                            attributes: { style: "text-align: center" }
-                                        },
-                                        {
-                                            field: "Id",
-                                            title: "@T("Admin.Common.Edit")",
-                                            width: 50,
-                                            headerAttributes: { style: "text-align:center" },
-                                            attributes: { style: "text-align:center" },
-                                            template: '<a class="btn btn-default" href="Edit/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
                                         }
-                                    ]
-                                });
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors:"Errors",
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                CTime: { type: "date" }
+                                            }
+                                        }
+                                    },
+                                    error: function (e) {
+                                        display_kendoui_grid_error(e);
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(Model.PageSize),
+                                    serverPaging: true,
+                                    serverFiltering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [@(Model.AvailablePageSizes)],
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                scrollable: false,
+                                columns: [
+                                    {
+                                        field: "SerialNum",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")",
+                                        width: 200,
+                                        headerAttributes: { style: "text-align: center" },
+                                        attributes: { style: "text-align: center" }
+                                    },
+                                    {
+                                        field: "CTime",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.CTime")",
+                                        width: 200,
+                                        type: "date",
+                                        attributes: { style: "text-align: center" },
+                                        headerAttributes: { style: "text-align: center" },
+                                        format: "{0:yyyy-MM-dd HH:mm:ss}"
+                                    },
+                                    {
+                                        field: "ConsignorId",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
+                                        template:
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
+                                    },
+                                    {
+                                        field: "ConsigneeId",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
+                                        template:
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
+                                    },
+                                    {
+                                        field: "StartPoint",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
+                                    },
+                                    {
+                                        field: "Terminal",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
+                                    },
+                                    {
+                                        field: "TripId",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
+                                        template:
+                                            "# if (null != Trip) {# " +
+                                            "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : ''#<br />" +
+                                            "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : ''#" +
+                                            " #} else {# #} #"
+                                    },
+                                    {
+                                        field: "ShipmentMethodName",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
+                                        width: 100,
+                                        headerAttributes: { style: "text-align: center" },
+                                        attributes: { style: "text-align: center" }
+                                    },
+                                    {
+                                        field: "Id",
+                                        title: "@T("Admin.Common.Edit")",
+                                        width: 50,
+                                        headerAttributes: { style: "text-align:center" },
+                                        attributes: { style: "text-align:center" },
+                                        template: '<a class="btn btn-default" href="Edit/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
+                                    }
+                                ]
                             });
+                        });
                     </script>
 
                     <script>
-                            var selectedIds = [];
-
-                            $(function () {
-                                $("#search").click(function () {
-                                    var grid = $("#grid").data("kendoGrid");
-                                    grid.dataSource.page(1);
-                                    $(".checkboxGroups").attr("checked", false).change();
-                                    selectedIds = [];
-                                    return false;
-                                });
-
-                                $([
-                                    "#@Html.IdFor(x => x.SearchStartPoint)",
-                                    "#@Html.IdFor(x => x.SearchTerminal)",
-                                    "#@Html.IdFor(x => x.SearchConsignor)",
-                                    "#@Html.IdFor(x => x.SearchConsignee)"
-                                ].join(",")).keydown(function (event) {
-                                    if (event.keyCode === 13) {
-                                        $("#search").click();
-                                        return false;
-                                    }
-                                });
-
-                                $("#mastercheckbox").click(function () {
-                                    $(".checkboxGroups").attr("checked", $(this).is(":checked")).change();
-                                });
-
-                                $("#grid").on("change", "input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]", function (e) {
-                                    var $check = $(this);
-                                    var checked = $.inArray($check.val(), selectedIds);
-                                    if ($check.is(":checked") == true) {
-                                        if (-1 == checked) {
-                                            selectedIds.push($check.val());
-                                        }
-                                    }
-                                    else if (checked > -1) {
-                                        selectedIds = $.grep(selectedIds, function (item, index) {
-                                            return item != $check.val();
-                                        });
-                                    }
-                                    updateMasterCheckbox();
-                                });
+                        $(function () {
+                            $("#search").click(function () {
+                                var grid = $("#grid").data("kendoGrid");
+                                grid.dataSource.page(1);
+                                return false;
                             });
 
-                            function onDataBound(e) {
-                                $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").each(function () {
-                                    var currentId = $(this).val();
-                                    var checked = $.inArray(currentId, selectedIds);
-                                    $(this).attr('checked', checked > -1);
-                                });
-
-                                updateMasterCheckbox();
-                            }
-
-                            function updateMasterCheckbox() {
-                                var numChkBoxes = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").length;
-                                var numChkBoxesChecked = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked").length;
-                                $("#mastercheckbox").attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-                            }
+                            $([
+                                "#@Html.IdFor(x => x.SearchStartPoint)",
+                                "#@Html.IdFor(x => x.SearchTerminal)",
+                                "#@Html.IdFor(x => x.SearchConsignor)",
+                                "#@Html.IdFor(x => x.SearchConsignee)"
+                            ].join(",")).keydown(function (event) {
+                                if (event.keyCode === 13) {
+                                    $("#search").click();
+                                    return false;
+                                }
+                            });
+                        });
                     </script>
                 </div>
             </div>

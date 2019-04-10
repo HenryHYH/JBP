@@ -99,16 +99,7 @@
                                         @await Html.PartialAsync("_GridPagerMessages")
                                     },
                                     scrollable: false,
-                                    dataBound: onDataBound,
                                     columns: [
-                                        {
-                                            field: "Id",
-                                            headerTemplate: "<input id='mastercheckbox' type='checkbox' />",
-                                            headerAttributes: { style: "text-align:center" },
-                                            attributes: { style: "text-align:center" },
-                                            template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />",
-                                            width: 50
-                                        },
                                         {
                                             field: "License",
                                             title: "@T("Admin.Logistics.Car.Fields.License")"
@@ -116,7 +107,10 @@
                                         {
                                             field: "Enabled",
                                             title: "@T("Admin.Logistics.Car.Fields.Enabled")",
-                                            template: '# if(Enabled) {# <i class="fa fa-check true-icon"></i> #} else {# <i class="fa fa-close false-icon"></i> #} #'
+                                            template: '# if(Enabled) {# <i class="fa fa-check true-icon"></i> #} else {# <i class="fa fa-close false-icon"></i> #} #',
+                                            width: 70,
+                                            headerAttributes: { style: "text-align:center" },
+                                            attributes: { style: "text-align:center" }
                                         },
                                         {
                                             field: "Id",
@@ -132,14 +126,10 @@
                         </script>
 
                         <script>
-                            var selectedIds = [];
-
                             $(function () {
                                 $("#search").click(function () {
                                     var grid = $("#grid").data("kendoGrid");
                                     grid.dataSource.page(1);
-                                    $(".checkboxGroups").attr("checked", false).change();
-                                    selectedIds = [];
                                     return false;
                                 });
 
@@ -149,43 +139,7 @@
                                         return false;
                                     }
                                 });
-
-                                $("#mastercheckbox").click(function () {
-                                    $(".checkboxGroups").attr("checked", $(this).is(":checked")).change();
-                                });
-
-                                $("#grid").on("change", "input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]", function (e) {
-                                    var $check = $(this);
-                                    var checked = $.inArray($check.val(), selectedIds);
-                                    if ($check.is(":checked") == true) {
-                                        if (-1 == checked) {
-                                            selectedIds.push($check.val());
-                                        }
-                                    }
-                                    else if (checked > -1) {
-                                        selectedIds = $.grep(selectedIds, function (item, index) {
-                                            return item != $check.val();
-                                        });
-                                    }
-                                    updateMasterCheckbox();
-                                });
                             });
-
-                            function onDataBound(e) {
-                                $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").each(function () {
-                                    var currentId = $(this).val();
-                                    var checked = $.inArray(currentId, selectedIds);
-                                    $(this).attr('checked', checked > -1);
-                                });
-
-                                updateMasterCheckbox();
-                            }
-
-                            function updateMasterCheckbox() {
-                                var numChkBoxes = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").length;
-                                var numChkBoxesChecked = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked").length;
-                                $("#mastercheckbox").attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
-                            }
                         </script>
                     </div>
                 </div>

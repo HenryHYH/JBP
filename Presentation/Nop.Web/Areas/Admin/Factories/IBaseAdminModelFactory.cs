@@ -276,5 +276,7 @@ namespace Nop.Web.Areas.Admin.Factories
         void PrepareCars(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
 
         void PrepareDrivers(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareFeeCategories(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
 }

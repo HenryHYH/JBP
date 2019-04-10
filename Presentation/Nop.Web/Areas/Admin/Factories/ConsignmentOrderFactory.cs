@@ -1,4 +1,5 @@
-﻿using Nop.Core.Domain.Logistics;
+﻿using Nop.Core;
+using Nop.Core.Domain.Logistics;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logistics;
@@ -93,7 +94,10 @@ namespace Nop.Web.Areas.Admin.Factories
             }
 
             if (null == model)
-                model = new ConsignmentOrderModel();
+                model = new ConsignmentOrderModel
+                {
+                    SerialNum = CommonHelper.GenerateSerialNumber()
+                };
 
             return model;
         }
