@@ -47,7 +47,7 @@ namespace Nop.Services.ExportImport
 
         private const string UPLOADS_TEMP_PATH = "~/App_Data/TempUploads";
 
-        private const int GOODS_CELL_NUM_OFFSET = 1;
+        private const int GOODS_CELL_NUM_OFFSET = 2;
 
         #endregion
 
@@ -1161,6 +1161,9 @@ namespace Nop.Services.ExportImport
             var properties = GetPropertiesByExcelCells<ConsignmentOrder>(worksheet);
 
             var manager = new PropertyManager<ConsignmentOrder>(properties, _catalogSettings);
+            // 下拉
+            manager.SetSelectList(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"),
+                                    OrderStatus.未开始.ToSelectList());
 
             var goodsProperties = new[]
             {
@@ -1172,17 +1175,21 @@ namespace Nop.Services.ExportImport
 
             var endRow = 2;
 
-            var allCars = new List<string>();
-            var carProperty = manager.GetProperty(
-                $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
-                $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}");
-            var carCellNum = carProperty?.PropertyOrderPosition ?? -1;
+            //var allCars = new List<string>();
+            //var carProperty = manager.GetProperty(
+            //    $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
+            //    $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}");
+            //var carCellNum = carProperty?.PropertyOrderPosition ?? -1;
 
-            var allDrivers = new List<string>();
-            var driverProperty = manager.GetProperty(
-                $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
-                $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}");
-            var driverCellNum = driverProperty?.PropertyOrderPosition ?? -1;
+            //var allDrivers = new List<string>();
+            //var driverProperty = manager.GetProperty(
+            //    $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
+            //    $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}");
+            //var driverCellNum = driverProperty?.PropertyOrderPosition ?? -1;
+
+            var allSerialNums = new List<string>();
+            var serialNumProperty = manager.GetProperty(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum"));
+            var serialNumCellNum = serialNumProperty?.PropertyOrderPosition ?? -1;
 
             var goodsCellNum = 1 + GOODS_CELL_NUM_OFFSET;
 
@@ -1197,7 +1204,7 @@ namespace Nop.Services.ExportImport
                 if (allColumnsAreEmpty)
                     break;
 
-                if (new[] { 1 }.Select(x => worksheet.Cells[endRow, x])
+                if (new[] { 1, 2 }.Select(x => worksheet.Cells[endRow, x])
                         .All(x => string.IsNullOrWhiteSpace(x?.Value?.ToString())) &&
                     worksheet.Row(endRow).OutlineLevel == 0)
                 {
@@ -1211,32 +1218,39 @@ namespace Nop.Services.ExportImport
                     continue;
                 }
 
-                if (carCellNum > 0)
+                if (serialNumCellNum > 0)
                 {
-                    var carName = worksheet.Cells[endRow, carCellNum].Value?.ToString() ?? string.Empty;
-                    if (!string.IsNullOrWhiteSpace(carName))
-                        allCars.Add(carName);
+                    var serialNum = worksheet.Cells[endRow, serialNumCellNum].Text ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(serialNum))
+                        allSerialNums.Add(serialNum);
                 }
 
-                if (driverCellNum > 0)
-                {
-                    var driverName = worksheet.Cells[endRow, driverCellNum].Value?.ToString() ?? string.Empty;
-                    if (!string.IsNullOrWhiteSpace(driverName))
-                        allDrivers.Add(driverName);
-                }
+                //if (carCellNum > 0)
+                //{
+                //    var carName = worksheet.Cells[endRow, carCellNum].Value?.ToString() ?? string.Empty;
+                //    if (!string.IsNullOrWhiteSpace(carName))
+                //        allCars.Add(carName);
+                //}
+
+                //if (driverCellNum > 0)
+                //{
+                //    var driverName = worksheet.Cells[endRow, driverCellNum].Value?.ToString() ?? string.Empty;
+                //    if (!string.IsNullOrWhiteSpace(driverName))
+                //        allDrivers.Add(driverName);
+                //}
 
                 consignmentOrdersInFile.Add(endRow);
 
                 endRow++;
             }
 
-            var notExistingCars = carService.GetNotExistings(allCars.ToArray());
-            if (notExistingCars.Any())
-                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.CarNotExists"), string.Join(",", notExistingCars)));
+            //var notExistingCars = carService.GetNotExistings(allCars.ToArray());
+            //if (notExistingCars.Any())
+            //    throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.CarNotExists"), string.Join(",", notExistingCars)));
 
-            var notExistingDrivers = driverService.GetNotExistings(allDrivers.ToArray());
-            if (notExistingDrivers.Any())
-                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
+            //var notExistingDrivers = driverService.GetNotExistings(allDrivers.ToArray());
+            //if (notExistingDrivers.Any())
+            //    throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
 
             return new ImportConsignmentOrderMetadata
             {
@@ -1245,8 +1259,10 @@ namespace Nop.Services.ExportImport
                 Properties = properties,
                 GoodsManager = goodsManager,
                 ConsignmentOrdersInFile = consignmentOrdersInFile,
-                DriverNames = allDrivers.ToArray(),
-                CarLicenses = allCars.ToArray()
+                SerialNumCellNum = serialNumCellNum,
+                SerialNums = allSerialNums.ToArray()
+                //DriverNames = allDrivers.ToArray(),
+                //CarLicenses = allCars.ToArray()
             };
         }
 
@@ -2242,8 +2258,10 @@ namespace Nop.Services.ExportImport
 
                 var metadata = PrepareImportConsignmentOrderData(worksheet);
 
-                var allCars = carService.GetAll(enabled: true, licenses: metadata.CarLicenses);
-                var allDrivers = driverService.GetAll(enabled: true, names: metadata.DriverNames);
+                //var allCars = carService.GetAll(enabled: true, licenses: metadata.CarLicenses);
+                //var allDrivers = driverService.GetAll(enabled: true, names: metadata.DriverNames);
+                var allConsignmentOrders = consignmentOrderService.GetAll(serialNums: metadata.SerialNums);
+                var serialNumCellTitle = _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum");
 
                 var consignmentOrderDataConverter = new Dictionary<string, Action<ConsignmentOrder, PropertyByName<ConsignmentOrder>>>
                 {
@@ -2314,6 +2332,18 @@ namespace Nop.Services.ExportImport
                     {
                         _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Terminal"),
                         (e, p) => { e.Terminal = p.StringValue; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"),
+                        (e, p) => { e.OrderStatus = (OrderStatus)p.IntValue; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receivable"),
+                        (e, p) => { e.Receivable = p.DecimalValueNullable; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receipts"),
+                        (e, p) => { e.Receipts = p.DecimalValueNullable; }
                     }
                 };
                 var goodsDataConverter = new Dictionary<string, Action<Goods, PropertyByName<Goods>>>
@@ -2346,7 +2376,13 @@ namespace Nop.Services.ExportImport
 
                     metadata.Manager.ReadFromXlsx(worksheet, iRow);
 
-                    var consignmentOrder = new ConsignmentOrder
+                    var consignmentOrder = metadata.SerialNumCellNum <= 0 ? null :
+                                            allConsignmentOrders.FirstOrDefault(x =>
+                                                            x.SerialNum == metadata.Manager.GetProperty(serialNumCellTitle).StringValue);
+
+                    var isNew = null == consignmentOrder;
+
+                    consignmentOrder = consignmentOrder ?? new ConsignmentOrder
                     {
                         ShipmentMethod = ShipmentMethod.Highway,
                         CTime = DateTime.UtcNow
@@ -2360,7 +2396,13 @@ namespace Nop.Services.ExportImport
                             action(consignmentOrder, property);
                     }
 
-                    consignmentOrderService.Insert(consignmentOrder);
+                    if (isNew)
+                        consignmentOrderService.Insert(consignmentOrder);
+                    else
+                    {
+                        consignmentOrderService.DeleteGoods(consignmentOrder.Goods);
+                        consignmentOrderService.Update(consignmentOrder);
+                    }
 
                     lastLoadedConsignmentOrder = consignmentOrder;
                 }

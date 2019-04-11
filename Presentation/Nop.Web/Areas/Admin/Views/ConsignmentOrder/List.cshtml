@@ -98,6 +98,10 @@
                 <div class="panel-body">
                     <div id="grid"></div>
 
+                    <style scoped>
+                        #grid th { text-align: center; }
+                    </style>
+
                     <script>
                         $(function () {
                             $("#grid").kendoGrid({
@@ -152,7 +156,6 @@
                                         field: "SerialNum",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")",
                                         width: 200,
-                                        headerAttributes: { style: "text-align: center" },
                                         attributes: { style: "text-align: center" }
                                     },
                                     {
@@ -161,24 +164,23 @@
                                         width: 200,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
-                                        headerAttributes: { style: "text-align: center" },
                                         format: "{0:yyyy-MM-dd HH:mm:ss}"
                                     },
                                     {
                                         field: "ConsignorId",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
                                         template:
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignor.Name#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignor.Address#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignor.Phone#"
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignor.Name ? '-' : Consignor.Name)#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignor.Address ? '-' : Consignor.Address)#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignor.Phone ? '-' : Consignor.Phone)#"
                                     },
                                     {
                                         field: "ConsigneeId",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
                                         template:
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=Consignee.Name#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=Consignee.Address#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=Consignee.Phone#"
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignee.Name ? '-' : Consignee.Name)#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignee.Address ? '-' : Consignee.Address)#<br />" +
+                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignee.Phone ? '-' : Consignee.Phone)#"
                                     },
                                     {
                                         field: "StartPoint",
@@ -189,26 +191,44 @@
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
                                     },
                                     {
+                                        field: "PaymentStatus",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Payment")",
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (PaymentStatus == -1) {# red #} #' +
+                                            '# if (PaymentStatus == 0 || PaymentStatus == -2) {# yellow #} #' +
+                                            '# if (PaymentStatus == 1) {# green #} #' +
+                                            '# if (PaymentStatus == 2) {# blue #} #' +
+                                            '">#=PaymentStatusName#</span>' +
+                                            "(@T("Admin.Logistics.ConsignmentOrder.Fields.Receipts"): #=(null == Receipts ? '-' : Receipts)# / " +
+                                            "@T("Admin.Logistics.ConsignmentOrder.Fields.Receivable"): #=(null == Receivable ? '-' : Receivable)#)"
+                                    },
+                                    {
+                                        field: "OrderStatusName",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus")",
+                                        width: 100,
+                                        attributes: { style: "text-align: center" },
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (OrderStatus == 0) {# yellow #} #' +
+                                            '# if (OrderStatus == -1) {# red #} #' +
+                                            '# if (OrderStatus == 2) {# blue #} #' +
+                                            '# if (OrderStatus == 1) {# green #} #' +
+                                            '">#=OrderStatusName#</span>'
+                                    },
+                                    {
                                         field: "TripId",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
                                         template:
                                             "# if (null != Trip) {# " +
-                                            "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : ''#<br />" +
-                                            "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : ''#" +
+                                            "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : '-'#<br />" +
+                                            "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : '-'#" +
                                             " #} else {# #} #"
-                                    },
-                                    {
-                                        field: "ShipmentMethodName",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")",
-                                        width: 100,
-                                        headerAttributes: { style: "text-align: center" },
-                                        attributes: { style: "text-align: center" }
                                     },
                                     {
                                         field: "Id",
                                         title: "@T("Admin.Common.Edit")",
                                         width: 50,
-                                        headerAttributes: { style: "text-align:center" },
                                         attributes: { style: "text-align:center" },
                                         template: '<a class="btn btn-default" href="Edit/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
                                     }

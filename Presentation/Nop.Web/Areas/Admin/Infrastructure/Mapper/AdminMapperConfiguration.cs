@@ -1258,7 +1258,9 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<ConsignmentOrderModel, ConsignmentOrder>()
                 .ForMember(x => x.TripId, o => o.Ignore())
                 .ForMember(x => x.Trip, o => o.Ignore())
-                .ForMember(x => x.CTime, o => o.Ignore());
+                .ForMember(x => x.CTime, o => o.Ignore())
+                .ForMember(x => x.PaymentStatus, o => o.MapFrom(x => x.GetPaymentStatus()))
+                .ForMember(x => x.OrderStatus, o => o.Ignore());
 
             CreateMap<Fee, FeeModel>();
             CreateMap<FeeModel, Fee>()

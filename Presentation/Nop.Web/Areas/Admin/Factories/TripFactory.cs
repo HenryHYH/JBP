@@ -1,5 +1,6 @@
 ﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
+using Nop.Services.Helpers;
 using Nop.Services.Localization;
 using Nop.Services.Logistics;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
@@ -19,7 +20,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IBaseAdminModelFactory baseAdminModelFactory;
         private readonly ILocalizationService localizationService;
         private readonly IConsignmentOrderService consignmentOrderService;
-        private readonly IFeeService feeService;
+        private readonly IDateTimeHelper dateTimeHelper;
 
         #endregion
 
@@ -30,13 +31,13 @@ namespace Nop.Web.Areas.Admin.Factories
             IBaseAdminModelFactory baseAdminModelFactory,
             ILocalizationService localizationService,
             IConsignmentOrderService consignmentOrderService,
-            IFeeService feeService)
+            IDateTimeHelper dateTimeHelper)
         {
             this.tripService = tripService;
             this.baseAdminModelFactory = baseAdminModelFactory;
             this.localizationService = localizationService;
             this.consignmentOrderService = consignmentOrderService;
-            this.feeService = feeService;
+            this.dateTimeHelper = dateTimeHelper;
         }
 
         #endregion
@@ -69,6 +70,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 Data = list.Select(x =>
                 {
                     var modelItem = x.ToModel<TripModel>();
+                    modelItem.CTime = dateTimeHelper.ConvertToUserTime(modelItem.CTime, DateTimeKind.Utc);
 
                     return modelItem;
                 }),
@@ -137,6 +139,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 Data = list.PaginationByRequestModel(searchModel).Select(x =>
                 {
                     var modelItem = x.ToModel<ConsignmentOrderModel>();
+                    modelItem.CTime = dateTimeHelper.ConvertToUserTime(modelItem.CTime, DateTimeKind.Utc);
 
                     return modelItem;
                 }),

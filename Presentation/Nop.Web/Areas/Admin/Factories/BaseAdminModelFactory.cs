@@ -6,7 +6,6 @@ using Nop.Core.Domain.Gdpr;
 using Nop.Core.Domain.Logging;
 using Nop.Core.Domain.Logistics;
 using Nop.Core.Domain.Orders;
-using Nop.Core.Domain.Payments;
 using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Tax;
 using Nop.Core.Plugins;
@@ -187,7 +186,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             //prepare available order statuses
-            var availableStatusItems = OrderStatus.Pending.ToSelectList(false);
+            var availableStatusItems = Core.Domain.Orders.OrderStatus.Pending.ToSelectList(false);
             foreach (var statusItem in availableStatusItems)
             {
                 items.Add(statusItem);
@@ -209,7 +208,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             //prepare available payment statuses
-            var availableStatusItems = PaymentStatus.Pending.ToSelectList(false);
+            var availableStatusItems = Core.Domain.Payments.PaymentStatus.Pending.ToSelectList(false);
             foreach (var statusItem in availableStatusItems)
             {
                 items.Add(statusItem);

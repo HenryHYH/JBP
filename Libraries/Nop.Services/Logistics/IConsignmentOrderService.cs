@@ -1,4 +1,5 @@
-﻿using Nop.Core;
+﻿using System.Collections.Generic;
+using Nop.Core;
 using Nop.Core.Domain.Logistics;
 
 namespace Nop.Services.Logistics
@@ -14,7 +15,8 @@ namespace Nop.Services.Logistics
             string consignor = null,
             string consignee = null,
             int? tripId = null,
-            bool? noRelatedTrip = null);
+            bool? noRelatedTrip = null,
+            string[] serialNums = null);
 
         ConsignmentOrder Get(int id);
 
@@ -24,8 +26,12 @@ namespace Nop.Services.Logistics
 
         void Delete(ConsignmentOrder entity);
 
-        void DeleteGoods(Goods entity);
+        void ChangeOrderStatus(ConsignmentOrder entity, OrderStatus orderStatus);
 
         void InsertGoods(Goods entity);
+
+        void DeleteGoods(Goods entity);
+
+        void DeleteGoods(ICollection<Goods> goods);
     }
 }

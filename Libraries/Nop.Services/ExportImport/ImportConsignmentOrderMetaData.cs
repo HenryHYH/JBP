@@ -16,8 +16,12 @@ namespace Nop.Services.ExportImport
 
         public List<int> ConsignmentOrdersInFile { get; set; }
 
-        public string[] DriverNames { get; set; }
+        public int SerialNumCellNum { get; set; }
 
-        public string[] CarLicenses { get; set; }
+        public string[] SerialNums { get; set; }
+
+        //public string[] DriverNames { get; set; }
+
+        //public string[] CarLicenses { get; set; }
     }
 }

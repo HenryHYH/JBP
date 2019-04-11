@@ -4,6 +4,7 @@ using Nop.Web.Areas.Admin.Validators.Logistics;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nop.Web.Areas.Admin.Models.Logistics
@@ -11,10 +12,23 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
     [Validator(typeof(ConsignmentOrderValidator))]
     public partial class ConsignmentOrderModel : BaseNopEntityModel
     {
+        #region 
+
+        private static readonly IDictionary<OrderStatus, IList<OrderStatus>> NEXT_AVAIABLE_STATUS = new Dictionary<OrderStatus, IList<OrderStatus>>
+        {
+            { OrderStatus.未开始, new[] { OrderStatus.进行中, OrderStatus.已取消 } },
+            { OrderStatus.进行中, new[] { OrderStatus.已完成, OrderStatus.已取消 } },
+            { OrderStatus.已完成, new[] { OrderStatus.已取消 } },
+            { OrderStatus.已取消, new OrderStatus[] { } }
+        };
+
+        #endregion
+
         #region Ctor
 
         public ConsignmentOrderModel()
         {
+            OrderStatus = OrderStatus.未开始;
             GoodsSearchModel = new GoodsSearchModel();
         }
 
@@ -30,6 +44,26 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Terminal")]
         public string Terminal { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Receivable")]
+        [UIHint("DecimalNullable")]
+        public decimal? Receivable { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.Receipts")]
+        [UIHint("DecimalNullable")]
+        public decimal? Receipts { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.PaymentStatus")]
+        public PaymentStatus PaymentStatus { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.PaymentStatus")]
+        public string PaymentStatusName { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus")]
+        public OrderStatus OrderStatus { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus")]
+        public string OrderStatusName { get; set; }
 
         [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.ShipmentMethod")]
         public ShipmentMethod ShipmentMethod { get; set; }
@@ -67,6 +101,30 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
         public GoodsSearchModel GoodsSearchModel { get; set; }
 
         #endregion
+
+        #endregion
+
+        #region Methods
+
+        public virtual IList<OrderStatus> GetNextAvailableStatus()
+        {
+            if (!NEXT_AVAIABLE_STATUS.TryGetValue(this.OrderStatus, out IList<OrderStatus> status))
+                status = new List<OrderStatus>();
+
+            return status;
+        }
+
+        public virtual PaymentStatus GetPaymentStatus()
+        {
+            if (!Receivable.HasValue || !Receipts.HasValue)
+                return PaymentStatus.未知;
+            if (0 == Receivable.Value || Receivable.Value <= Receipts.Value)
+                return PaymentStatus.已付全款;
+            if (0 == Receipts.Value)
+                return PaymentStatus.未支付;
+            else
+                return PaymentStatus.部分支付;
+        }
 
         #endregion
     }

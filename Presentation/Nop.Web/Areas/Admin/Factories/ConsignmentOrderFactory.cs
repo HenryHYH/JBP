@@ -75,6 +75,9 @@ namespace Nop.Web.Areas.Admin.Factories
                     var modelItem = x.ToModel<ConsignmentOrderModel>();
 
                     modelItem.ShipmentMethodName = localizationService.GetLocalizedEnum(modelItem.ShipmentMethod);
+                    modelItem.OrderStatusName = localizationService.GetLocalizedEnum(modelItem.OrderStatus);
+                    modelItem.PaymentStatusName = localizationService.GetLocalizedEnum(modelItem.PaymentStatus);
+                    modelItem.CTime = dateTimeHelper.ConvertToUserTime(modelItem.CTime, DateTimeKind.Utc);
 
                     return modelItem;
                 }),
@@ -98,6 +101,10 @@ namespace Nop.Web.Areas.Admin.Factories
                 {
                     SerialNum = CommonHelper.GenerateSerialNumber()
                 };
+
+            model.ShipmentMethodName = localizationService.GetLocalizedEnum(model.ShipmentMethod);
+            model.OrderStatusName = localizationService.GetLocalizedEnum(model.OrderStatus);
+            model.PaymentStatusName = localizationService.GetLocalizedEnum(model.PaymentStatus);
 
             return model;
         }

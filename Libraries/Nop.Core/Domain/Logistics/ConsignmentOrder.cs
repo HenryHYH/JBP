@@ -66,6 +66,26 @@ namespace Nop.Core.Domain.Logistics
         public string Terminal { get; set; }
 
         /// <summary>
+        /// 订单状态
+        /// </summary>
+        public OrderStatus OrderStatus { get; set; }
+
+        /// <summary>
+        /// 支付状态
+        /// </summary>
+        public PaymentStatus PaymentStatus { get; set; }
+
+        /// <summary>
+        /// 应收
+        /// </summary>
+        public decimal? Receivable { get; set; }
+
+        /// <summary>
+        /// 实收
+        /// </summary>
+        public decimal? Receipts { get; set; }
+
+        /// <summary>
         /// 行程ID
         /// </summary>
         public int? TripId { get; set; }

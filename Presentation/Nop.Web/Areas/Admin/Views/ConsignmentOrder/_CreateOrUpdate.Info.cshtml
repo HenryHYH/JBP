@@ -1,5 +1,8 @@
 ﻿@model Nop.Web.Areas.Admin.Models.Logistics.ConsignmentOrderModel
 @using Nop.Services
+@{
+    var nextAvailableOrderStatus = Model.GetNextAvailableStatus();
+}
 <div class="panel-group">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -116,11 +119,80 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
+            @T("Admin.Logistics.ConsignmentOrder.Fields.Process")
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="OrderStatus" />
+                </div>
+                <div class="col-md-9">
+                    <div class="input-group input-group-short">
+                        <div class="input-group-text">
+                            <div class="form-text-row">@Model.OrderStatusName</div>
+                        </div>
+                        <div class="input-group-btn">
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.进行中))
+                            {
+                                <button type="submit" name="StartOrder" id="StartOrder" class="btn bg-blue" style="margin-right:3px;">
+                                    @T("Admin.Logistics.ConsignmentOrder.OrderStatus.StartOrder")
+                                </button>
+                                <nop-action-confirmation asp-button-id="StartOrder" />
+                            }
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.已完成))
+                            {
+                                <button type="submit" name="CompleteOrder" id="CompleteOrder" class="btn bg-green" style="margin-right:3px;">
+                                    @T("Admin.Logistics.ConsignmentOrder.OrderStatus.CompleteOrder")
+                                </button>
+                                <nop-action-confirmation asp-button-id="CompleteOrder" />
+                            }
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.已取消))
+                            {
+                                <button type="submit" name="CancelOrder" id="CancelOrder" class="btn bg-red" style="margin-right:3px;">
+                                    @T("Admin.Logistics.ConsignmentOrder.OrderStatus.CancelOrder")
+                                </button>
+                                <nop-action-confirmation asp-button-id="CancelOrder" />
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Receivable" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Receivable" />
+                    <span asp-validation-for="Receivable"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="Receipts" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="Receipts" />
+                    <span asp-validation-for="Receipts"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
             @T("Admin.Logistics.ConsignmentOrder.Fields.Trip")
         </div>
         <div class="panel-body">
             @if (null != Model.Trip)
             {
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Trip.SerialNum" />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-text-row">@(Model.Trip?.SerialNum ?? string.Empty)</div>
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="col-md-3">
                         <nop-label asp-for="Trip.Car.License" />

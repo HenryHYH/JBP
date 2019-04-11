@@ -9,6 +9,7 @@ using Nop.Services.Security;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Logistics;
+using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using System;
@@ -166,6 +167,45 @@ namespace Nop.Web.Areas.Admin.Controllers
             model = consignmentOrderFactory.PrepareModel(model, entity, true);
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Edit"), FormValueRequired("StartOrder")]
+        public virtual IActionResult StartOrder(int id)
+        {
+            return ChangeOrderStatus(id, OrderStatus.进行中);
+        }
+
+        [HttpPost, ActionName("Edit"), FormValueRequired("CompleteOrder")]
+        public virtual IActionResult CompleteOrder(int id)
+        {
+            return ChangeOrderStatus(id, OrderStatus.已完成);
+        }
+
+        [HttpPost, ActionName("Edit"), FormValueRequired("CancelOrder")]
+        public virtual IActionResult CancelOrder(int id)
+        {
+            return ChangeOrderStatus(id, OrderStatus.已取消);
+        }
+
+        protected virtual IActionResult ChangeOrderStatus(int id, OrderStatus orderStatus)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageConsignmentOrders))
+                return AccessDeniedView();
+
+            var entity = consignmentOrderService.Get(id);
+            if (null == entity || entity.Deleted)
+                return RedirectToAction("List");
+
+            try
+            {
+                consignmentOrderService.ChangeOrderStatus(entity, orderStatus);
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex, false);
+            }
+
+            return RedirectToAction("Edit", new { id });
         }
 
         [HttpPost]

@@ -3,6 +3,7 @@ using Nop.Core.Data;
 using Nop.Core.Domain.Logistics;
 using Nop.Services.Events;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nop.Services.Logistics
@@ -42,7 +43,8 @@ namespace Nop.Services.Logistics
             string consignor = null,
             string consignee = null,
             int? tripId = null,
-            bool? noRelatedTrip = null)
+            bool? noRelatedTrip = null,
+            string[] serialNums = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
@@ -72,6 +74,8 @@ namespace Nop.Services.Logistics
                 query = query.Where(x => x.TripId == tripId.Value);
             if (noRelatedTrip.HasValue && noRelatedTrip.Value)
                 query = query.Where(x => null == x.TripId || 0 == x.TripId);
+            if (null != serialNums && serialNums.Any())
+                query = query.Where(x => serialNums.Contains(x.SerialNum));
 
             query = query.OrderByDescending(x => x.UTime ?? x.CTime);
 
@@ -92,6 +96,9 @@ namespace Nop.Services.Logistics
         {
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
+
+            if (string.IsNullOrWhiteSpace(entity.SerialNum))
+                entity.SerialNum = CommonHelper.GenerateSerialNumber();
 
             repository.Insert(entity);
 
@@ -123,7 +130,27 @@ namespace Nop.Services.Logistics
             eventPublisher.EntityDeleted(entity);
         }
 
+        public virtual void ChangeOrderStatus(ConsignmentOrder entity, OrderStatus orderStatus)
+        {
+            if (null == entity)
+                throw new ArgumentNullException(nameof(entity));
+
+            entity.OrderStatus = orderStatus;
+
+            Update(entity);
+        }
+
         #region Goods
+
+        public virtual void InsertGoods(Goods entity)
+        {
+            if (null == entity)
+                throw new ArgumentNullException(nameof(entity));
+
+            goodsRepository.Insert(entity);
+
+            eventPublisher.EntityInserted(entity);
+        }
 
         public virtual void DeleteGoods(Goods entity)
         {
@@ -135,14 +162,12 @@ namespace Nop.Services.Logistics
             eventPublisher.EntityDeleted(entity);
         }
 
-        public virtual void InsertGoods(Goods entity)
+        public virtual void DeleteGoods(ICollection<Goods> goods)
         {
-            if (null == entity)
-                throw new ArgumentNullException(nameof(entity));
+            if (null == goods)
+                throw new ArgumentNullException(nameof(goods));
 
-            goodsRepository.Insert(entity);
-
-            eventPublisher.EntityInserted(entity);
+            goodsRepository.Delete(goods);
         }
 
         #endregion
