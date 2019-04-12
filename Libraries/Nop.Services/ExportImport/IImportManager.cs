@@ -39,8 +39,16 @@ namespace Nop.Services.ExportImport
         /// <param name="stream">Stream</param>
         void ImportCategoriesFromXlsx(Stream stream);
 
+        /// <summary>
+        /// 从xlsx文件中导入运货单
+        /// </summary>
+        /// <param name="stream"></param>
         void ImportConsignmentOrdersFromXlsx(Stream stream);
 
+        /// <summary>
+        /// 从xlsx文件中导入行程单
+        /// </summary>
+        /// <param name="stream"></param>
         void ImportTripsFromXlsx(Stream stream);
     }
 }

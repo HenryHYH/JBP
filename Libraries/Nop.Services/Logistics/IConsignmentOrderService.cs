@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Nop.Core;
+﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
+using System.Collections.Generic;
 
 namespace Nop.Services.Logistics
 {
@@ -19,6 +19,8 @@ namespace Nop.Services.Logistics
             string[] serialNums = null);
 
         ConsignmentOrder Get(int id);
+
+        string[] GetNotExistings(string[] serialNums);
 
         void Insert(ConsignmentOrder entity);
 

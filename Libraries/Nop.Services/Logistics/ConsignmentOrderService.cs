@@ -92,13 +92,24 @@ namespace Nop.Services.Logistics
             return repository.GetById(id);
         }
 
+        public virtual string[] GetNotExistings(string[] serialNums)
+        {
+            if (null == serialNums)
+                throw new ArgumentNullException(nameof(serialNums));
+
+            var query = repository.TableNoTracking;
+            var queryFilter = serialNums.Distinct().ToArray();
+
+            var filter = query.Where(x => !x.Deleted).Select(x => x.SerialNum).Where(x => queryFilter.Contains(x)).ToList();
+            queryFilter = queryFilter.Except(filter).ToArray();
+
+            return queryFilter;
+        }
+
         public virtual void Insert(ConsignmentOrder entity)
         {
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
-
-            if (string.IsNullOrWhiteSpace(entity.SerialNum))
-                entity.SerialNum = CommonHelper.GenerateSerialNumber();
 
             repository.Insert(entity);
 

@@ -37,7 +37,8 @@ namespace Nop.Services.Logistics
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             string carLicense = null,
-            string driverName = null)
+            string driverName = null,
+            string[] serialNums = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
@@ -51,6 +52,8 @@ namespace Nop.Services.Logistics
                 driverName = driverName.Trim();
                 query = query.Where(x => x.Driver.Name.Contains(driverName));
             }
+            if (null != serialNums && serialNums.Any())
+                query = query.Where(x => serialNums.Contains(x.SerialNum));
 
             query = query.OrderByDescending(x => x.UTime ?? x.CTime);
 

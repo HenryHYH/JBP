@@ -12,12 +12,16 @@ namespace Nop.Services.ExportImport
 
         public IList<PropertyByName<Trip>> Properties { get; set; }
 
-        public PropertyManager<ConsignmentOrder> ConsignmentOrderManager { get; internal set; }
-
         public List<int> TripsInFile { get; set; }
+
+        public int SerialNumCellNum { get; set; }
+
+        public string[] SerialNums { get; set; }
 
         public string[] DriverNames { get; set; }
 
         public string[] CarLicenses { get; set; }
+
+        public string[] ConsignmentOrderSerialNums { get; internal set; }
     }
 }

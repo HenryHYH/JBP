@@ -9,7 +9,8 @@ namespace Nop.Services.Logistics
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             string carLicense = null,
-            string driverName = null);
+            string driverName = null,
+            string[] serialNums = null);
 
         Trip Get(int id);
 

@@ -130,12 +130,12 @@
                                     {
                                         field: "CarId",
                                         title: "@T("Admin.Logistics.Trip.Fields.Car")",
-                                        template: "@T("Admin.Logistics.Car.Fields.License"): #=Car.License#"
+                                        template: "@T("Admin.Logistics.Car.Fields.License"): #=(null == Car ? '' : Car.License)#"
                                     },
                                     {
                                         field: "DriverId",
                                         title: "@T("Admin.Logistics.Trip.Fields.Driver")",
-                                        template: "@T("Admin.Logistics.Driver.Fields.Name"): #=Driver.Name#"
+                                        template: "@T("Admin.Logistics.Driver.Fields.Name"): #=(null == Driver ? '' : Driver.Name)#"
                                     },
                                     {
                                         field: "Id",

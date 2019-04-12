@@ -49,6 +49,8 @@ namespace Nop.Services.ExportImport
 
         private const int GOODS_CELL_NUM_OFFSET = 2;
 
+        private static readonly char[] DATA_SEPARATOR = new[] { ';', ',', ' ' };
+
         #endregion
 
         #region Fields
@@ -86,6 +88,8 @@ namespace Nop.Services.ExportImport
         private readonly ICarService carService;
         private readonly IDriverService driverService;
         private readonly IConsignmentOrderService consignmentOrderService;
+        private readonly IFeeService feeService;
+        private readonly ITripService tripService;
 
         #endregion
 
@@ -123,7 +127,9 @@ namespace Nop.Services.ExportImport
             VendorSettings vendorSettings,
             ICarService carService,
             IDriverService driverService,
-            IConsignmentOrderService consignmentOrderService)
+            IConsignmentOrderService consignmentOrderService,
+            IFeeService feeService,
+            ITripService tripService)
         {
             this._catalogSettings = catalogSettings;
             this._categoryService = categoryService;
@@ -158,6 +164,8 @@ namespace Nop.Services.ExportImport
             this.carService = carService;
             this.driverService = driverService;
             this.consignmentOrderService = consignmentOrderService;
+            this.feeService = feeService;
+            this.tripService = tripService;
         }
 
         #endregion
@@ -1175,18 +1183,6 @@ namespace Nop.Services.ExportImport
 
             var endRow = 2;
 
-            //var allCars = new List<string>();
-            //var carProperty = manager.GetProperty(
-            //    $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Car")}" +
-            //    $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}");
-            //var carCellNum = carProperty?.PropertyOrderPosition ?? -1;
-
-            //var allDrivers = new List<string>();
-            //var driverProperty = manager.GetProperty(
-            //    $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Driver")}" +
-            //    $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}");
-            //var driverCellNum = driverProperty?.PropertyOrderPosition ?? -1;
-
             var allSerialNums = new List<string>();
             var serialNumProperty = manager.GetProperty(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum"));
             var serialNumCellNum = serialNumProperty?.PropertyOrderPosition ?? -1;
@@ -1225,32 +1221,10 @@ namespace Nop.Services.ExportImport
                         allSerialNums.Add(serialNum);
                 }
 
-                //if (carCellNum > 0)
-                //{
-                //    var carName = worksheet.Cells[endRow, carCellNum].Value?.ToString() ?? string.Empty;
-                //    if (!string.IsNullOrWhiteSpace(carName))
-                //        allCars.Add(carName);
-                //}
-
-                //if (driverCellNum > 0)
-                //{
-                //    var driverName = worksheet.Cells[endRow, driverCellNum].Value?.ToString() ?? string.Empty;
-                //    if (!string.IsNullOrWhiteSpace(driverName))
-                //        allDrivers.Add(driverName);
-                //}
-
                 consignmentOrdersInFile.Add(endRow);
 
                 endRow++;
             }
-
-            //var notExistingCars = carService.GetNotExistings(allCars.ToArray());
-            //if (notExistingCars.Any())
-            //    throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.CarNotExists"), string.Join(",", notExistingCars)));
-
-            //var notExistingDrivers = driverService.GetNotExistings(allDrivers.ToArray());
-            //if (notExistingDrivers.Any())
-            //    throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
 
             return new ImportConsignmentOrderMetadata
             {
@@ -1261,8 +1235,102 @@ namespace Nop.Services.ExportImport
                 ConsignmentOrdersInFile = consignmentOrdersInFile,
                 SerialNumCellNum = serialNumCellNum,
                 SerialNums = allSerialNums.ToArray()
-                //DriverNames = allDrivers.ToArray(),
-                //CarLicenses = allCars.ToArray()
+            };
+        }
+
+        private ImportTripMetadata PrepareImportTripMetadata(ExcelWorksheet worksheet)
+        {
+            var properties = GetPropertiesByExcelCells<Trip>(worksheet);
+
+            var manager = new PropertyManager<Trip>(properties, _catalogSettings);
+
+            var endRow = 2;
+
+            var allCars = new List<string>();
+            var carProperty = manager.GetProperty(
+                $"{_localizationService.GetResource("Admin.Logistics.Trip.Fields.Car")}" +
+                $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}");
+            var carCellNum = carProperty?.PropertyOrderPosition ?? -1;
+
+            var allDrivers = new List<string>();
+            var driverProperty = manager.GetProperty(
+                $"{_localizationService.GetResource("Admin.Logistics.Trip.Fields.Driver")}" +
+                $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}");
+            var driverCellNum = driverProperty?.PropertyOrderPosition ?? -1;
+
+            var allConsignmentOrderSerialNums = new List<string>();
+            var consignmentOrderSerialNumProperty = manager.GetProperty(
+                $"{_localizationService.GetResource("Admin.Logistics.Trip.ConsignmentOrder")}" +
+                $"{_localizationService.GetResource("Admin.Logistics.Consignment.Fields.SerialNum")}");
+            var consignmentOrderSerialNumCellNum = consignmentOrderSerialNumProperty?.PropertyOrderPosition ?? -1;
+
+            var allSerialNums = new List<string>();
+            var serialNumProperty = manager.GetProperty(_localizationService.GetResource("Admin.Logistics.Trip.Fields.SerialNum"));
+            var serialNumCellNum = serialNumProperty?.PropertyOrderPosition ?? -1;
+
+            var tripsInFile = new List<int>();
+
+            while (true)
+            {
+                var allColumnsAreEmpty = manager.GetProperties
+                    .Select(x => worksheet.Cells[endRow, x.PropertyOrderPosition])
+                    .All(x => string.IsNullOrWhiteSpace(x?.Value?.ToString()));
+
+                if (allColumnsAreEmpty)
+                    break;
+
+                if (serialNumCellNum > 0)
+                {
+                    var serialNums = worksheet.Cells[endRow, serialNumCellNum].Text ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(serialNums))
+                        allSerialNums.AddRange(
+                            serialNums.Split(DATA_SEPARATOR, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => x.Trim())
+                            .Distinct());
+                }
+
+                if (carCellNum > 0)
+                {
+                    var carName = worksheet.Cells[endRow, carCellNum].Value?.ToString() ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(carName))
+                        allCars.Add(carName);
+                }
+
+                if (driverCellNum > 0)
+                {
+                    var driverName = worksheet.Cells[endRow, driverCellNum].Value?.ToString() ?? string.Empty;
+                    if (!string.IsNullOrWhiteSpace(driverName))
+                        allDrivers.Add(driverName);
+                }
+
+                tripsInFile.Add(endRow);
+
+                endRow++;
+            }
+
+            var notExistingCars = carService.GetNotExistings(allCars.ToArray());
+            if (notExistingCars.Any())
+                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.Trip.Import.CarNotExists"), string.Join(",", notExistingCars)));
+
+            var notExistingDrivers = driverService.GetNotExistings(allDrivers.ToArray());
+            if (notExistingDrivers.Any())
+                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.Trip.Import.DriverNotExists"), string.Join(",", notExistingDrivers)));
+
+            var notExistingConsignmentOrders = consignmentOrderService.GetNotExistings(allConsignmentOrderSerialNums.ToArray());
+            if (notExistingConsignmentOrders.Any())
+                throw new ArgumentException(string.Format(_localizationService.GetResource("Admin.Logistics.Trip.Import.ConsignmentOrdersNotExists"), string.Join(",", notExistingConsignmentOrders)));
+
+            return new ImportTripMetadata
+            {
+                EndRow = endRow,
+                Manager = manager,
+                Properties = properties,
+                TripsInFile = tripsInFile,
+                SerialNumCellNum = serialNumCellNum,
+                SerialNums = allSerialNums.ToArray(),
+                DriverNames = allDrivers.ToArray(),
+                CarLicenses = allCars.ToArray(),
+                ConsignmentOrderSerialNums = allConsignmentOrderSerialNums.ToArray()
             };
         }
 
@@ -2248,6 +2316,10 @@ namespace Nop.Services.ExportImport
             }
         }
 
+        /// <summary>
+        /// 从xlsx文件中导入运货单
+        /// </summary>
+        /// <param name="stream"></param>
         public virtual void ImportConsignmentOrdersFromXlsx(Stream stream)
         {
             using (var xlPackage = new ExcelPackage(stream))
@@ -2258,8 +2330,6 @@ namespace Nop.Services.ExportImport
 
                 var metadata = PrepareImportConsignmentOrderData(worksheet);
 
-                //var allCars = carService.GetAll(enabled: true, licenses: metadata.CarLicenses);
-                //var allDrivers = driverService.GetAll(enabled: true, names: metadata.DriverNames);
                 var allConsignmentOrders = consignmentOrderService.GetAll(serialNums: metadata.SerialNums);
                 var serialNumCellTitle = _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum");
 
@@ -2344,6 +2414,15 @@ namespace Nop.Services.ExportImport
                     {
                         _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receipts"),
                         (e, p) => { e.Receipts = p.DecimalValueNullable; }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum"),
+                        (e, p) =>
+                        {
+                            var value = p.StringValue;
+                            if (!string.IsNullOrWhiteSpace(value))
+                                e.SerialNum = value;
+                        }
                     }
                 };
                 var goodsDataConverter = new Dictionary<string, Action<Goods, PropertyByName<Goods>>>
@@ -2385,7 +2464,8 @@ namespace Nop.Services.ExportImport
                     consignmentOrder = consignmentOrder ?? new ConsignmentOrder
                     {
                         ShipmentMethod = ShipmentMethod.Highway,
-                        CTime = DateTime.UtcNow
+                        CTime = DateTime.UtcNow,
+                        SerialNum = CommonHelper.GenerateSerialNumber()
                     };
 
                     foreach (var property in metadata.Manager.GetProperties)
@@ -2412,16 +2492,122 @@ namespace Nop.Services.ExportImport
             }
         }
 
+        /// <summary>
+        /// 从xlsx文件中导入行程单
+        /// </summary>
+        /// <param name="stream"></param>
         public virtual void ImportTripsFromXlsx(Stream stream)
         {
             using (var xlPackage = new ExcelPackage(stream))
             {
-                var workSheet = xlPackage.Workbook.Worksheets.FirstOrDefault();
-                if (null == workSheet)
+                var worksheet = xlPackage.Workbook.Worksheets.FirstOrDefault();
+                if (null == worksheet)
                     throw new NopException("No worksheet found");
 
+                var metadata = PrepareImportTripMetadata(worksheet);
+
+                var allCars = carService.GetAll(enabled: true, licenses: metadata.CarLicenses);
+                var allDrivers = driverService.GetAll(enabled: true, names: metadata.DriverNames);
+                var allConsignmentOrders = consignmentOrderService.GetAll(serialNums: metadata.ConsignmentOrderSerialNums);
+                var allTrips = tripService.GetAll(serialNums: metadata.SerialNums);
+                var serialNumCellTitle = _localizationService.GetResource("Admin.Logistics.Trip.Fields.SerialNum");
+                var consignmentOrdersCellTitle =
+                    $"{_localizationService.GetResource("Admin.Logistics.Trip.ConsignmentOrder")}" +
+                    $"{_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")}";
+                var feeCategories = feeService.GetFeeCategories();
+
+                var tripDataConverter = new Dictionary<string, Action<Trip, PropertyByName<Trip>>>
+                {
+                    {
+                        _localizationService.GetResource("Admin.Logistics.Trip.Fields.SerialNum"),
+                        (e, p) =>
+                        {
+                            var value = p.StringValue;
+                            if (!string.IsNullOrWhiteSpace(value))
+                                e.SerialNum = value;
+                        }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.Trip.Fields.Car")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.Car.Fields.License")}",
+                        (e, p) => { e.CarId = allCars.FirstOrDefault(x => x.License == p.StringValue)?.Id ?? 0; }
+                    },
+                    {
+                        $"{_localizationService.GetResource("Admin.Logistics.Trip.Fields.Driver")}" +
+                        $"{_localizationService.GetResource("Admin.Logistics.Driver.Fields.Name")}",
+                        (e, p) => { e.DriverId = allDrivers.FirstOrDefault(x => x.Name == p.StringValue)?.Id ?? 0; }
+                    }
+                };
+                foreach (var category in feeCategories)
+                {
+                    tripDataConverter.Add(category.Name, (e, p) =>
+                    {
+                        var fee = e.Fees.FirstOrDefault(x => x.CategoryId == category.Id);
+                        if (null != fee)
+                            fee.Amount = p.DecimalValueNullable;
+                        else
+                            e.Fees.Add(new Fee { CategoryId = category.Id, Amount = p.DecimalValueNullable });
+                    });
+                }
+
+                for (var iRow = 2; iRow < metadata.EndRow; iRow++)
+                {
+                    metadata.Manager.ReadFromXlsx(worksheet, iRow);
+
+                    var trip = metadata.SerialNumCellNum <= 0 ? null :
+                                allTrips.FirstOrDefault(x =>
+                                                x.SerialNum == metadata.Manager.GetProperty(serialNumCellTitle).StringValue);
+
+                    var isNew = null == trip;
+
+                    trip = trip ?? new Trip
+                    {
+                        CTime = DateTime.UtcNow,
+                        SerialNum = CommonHelper.GenerateSerialNumber()
+                    };
+
+                    foreach (var property in metadata.Manager.GetProperties)
+                    {
+                        if (tripDataConverter.TryGetValue(
+                            property.PropertyName,
+                            out Action<Trip, PropertyByName<Trip>> action))
+                            action(trip, property);
+                    }
+
+                    if (isNew)
+                        tripService.Insert(trip);
+                    else
+                        tripService.Update(trip);
+
+                    var tmpProperty = metadata.Manager.GetProperty(consignmentOrdersCellTitle);
+                    if (null != tmpProperty)
+                    {
+                        var orderSerialNumsString = tmpProperty.StringValue;
+                        var orderSerialNums = orderSerialNumsString.Split(DATA_SEPARATOR, StringSplitOptions.RemoveEmptyEntries)
+                                                                    .Distinct();
+
+                        foreach (var item in orderSerialNums)
+                        {
+                            var order = allConsignmentOrders.FirstOrDefault(x => x.SerialNum == item);
+                            order.TripId = trip.Id;
+                            consignmentOrderService.Update(order);
+                        }
+
+                        if (!isNew && null != trip.Orders && trip.Orders.Any())
+                        {
+                            var exceptOrders = trip.Orders.Where(x => !orderSerialNums.Contains(x.SerialNum)).ToList();
+                            for (int i = exceptOrders.Count - 1; i >= 0; i--)
+                            {
+                                var item = exceptOrders[i];
+                                item.TripId = null;
+                                consignmentOrderService.Update(item);
+                            }
+                        }
+                    }
+                }
+
                 _customerActivityService.InsertActivity("ImportTrips",
-                    string.Format(_localizationService.GetResource("ActivityLog.ImportTrips")));
+                    string.Format(_localizationService.GetResource("ActivityLog.ImportTrips"), metadata.TripsInFile.Count));
             }
         }
 
