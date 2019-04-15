@@ -1,5 +1,6 @@
 ﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
+using System;
 
 namespace Nop.Services.Logistics
 {
@@ -21,5 +22,15 @@ namespace Nop.Services.Logistics
         void Delete(Trip entity);
 
         void DeleteConsignmentOrder(ConsignmentOrder entity);
+
+        IPagedList<Trip> GetStatistics(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            DateTime? tripCTimeFrom = null,
+            DateTime? tripCTimeTo = null,
+            DateTime? orderCTimeFrom = null,
+            DateTime? orderCTimeTo = null,
+            string driverName = null,
+            string carLicense = null);
     }
 }

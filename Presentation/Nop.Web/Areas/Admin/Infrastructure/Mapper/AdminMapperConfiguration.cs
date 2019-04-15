@@ -104,6 +104,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateTopicsMaps();
             CreateVendorsMaps();
             CreateLogisticsMaps();
+            CreateLogisticsReportMaps();
 
             //add some generic mapping rules
             ForAllMaps((mapConfiguration, map) =>
@@ -1270,6 +1271,16 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<Trip, TripModel>();
             CreateMap<TripModel, Trip>()
                 .ForMember(x => x.CTime, o => o.Ignore());
+        }
+
+        protected virtual void CreateLogisticsReportMaps()
+        {
+            CreateMap<Goods, ReportGoodsModel>();
+            CreateMap<ConsignmentUser, ReportUserModel>();
+            CreateMap<ConsignmentOrder, ReportOrderModel>();
+            CreateMap<Driver, ReportDriverModel>();
+            CreateMap<Car, ReportCarModel>();
+            CreateMap<Trip, ReportTripModel>();
         }
 
         #endregion

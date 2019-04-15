@@ -105,7 +105,7 @@ namespace Nop.Services.Logistics
             eventPublisher.EntityDeleted(entity);
         }
 
-        #region Trips
+        #region Consignment Orders
 
         public virtual void DeleteConsignmentOrder(ConsignmentOrder entity)
         {
@@ -116,6 +116,44 @@ namespace Nop.Services.Logistics
             consignmentOrderRepository.Update(entity);
 
             eventPublisher.EntityDeleted(entity);
+        }
+
+        #endregion
+
+        #region Statistics
+
+        public virtual IPagedList<Trip> GetStatistics(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            DateTime? tripCTimeFrom = null,
+            DateTime? tripCTimeTo = null,
+            DateTime? orderCTimeFrom = null,
+            DateTime? orderCTimeTo = null,
+            string driverName = null,
+            string carLicense = null)
+        {
+            var query = repository.Table.Where(x => !x.Deleted);
+
+            if (tripCTimeFrom.HasValue)
+                query = query.Where(x => x.CTime >= tripCTimeFrom.Value.Date);
+            if (tripCTimeTo.HasValue)
+                query = query.Where(x => x.CTime < tripCTimeTo.Value.Date.AddDays(1));
+            if (orderCTimeFrom.HasValue)
+                query = query.Where(x => x.Orders.Any(y => y.CTime >= orderCTimeFrom.Value.Date));
+            if (orderCTimeTo.HasValue)
+                query = query.Where(x => x.Orders.Any(y => y.CTime < orderCTimeTo.Value.Date.AddDays(1)));
+            if (!string.IsNullOrWhiteSpace(driverName))
+            {
+                driverName = driverName.Trim();
+                query = query.Where(x => x.Driver.Name.Contains(driverName));
+            }
+            if (!string.IsNullOrWhiteSpace(carLicense))
+            {
+                carLicense = carLicense.Trim();
+                query = query.Where(x => x.Car.License.Contains(carLicense));
+            }
+
+            return new PagedList<Trip>(query, pageIndex, pageSize);
         }
 
         #endregion

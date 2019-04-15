@@ -1,0 +1,256 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ReportTripSearchModel
+
+@{
+    ViewBag.Title = T("Admin.LogisticsReports.Trips.ByDriver").Text;
+    Html.SetActiveMenuItemSystemName("ByDriver");
+}
+
+<nop-antiforgery-token />
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @T("Admin.LogisticsReports.Trips.ByDriver")
+    </h1>
+    <div class="pull-right">
+        &nbsp;
+    </div>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="TripCTimeFrom" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="TripCTimeFrom" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="TripCTimeTo" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="TripCTimeTo" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="DriverName" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="DriverName" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="OrderCTimeFrom" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="OrderCTimeFrom" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="OrderCTimeTo" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="OrderCTimeTo" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="CarLicense" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="CarLicense" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-md-offset-5">
+                            <button type="button" id="search" class="btn btn-primary btn-search">
+                                <i class="fa fa-line-chart"></i>
+                                @T("Admin.LogisticsReports.Trips.ByDriver.RunReport")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid"></div>
+
+                    <style>
+                        #grid th { text-align: center; }
+                        #grid .table td:first-child { text-align: center; }
+                        #grid .table-report-user td:first-child { width: 100px; }
+                        #grid .table-report-goods th:first-child { width: 50px; }
+                    </style>
+
+                    <script>
+                        $(function () {
+                            $("#grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("TripReport", "LogisticsReport"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: function () {
+                                                var data = {
+                                                    TripCTimeFrom: $("#@(Html.IdFor(x => x.TripCTimeFrom))").val(),
+                                                    TripCTimeTo: $("#@(Html.IdFor(x => x.TripCTimeTo))").val(),
+                                                    OrderCTimeFrom: $("#@(Html.IdFor(x => x.OrderCTimeFrom))").val(),
+                                                    OrderCTimeTo: $("#@(Html.IdFor(x => x.OrderCTimeTo))").val(),
+                                                    DriverName: $("#@(Html.IdFor(x => x.DriverName))").val(),
+                                                    CarLicense: $("#@(Html.IdFor(x => x.CarLicense))").val()
+                                                };
+                                                addAntiForgeryToken(data);
+                                                return data;
+                                            }
+                                        }
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors",
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                CTime: { type: "date" }
+                                            }
+                                        }
+                                    },
+                                    error: function (e) {
+                                        display_kendoui_grid_error(e);
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(Model.PageSize),
+                                    serverPaging: true,
+                                    serverFiletering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [@(Model.AvailablePageSizes)],
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [
+                                    {
+                                        field: "CTime",
+                                        title: "@T("Admin.LogisticsReports.ReportTripModel.Fields.CTime")",
+                                        width: 120,
+                                        type: "date",
+                                        attributes: { style: "text-align: center" },
+                                        format: "{0:yyyy-MM-dd}"
+                                    },
+                                    {
+                                        field: "Driver",
+                                        title: "@T("Admin.LogisticsReports.ReportDriverModel.Fields.Name")",
+                                        width: 100,
+                                        template: "#=(null == Driver ? '-' : Driver.Name)#"
+                                    },
+                                    {
+                                        field: "Car",
+                                        title: "@T("Admin.LogisticsReports.ReportCarModel.Fields.License")",
+                                        width: 100,
+                                        template: "#=(null == Car ? '-' : Car.License)#"
+                                    },
+                                    {
+                                        fields: "Orders",
+                                        title: "@T("Admin.LogisticsReports.ReportTripModel.Fields.Orders")",
+                                        template: kendo.template($("#order-template").html())
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#search").click(function () {
+                                var grid = $("#grid").data("kendoGrid");
+                                grid.dataSource.page(1);
+
+                                return false;
+                            });
+                        });
+
+                        function formatText(str) {
+                            return null == str ? "-" : str;
+                        }
+
+                        function formatConsignUser(model) {
+                            if (null == model)
+                                return "-";
+
+                            var name = model.Name,
+                                address = model.Address,
+                                phone = model.Phone;
+
+                            return formatText(name) +
+                                (null == phone ? "" : ("(" + phone + ")")) +
+                                (null == address ? "" : (" - " + address));
+                        }
+                    </script>
+
+                    <script id="order-template" type="text/x-kendo-template">
+                        # if (null == Orders || 0 == Orders.length) {# - #} else { for (var i = 0, iMax = Orders.length; i < iMax; i++) {#
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <table class="table-report-user table">
+                                    <tr>
+                                        <td>@T("Admin.LogisticsReports.ReportOrderModel.Fields.SerialNum")</td>
+                                        <td>#=formatText(Orders[i].SerialNum)#</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@T("Admin.LogisticsReports.ReportOrderModel.Fields.Consignor")</td>
+                                        <td>#=formatConsignUser(Orders[i].Consignor)#</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@T("Admin.LogisticsReports.ReportOrderModel.Fields.Consignor")</td>
+                                        <td>#=formatConsignUser(Orders[i].Consignee)#</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <table class="table-report-goods table">
+                                <thead>
+                                    <tr>
+                                        <th>@T("Admin.LogisticsReports.ReportGoodsModel.Fields.Index")</th>
+                                        <th>@T("Admin.LogisticsReports.ReportGoodsModel.Fields.Name")</th>
+                                        <th>@T("Admin.LogisticsReports.ReportGoodsModel.Fields.Price")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    # for (var j = 0, jMax = Orders[i].Goods.length; j < jMax; j++) { #
+                                    <tr>
+                                        <td>#=(j + 1)#</td>
+                                        <td>#=formatText(Orders[i].Goods[j].Name)#</td>
+                                        <td>#=formatText(Orders[i].Goods[j].Price)#</td>
+                                    </tr>
+                                    # }#
+                                </tbody>
+                            </table>
+                        </div>
+                        #}}#
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
