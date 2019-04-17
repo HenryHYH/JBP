@@ -26,7 +26,9 @@ namespace Nop.Services.Logistics
 
         public IList<FeeCategory> GetFeeCategories()
         {
-            return feeCategoryRepository.TableNoTracking.ToList();
+            return feeCategoryRepository.TableNoTracking
+                                .OrderBy(x => x.DisplayOrder)
+                                .ToList();
         }
 
         #endregion

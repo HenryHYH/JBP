@@ -10,16 +10,22 @@ namespace Nop.Web.Areas.Admin.Factories
     {
         #region Fields
 
+        private readonly IBaseAdminModelFactory baseAdminModelFactory;
         private readonly ITripService tripService;
+        private readonly IFeeService feeService;
 
         #endregion
 
         #region Ctor
 
         public LogisticsReportModelFactory(
-            ITripService tripService)
+            IBaseAdminModelFactory baseAdminModelFactory,
+            ITripService tripService,
+            IFeeService feeService)
         {
+            this.baseAdminModelFactory = baseAdminModelFactory;
             this.tripService = tripService;
+            this.feeService = feeService;
         }
 
         #endregion
@@ -34,7 +40,7 @@ namespace Nop.Web.Areas.Admin.Factories
             return model;
         }
 
-        public ReportTripListModel PrepareReportTripListModel(ReportTripSearchModel searchModel)
+        public virtual ReportTripListModel PrepareReportTripListModel(ReportTripSearchModel searchModel)
         {
             if (null == searchModel)
                 throw new ArgumentNullException(nameof(searchModel));
@@ -57,6 +63,44 @@ namespace Nop.Web.Areas.Admin.Factories
 
                     return modelItem;
                 }),
+                Total = list.TotalCount
+            };
+
+            return model;
+        }
+
+        public virtual ReportBalanceSearchModel PrepareReportBalanceSearchModel(ReportBalanceSearchModel model = null)
+        {
+            if (null == model)
+                model = new ReportBalanceSearchModel();
+
+            baseAdminModelFactory.PrepareStatisticsFrequency(model.AvailableStatisticsFrequencies, false);
+            baseAdminModelFactory.PrepareFeeCategories(model.AvailableFeeCategories, false);
+
+            return model;
+        }
+
+        public virtual ReportBalanceListModel PrepareReportBalanceListModel(ReportBalanceSearchModel searchModel)
+        {
+            if (null == searchModel)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            var list = tripService.StatisticsBalance(
+                                    pageIndex: searchModel.Page - 1,
+                                    pageSize: searchModel.PageSize,
+                                    frequency: searchModel.Frequency,
+                                    tripCTimeFrom: searchModel.TripCTimeFrom,
+                                    tripCTimeTo: searchModel.TripCTimeTo);
+
+            var model = new ReportBalanceListModel
+            {
+                Data = list.GroupBy(x => x.StatisticsTime)
+                            .Select(x => new ReportBalanceModel
+                            {
+                                StatisticsTime = x.Key,
+                                Fees = x.Select(f => new ReportFeeModel { Id = f.CategoryId, Name = f.Category, Type = f.FeeType, Amount = f.Amount })
+                                        .ToDictionary(k => k.Id, v => v)
+                            }),
                 Total = list.TotalCount
             };
 

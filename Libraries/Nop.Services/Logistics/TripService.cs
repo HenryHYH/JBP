@@ -1,6 +1,9 @@
 ﻿using Nop.Core;
 using Nop.Core.Data;
+using Nop.Core.Data.Extensions;
 using Nop.Core.Domain.Logistics;
+using Nop.Data;
+using Nop.Services.Common;
 using Nop.Services.Events;
 using System;
 using System.Linq;
@@ -11,6 +14,8 @@ namespace Nop.Services.Logistics
     {
         #region Fields
 
+        private readonly IDataProvider dataProvider;
+        private readonly IDbContext dbContext;
         private readonly IRepository<Trip> repository;
         private readonly IRepository<ConsignmentOrder> consignmentOrderRepository;
         private readonly IEventPublisher eventPublisher;
@@ -20,10 +25,14 @@ namespace Nop.Services.Logistics
         #region Ctor
 
         public TripService(
+            IDataProvider dataProvider,
+            IDbContext dbContext,
             IRepository<Trip> repository,
             IRepository<ConsignmentOrder> consignmentOrderRepository,
             IEventPublisher eventPublisher)
         {
+            this.dataProvider = dataProvider;
+            this.dbContext = dbContext;
             this.repository = repository;
             this.consignmentOrderRepository = consignmentOrderRepository;
             this.eventPublisher = eventPublisher;
@@ -154,6 +163,31 @@ namespace Nop.Services.Logistics
             }
 
             return new PagedList<Trip>(query, pageIndex, pageSize);
+        }
+
+        public virtual IPagedList<BalanceReport> StatisticsBalance(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            StatisticsFrequency frequency = StatisticsFrequency.Daily,
+            DateTime? tripCTimeFrom = null,
+            DateTime? tripCTimeTo = null)
+        {
+            var pFrequency = dataProvider.GetInt32Parameter("Frequency", (int)frequency);
+            var pTripCTimeFrom = dataProvider.GetDateTimeParameter("TripCTimeFrom", tripCTimeFrom);
+            var pTripCTimeTo = dataProvider.GetDateTimeParameter("TripCTimeTo", tripCTimeTo);
+            var pPageIndex = dataProvider.GetInt32Parameter("PageIndex", pageIndex);
+            var pPageSize = dataProvider.GetInt32Parameter("PageSize", pageSize);
+            var pTotalRecords = dataProvider.GetOutputInt32Parameter("TotalRecords");
+            var list = dbContext.QueryFromSql<BalanceReport>("EXEC [TripBalanceReport]",
+                                                pFrequency,
+                                                pTripCTimeFrom,
+                                                pTripCTimeTo,
+                                                pPageIndex,
+                                                pPageSize,
+                                                pTotalRecords).ToList();
+
+            var totalRecords = pTotalRecords.Value != DBNull.Value ? Convert.ToInt32(pTotalRecords.Value) : 0;
+            return new PagedList<BalanceReport>(list, pageIndex, pageSize, totalRecords);
         }
 
         #endregion

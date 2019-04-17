@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Nop.Core;
+using System.Linq;
 
 namespace Nop.Data
 {
@@ -37,7 +37,9 @@ namespace Nop.Data
         /// <param name="sql">The raw SQL query</param>
         /// <returns>An IQueryable representing the raw SQL query</returns>
         IQueryable<TQuery> QueryFromSql<TQuery>(string sql) where TQuery : class;
-        
+
+        IQueryable<TQuery> QueryFromSql<TQuery>(string sql, params object[] parameters) where TQuery : class;
+
         /// <summary>
         /// Creates a LINQ query for the entity based on a raw SQL query
         /// </summary>

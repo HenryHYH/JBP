@@ -14,5 +14,10 @@
         /// 类型
         /// </summary>
         public FeeType Type { get; set; }
+
+        /// <summary>
+        /// 排序号
+        /// </summary>
+        public int DisplayOrder { get; set; }
     }
 }

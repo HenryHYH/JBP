@@ -1,0 +1,174 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ReportBalanceSearchModel
+
+@{
+    ViewBag.Title = T("Admin.LogisticsReports.Trips.Balance").Text;
+    Html.SetActiveMenuItemSystemName("BalanceReport");
+}
+
+<nop-antiforgery-token />
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @T("Admin.LogisticsReports.Trips.Balance")
+    </h1>
+    <div class="pull-right">
+        &nbsp;
+    </div>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="TripCTimeFrom" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="TripCTimeFrom" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="TripCTimeTo" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="TripCTimeTo" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="Frequency" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="Frequency" asp-items="Model.AvailableStatisticsFrequencies" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-md-offset-5">
+                            <button type="button" id="search" class="btn btn-primary btn-search">
+                                <i class="fa fa-line-chart"></i>
+                                @T("Admin.LogisticsReports.Trips.Balance.RunReport")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid"></div>
+
+                    <style scoped>
+                        #grid th { text-align: center; }
+                    </style>
+
+                    <script>
+                        $(function () {
+                            $("#grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("BalanceReport", "LogisticsReport"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: function () {
+                                                var data = {
+                                                    TripCTimeFrom: $("#@(Html.IdFor(x => x.TripCTimeFrom))").val(),
+                                                    TripCTimeTo: $("#@(Html.IdFor(x => x.TripCTimeTo))").val(),
+                                                    Frequency: $("#@(Html.IdFor(x => x.Frequency))").val()
+                                                };
+                                                addAntiForgeryToken(data);
+                                                return data;
+                                            }
+                                        }
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors"
+                                    },
+                                    error: function (e) {
+                                        display_kendoui_grid_error(e);
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(Model.PageSize),
+                                    serverPaging: true,
+                                    serverFiletering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [@(Model.AvailablePageSizes)],
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [
+                                    {
+                                        field: "StatisticsTime",
+                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.StatisticsTime")",
+                                        attributes: { style: "text-align: center" },
+                                        locked: true
+                                    },
+                                    {
+                                        field: "Balance",
+                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Balance")",
+                                        attributes: { style: "text-align: center" },
+                                        locked: true
+                                    },
+                                    {
+                                        field: "Income",
+                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Income")",
+                                        attributes: { style: "text-align: center" },
+                                        locked: true
+                                    },
+                                    {
+                                        field: "Expense",
+                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Expense")",
+                                        attributes: { style: "text-align: center" },
+                                        locked: true
+                                    },
+                                    @for (int i = 0, iMax = Model.AvailableFeeCategories.Count; i < iMax; i++)
+                                    {
+                                        var text = Model.AvailableFeeCategories[i].Text;
+                                        var value = Model.AvailableFeeCategories[i].Value;
+                                        <text>
+                                    {
+                                        title: "@(text)",
+                                        attributes: { style: "text-align: center" },
+                                        template: "#=Fees[@(value)].Amount#"
+                                    }
+                                        </text>
+                                        @if (i != iMax - 1) { <text>,</text> }
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#search").click(function () {
+                                var grid = $("#grid").data("kendoGrid");
+                                grid.dataSource.page(1);
+
+                                return false;
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

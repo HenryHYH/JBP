@@ -49,6 +49,27 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
 
+        public virtual IActionResult BalanceReport()
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedView();
+
+            var model = logisticsReportModelFactory.PrepareReportBalanceSearchModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult BalanceReport(ReportBalanceSearchModel searchModel)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedKendoGridJson();
+
+            var model = logisticsReportModelFactory.PrepareReportBalanceListModel(searchModel);
+
+            return Json(model);
+        }
+
         #endregion
     }
 }

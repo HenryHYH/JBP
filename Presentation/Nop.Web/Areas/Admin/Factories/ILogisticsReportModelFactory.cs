@@ -7,5 +7,9 @@ namespace Nop.Web.Areas.Admin.Factories
         ReportTripSearchModel PrepareReportTripSearchModel(ReportTripSearchModel model = null);
 
         ReportTripListModel PrepareReportTripListModel(ReportTripSearchModel searchModel);
+
+        ReportBalanceSearchModel PrepareReportBalanceSearchModel(ReportBalanceSearchModel model = null);
+
+        ReportBalanceListModel PrepareReportBalanceListModel(ReportBalanceSearchModel searchModel);
     }
 }

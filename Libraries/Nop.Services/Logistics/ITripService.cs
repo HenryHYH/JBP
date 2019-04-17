@@ -1,5 +1,6 @@
 ﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
+using Nop.Services.Common;
 using System;
 
 namespace Nop.Services.Logistics
@@ -32,5 +33,12 @@ namespace Nop.Services.Logistics
             DateTime? orderCTimeTo = null,
             string driverName = null,
             string carLicense = null);
+
+        IPagedList<BalanceReport> StatisticsBalance(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            StatisticsFrequency frequency = StatisticsFrequency.Daily,
+            DateTime? tripCTimeFrom = null,
+            DateTime? tripCTimeTo = null);
     }
 }

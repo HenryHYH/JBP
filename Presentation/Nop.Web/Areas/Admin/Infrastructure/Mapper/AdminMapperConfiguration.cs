@@ -1280,6 +1280,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<ConsignmentOrder, ReportOrderModel>();
             CreateMap<Driver, ReportDriverModel>();
             CreateMap<Car, ReportCarModel>();
+            CreateMap<FeeCategory, ReportFeeCategoryModel>();
             CreateMap<Trip, ReportTripModel>();
         }
 

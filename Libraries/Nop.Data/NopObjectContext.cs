@@ -1,11 +1,11 @@
+using Microsoft.EntityFrameworkCore;
+using Nop.Core;
+using Nop.Data.Mapping;
 using System;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
-using Nop.Core;
-using Nop.Data.Mapping;
 
 namespace Nop.Data
 {
@@ -31,9 +31,9 @@ namespace Nop.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //dynamically load all entity and query type configurations
-            var typeConfigurations = Assembly.GetExecutingAssembly().GetTypes().Where(type => 
-                (type.BaseType?.IsGenericType ?? false) 
-                    && (type.BaseType.GetGenericTypeDefinition() == typeof(NopEntityTypeConfiguration<>) 
+            var typeConfigurations = Assembly.GetExecutingAssembly().GetTypes().Where(type =>
+                (type.BaseType?.IsGenericType ?? false)
+                    && (type.BaseType.GetGenericTypeDefinition() == typeof(NopEntityTypeConfiguration<>)
                         || type.BaseType.GetGenericTypeDefinition() == typeof(NopQueryTypeConfiguration<>)));
 
             foreach (var typeConfiguration in typeConfigurations)
@@ -41,7 +41,7 @@ namespace Nop.Data
                 var configuration = (IMappingConfiguration)Activator.CreateInstance(typeConfiguration);
                 configuration.ApplyConfiguration(modelBuilder);
             }
-            
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -102,7 +102,12 @@ namespace Nop.Data
         {
             return this.Query<TQuery>().FromSql(sql);
         }
-        
+
+        public virtual IQueryable<TQuery> QueryFromSql<TQuery>(string sql, params object[] parameters) where TQuery : class
+        {
+            return this.Query<TQuery>().FromSql(CreateSqlWithParameters(sql, parameters), parameters);
+        }
+
         /// <summary>
         /// Creates a LINQ query for the entity based on a raw SQL query
         /// </summary>
@@ -141,10 +146,10 @@ namespace Nop.Data
             }
             else
                 result = this.Database.ExecuteSqlCommand(sql, parameters);
-            
+
             //return previous timeout back
             this.Database.SetCommandTimeout(previousTimeout);
-            
+
             return result;
         }
 
@@ -161,7 +166,7 @@ namespace Nop.Data
             var entityEntry = this.Entry(entity);
             if (entityEntry == null)
                 return;
-            
+
             //set the entity is not being tracked by the context
             entityEntry.State = EntityState.Detached;
         }

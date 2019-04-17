@@ -11,6 +11,7 @@ using Nop.Core.Domain.Tax;
 using Nop.Core.Plugins;
 using Nop.Services;
 using Nop.Services.Catalog;
+using Nop.Services.Common;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
 using Nop.Services.Helpers;
@@ -933,6 +934,18 @@ namespace Nop.Web.Areas.Admin.Factories
             var list = feeService.GetFeeCategories();
             foreach (var item in list)
                 items.Add(new SelectListItem { Text = item.Name, Value = item.Id.ToString() });
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareStatisticsFrequency(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = StatisticsFrequency.Monthly.ToSelectList(true);
+            foreach (var item in list)
+                items.Add(item);
 
             PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
         }
