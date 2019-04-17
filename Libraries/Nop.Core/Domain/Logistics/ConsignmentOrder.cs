@@ -96,6 +96,11 @@ namespace Nop.Core.Domain.Logistics
         public virtual Trip Trip { get; set; }
 
         /// <summary>
+        /// 托运时间
+        /// </summary>
+        public DateTime ConsignmentTime { get; set; }
+
+        /// <summary>
         /// 是否已删除
         /// </summary>
         public bool Deleted { get; set; }

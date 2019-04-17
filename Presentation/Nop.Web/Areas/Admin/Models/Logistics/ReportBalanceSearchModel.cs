@@ -22,13 +22,13 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         #region Properties
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.Balance.SearchTripCTimeFrom")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.Balance.SearchTripShippingTimeFrom")]
         [UIHint("DateNullable")]
-        public DateTime? TripCTimeFrom { get; set; }
+        public DateTime? TripShippingTimeFrom { get; set; }
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.Balance.SearchTripCTimeTo")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.Balance.SearchTripShippingTimeTo")]
         [UIHint("DateNullable")]
-        public DateTime? TripCTimeTo { get; set; }
+        public DateTime? TripShippingTimeTo { get; set; }
 
         [NopResourceDisplayName("Admin.LogisticsReports.Trips.Balance.SearchFrequency")]
         public StatisticsFrequency Frequency { get; set; }

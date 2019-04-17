@@ -134,23 +134,23 @@ namespace Nop.Services.Logistics
         public virtual IPagedList<Trip> GetStatistics(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            DateTime? tripCTimeFrom = null,
-            DateTime? tripCTimeTo = null,
-            DateTime? orderCTimeFrom = null,
-            DateTime? orderCTimeTo = null,
+            DateTime? tripShippingTimeFrom = null,
+            DateTime? tripShippingTimeTo = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
             string driverName = null,
             string carLicense = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
-            if (tripCTimeFrom.HasValue)
-                query = query.Where(x => x.CTime >= tripCTimeFrom.Value.Date);
-            if (tripCTimeTo.HasValue)
-                query = query.Where(x => x.CTime < tripCTimeTo.Value.Date.AddDays(1));
-            if (orderCTimeFrom.HasValue)
-                query = query.Where(x => x.Orders.Any(y => y.CTime >= orderCTimeFrom.Value.Date));
-            if (orderCTimeTo.HasValue)
-                query = query.Where(x => x.Orders.Any(y => y.CTime < orderCTimeTo.Value.Date.AddDays(1)));
+            if (tripShippingTimeFrom.HasValue)
+                query = query.Where(x => x.ShippingTime >= tripShippingTimeFrom.Value.Date);
+            if (tripShippingTimeTo.HasValue)
+                query = query.Where(x => x.ShippingTime < tripShippingTimeTo.Value.Date.AddDays(1));
+            if (orderConsignmentTimeFrom.HasValue)
+                query = query.Where(x => x.Orders.Any(y => y.CTime >= orderConsignmentTimeFrom.Value.Date));
+            if (orderConsignmentTimeTo.HasValue)
+                query = query.Where(x => x.Orders.Any(y => y.CTime < orderConsignmentTimeTo.Value.Date.AddDays(1)));
             if (!string.IsNullOrWhiteSpace(driverName))
             {
                 driverName = driverName.Trim();
@@ -169,19 +169,19 @@ namespace Nop.Services.Logistics
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             StatisticsFrequency frequency = StatisticsFrequency.Daily,
-            DateTime? tripCTimeFrom = null,
-            DateTime? tripCTimeTo = null)
+            DateTime? tripShippingTimeFrom = null,
+            DateTime? tripShippingTimeTo = null)
         {
             var pFrequency = dataProvider.GetInt32Parameter("Frequency", (int)frequency);
-            var pTripCTimeFrom = dataProvider.GetDateTimeParameter("TripCTimeFrom", tripCTimeFrom);
-            var pTripCTimeTo = dataProvider.GetDateTimeParameter("TripCTimeTo", tripCTimeTo);
+            var pTripShippingTimeFrom = dataProvider.GetDateTimeParameter("TripShippingTimeFrom", tripShippingTimeFrom);
+            var pTripShippingTimeTo = dataProvider.GetDateTimeParameter("TripShippingTimeTo", tripShippingTimeTo);
             var pPageIndex = dataProvider.GetInt32Parameter("PageIndex", pageIndex);
             var pPageSize = dataProvider.GetInt32Parameter("PageSize", pageSize);
             var pTotalRecords = dataProvider.GetOutputInt32Parameter("TotalRecords");
             var list = dbContext.QueryFromSql<BalanceReport>("EXEC [TripBalanceReport]",
                                                 pFrequency,
-                                                pTripCTimeFrom,
-                                                pTripCTimeTo,
+                                                pTripShippingTimeFrom,
+                                                pTripShippingTimeTo,
                                                 pPageIndex,
                                                 pPageSize,
                                                 pTotalRecords).ToList();

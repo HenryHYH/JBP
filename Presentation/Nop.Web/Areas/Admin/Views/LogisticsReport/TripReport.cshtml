@@ -24,18 +24,18 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="TripCTimeFrom" />
+                                    <nop-label asp-for="TripShippingTimeFrom" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="TripCTimeFrom" />
+                                    <nop-editor asp-for="TripShippingTimeFrom" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="TripCTimeTo" />
+                                    <nop-label asp-for="TripShippingTimeTo" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="TripCTimeTo" />
+                                    <nop-editor asp-for="TripShippingTimeTo" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -50,18 +50,18 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="OrderCTimeFrom" />
+                                    <nop-label asp-for="OrderConsignmentTimeFrom" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="OrderCTimeFrom" />
+                                    <nop-editor asp-for="OrderConsignmentTimeFrom" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="OrderCTimeTo" />
+                                    <nop-label asp-for="OrderConsignmentTimeTo" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="OrderCTimeTo" />
+                                    <nop-editor asp-for="OrderConsignmentTimeTo" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -108,10 +108,10 @@
                                             dataType: "json",
                                             data: function () {
                                                 var data = {
-                                                    TripCTimeFrom: $("#@(Html.IdFor(x => x.TripCTimeFrom))").val(),
-                                                    TripCTimeTo: $("#@(Html.IdFor(x => x.TripCTimeTo))").val(),
-                                                    OrderCTimeFrom: $("#@(Html.IdFor(x => x.OrderCTimeFrom))").val(),
-                                                    OrderCTimeTo: $("#@(Html.IdFor(x => x.OrderCTimeTo))").val(),
+                                                    TripShippingTimeFrom: $("#@(Html.IdFor(x => x.TripShippingTimeFrom))").val(),
+                                                    TripShippingTimeTo: $("#@(Html.IdFor(x => x.TripShippingTimeTo))").val(),
+                                                    OrderConsignmentTimeFrom: $("#@(Html.IdFor(x => x.OrderConsignmentTimeFrom))").val(),
+                                                    OrderConsignmentTimeTo: $("#@(Html.IdFor(x => x.OrderConsignmentTimeTo))").val(),
                                                     DriverName: $("#@(Html.IdFor(x => x.DriverName))").val(),
                                                     CarLicense: $("#@(Html.IdFor(x => x.CarLicense))").val()
                                                 };
@@ -127,7 +127,7 @@
                                         model: {
                                             id: "Id",
                                             fields: {
-                                                CTime: { type: "date" }
+                                                ShippingTime: { type: "date" }
                                             }
                                         }
                                     },
@@ -152,8 +152,14 @@
                                 scrollable: false,
                                 columns: [
                                     {
-                                        field: "CTime",
-                                        title: "@T("Admin.LogisticsReports.ReportTripModel.Fields.CTime")",
+                                        field: "SerialNum",
+                                        title: "@T("Admin.LogisticsReports.ReportTripModel.Fields.SerialNum")",
+                                        width: 120,
+                                        attributes: { style: "text-align: center" }
+                                    },
+                                    {
+                                        field: "ShippingTime",
+                                        title: "@T("Admin.LogisticsReports.ReportTripModel.Fields.ShippingTime")",
                                         width: 120,
                                         type: "date",
                                         attributes: { style: "text-align: center" },

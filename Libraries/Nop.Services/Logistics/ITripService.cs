@@ -27,10 +27,10 @@ namespace Nop.Services.Logistics
         IPagedList<Trip> GetStatistics(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
-            DateTime? tripCTimeFrom = null,
-            DateTime? tripCTimeTo = null,
-            DateTime? orderCTimeFrom = null,
-            DateTime? orderCTimeTo = null,
+            DateTime? tripShippingTimeFrom = null,
+            DateTime? tripShippingTimeTo = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
             string driverName = null,
             string carLicense = null);
 
@@ -38,7 +38,7 @@ namespace Nop.Services.Logistics
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             StatisticsFrequency frequency = StatisticsFrequency.Daily,
-            DateTime? tripCTimeFrom = null,
-            DateTime? tripCTimeTo = null);
+            DateTime? tripShippingTimeFrom = null,
+            DateTime? tripShippingTimeTo = null);
     }
 }

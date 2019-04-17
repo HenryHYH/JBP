@@ -89,6 +89,10 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public virtual TripModel Trip { get; set; }
 
+        [NopResourceDisplayName("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime")]
+        [UIHint("Date")]
+        public DateTime ConsignmentTime { get; set; }
+
         #region Goods
 
         [NopResourceDisplayName("Admin.Logistics.Goods.Fields.Name")]

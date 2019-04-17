@@ -48,10 +48,10 @@ namespace Nop.Web.Areas.Admin.Factories
             var list = tripService.GetStatistics(
                 pageIndex: searchModel.Page - 1,
                 pageSize: searchModel.PageSize,
-                tripCTimeFrom: searchModel.TripCTimeFrom,
-                tripCTimeTo: searchModel.TripCTimeTo,
-                orderCTimeFrom: searchModel.OrderCTimeFrom,
-                orderCTimeTo: searchModel.OrderCTimeTo,
+                tripShippingTimeFrom: searchModel.TripShippingTimeFrom,
+                tripShippingTimeTo: searchModel.TripShippingTimeTo,
+                orderConsignmentTimeFrom: searchModel.OrderConsignmentTimeFrom,
+                orderConsignmentTimeTo: searchModel.OrderConsignmentTimeTo,
                 driverName: searchModel.DriverName,
                 carLicense: searchModel.CarLicense);
 
@@ -89,8 +89,8 @@ namespace Nop.Web.Areas.Admin.Factories
                                     pageIndex: searchModel.Page - 1,
                                     pageSize: searchModel.PageSize,
                                     frequency: searchModel.Frequency,
-                                    tripCTimeFrom: searchModel.TripCTimeFrom,
-                                    tripCTimeTo: searchModel.TripCTimeTo);
+                                    tripShippingTimeFrom: searchModel.TripShippingTimeFrom,
+                                    tripShippingTimeTo: searchModel.TripShippingTimeTo);
 
             var model = new ReportBalanceListModel
             {

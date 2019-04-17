@@ -11,11 +11,13 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
             Orders = new List<ReportOrderModel>();
         }
 
+        public string SerialNum { get; set; }
+
         public virtual ReportDriverModel Driver { get; set; }
 
         public virtual ReportCarModel Car { get; set; }
 
-        public DateTime CTime { get; set; }
+        public DateTime? ShippingTime { get; set; }
 
         public virtual IList<ReportOrderModel> Orders { get; set; }
     }

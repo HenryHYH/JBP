@@ -9,21 +9,21 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
     {
         #region Properties
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchTripCTimeFrom")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchTripShippingTimeFrom")]
         [UIHint("DateNullable")]
-        public DateTime? TripCTimeFrom { get; set; }
+        public DateTime? TripShippingTimeFrom { get; set; }
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchTripCTimeTo")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchTripShippingTimeTo")]
         [UIHint("DateNullable")]
-        public DateTime? TripCTimeTo { get; set; }
+        public DateTime? TripShippingTimeTo { get; set; }
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchOrderCTimeFrom")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchOrderConsignmentTimeFrom")]
         [UIHint("DateNullable")]
-        public DateTime? OrderCTimeFrom { get; set; }
+        public DateTime? OrderConsignmentTimeFrom { get; set; }
 
-        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchOrderCTimeTo")]
+        [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchOrderConsignmentTimeTo")]
         [UIHint("DateNullable")]
-        public DateTime? OrderCTimeTo { get; set; }
+        public DateTime? OrderConsignmentTimeTo { get; set; }
 
         [NopResourceDisplayName("Admin.LogisticsReports.Trips.ByDriver.SearchDriverName")]
         public string DriverName { get; set; }

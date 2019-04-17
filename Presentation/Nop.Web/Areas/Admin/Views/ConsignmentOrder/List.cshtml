@@ -132,7 +132,7 @@
                                         model: {
                                             id: "Id",
                                             fields: {
-                                                CTime: { type: "date" }
+                                                ConsignmentTime: { type: "date" }
                                             }
                                         }
                                     },
@@ -159,12 +159,12 @@
                                         attributes: { style: "text-align: center" }
                                     },
                                     {
-                                        field: "CTime",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.CTime")",
+                                        field: "ConsignmentTime",
+                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime")",
                                         width: 200,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
-                                        format: "{0:yyyy-MM-dd HH:mm:ss}"
+                                        format: "{0:yyyy-MM-dd}"
                                     },
                                     {
                                         field: "ConsignorId",

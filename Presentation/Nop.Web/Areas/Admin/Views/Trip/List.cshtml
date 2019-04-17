@@ -91,7 +91,7 @@
                                         model: {
                                             id: "Id",
                                             fields: {
-                                                CTime: { type: "date" }
+                                                ShippingTime: { type: "date" }
                                             }
                                         }
                                     },
@@ -119,13 +119,13 @@
                                         attributes: { style: "text-align: center" }
                                     },
                                     {
-                                        field: "CTime",
-                                        title: "@T("Admin.Logistics.Trip.Fields.CTime")",
+                                        field: "ShippingTime",
+                                        title: "@T("Admin.Logistics.Trip.Fields.ShippingTime")",
                                         width: 200,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
                                         headerAttributes: { style: "text-align: center" },
-                                        format: "{0:yyyy-MM-dd HH:mm:ss}"
+                                        format: "{0:yyyy-MM-dd}"
                                     },
                                     {
                                         field: "CarId",

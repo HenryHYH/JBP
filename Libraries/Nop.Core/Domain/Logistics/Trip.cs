@@ -58,6 +58,11 @@ namespace Nop.Core.Domain.Logistics
         public virtual Car Car { get; set; }
 
         /// <summary>
+        /// 运输时间
+        /// </summary>
+        public DateTime? ShippingTime { get; set; }
+
+        /// <summary>
         /// 是否已删除
         /// </summary>
         public bool Deleted { get; set; }

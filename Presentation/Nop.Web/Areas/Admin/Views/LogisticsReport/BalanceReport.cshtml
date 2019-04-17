@@ -24,18 +24,18 @@
                         <div class="col-md-5">
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="TripCTimeFrom" />
+                                    <nop-label asp-for="TripShippingTimeFrom" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="TripCTimeFrom" />
+                                    <nop-editor asp-for="TripShippingTimeFrom" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-4">
-                                    <nop-label asp-for="TripCTimeTo" />
+                                    <nop-label asp-for="TripShippingTimeTo" />
                                 </div>
                                 <div class="col-md-8">
-                                    <nop-editor asp-for="TripCTimeTo" />
+                                    <nop-editor asp-for="TripShippingTimeTo" />
                                 </div>
                             </div>
                         </div>
@@ -81,8 +81,8 @@
                                             dataType: "json",
                                             data: function () {
                                                 var data = {
-                                                    TripCTimeFrom: $("#@(Html.IdFor(x => x.TripCTimeFrom))").val(),
-                                                    TripCTimeTo: $("#@(Html.IdFor(x => x.TripCTimeTo))").val(),
+                                                    TripShippingTimeFrom: $("#@(Html.IdFor(x => x.TripShippingTimeFrom))").val(),
+                                                    TripShippingTimeTo: $("#@(Html.IdFor(x => x.TripShippingTimeTo))").val(),
                                                     Frequency: $("#@(Html.IdFor(x => x.Frequency))").val()
                                                 };
                                                 addAntiForgeryToken(data);

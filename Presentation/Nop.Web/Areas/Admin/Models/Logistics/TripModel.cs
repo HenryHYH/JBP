@@ -47,6 +47,10 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public virtual IList<SelectListItem> AvailableDrivers { get; set; }
 
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.ShippingTime")]
+        [UIHint("DateNullable")]
+        public DateTime? ShippingTime { get; set; }
+
         public virtual ConsignmentOrderSearchModel ConsignmentOrderSearchModel { get; set; }
 
         public virtual IList<SelectListItem> AvaliableFeeCategories { get; set; }

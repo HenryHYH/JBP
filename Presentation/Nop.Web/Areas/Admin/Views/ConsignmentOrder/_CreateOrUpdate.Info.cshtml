@@ -29,6 +29,15 @@
             </div>
             <div class="form-group">
                 <div class="col-md-3">
+                    <nop-label asp-for="ConsignmentTime" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="ConsignmentTime" asp-required="true" />
+                    <span asp-validation-for="ConsignmentTime"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
                     <nop-label asp-for="StartPoint" />
                 </div>
                 <div class="col-md-9">
