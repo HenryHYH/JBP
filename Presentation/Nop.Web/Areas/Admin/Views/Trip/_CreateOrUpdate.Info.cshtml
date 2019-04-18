@@ -34,11 +34,20 @@
             </div>
             <div class="form-group">
                 <div class="col-md-3">
-                    <nop-label asp-for="ShippingTime" />
+                    <nop-label asp-for="StartAt" />
                 </div>
                 <div class="col-md-9">
-                    <nop-editor asp-for="ShippingTime" />
-                    <span asp-validation-for="ShippingTime"></span>
+                    <nop-editor asp-for="StartAt" />
+                    <span asp-validation-for="StartAt"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-3">
+                    <nop-label asp-for="EndAt" />
+                </div>
+                <div class="col-md-9">
+                    <nop-editor asp-for="EndAt" />
+                    <span asp-validation-for="EndAt"></span>
                 </div>
             </div>
         </div>

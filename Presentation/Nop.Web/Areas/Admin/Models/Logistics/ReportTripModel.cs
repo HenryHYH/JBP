@@ -17,7 +17,7 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public virtual ReportCarModel Car { get; set; }
 
-        public DateTime? ShippingTime { get; set; }
+        public DateTime? EndAt { get; set; }
 
         public virtual IList<ReportOrderModel> Orders { get; set; }
     }

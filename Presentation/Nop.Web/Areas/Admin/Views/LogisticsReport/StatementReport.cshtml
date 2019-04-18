@@ -1,0 +1,247 @@
+﻿@model Nop.Web.Areas.Admin.Models.Logistics.ReportStatementSearchModel
+
+@{
+    ViewBag.Title = T("Admin.LogisticsReports.Orders.Statement").Text;
+    Html.SetActiveMenuItemSystemName("StatementReport");
+}
+
+<nop-antiforgery-token />
+<div class="content-header clearfix">
+    <h1 class="pull-left">
+        @T("Admin.LogisticsReports.Orders.Statement")
+    </h1>
+    <div class="pull-right">
+        &nbsp;
+    </div>
+</div>
+
+<div class="content">
+    <div class="form-horizontal">
+        <div class="panel-group">
+            <div class="panel panel-default panel-search">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="ConsigneeName" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="ConsigneeName" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="OrderStatuses" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="OrderStatuses" asp-items="Model.AvailableOrderStatuses" asp-multiple="true" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="PaymentStatuses" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="PaymentStatuses" asp-items="Model.AvailablePaymentStatuses" asp-multiple="true" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="ShippingStatuses" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-select asp-for="ShippingStatuses" asp-items="Model.AvailableShippingStatuses" asp-multiple="true" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="OrderConsignmentTimeFrom" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="OrderConsignmentTimeFrom" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-4">
+                                    <nop-label asp-for="OrderConsignmentTimeTo" />
+                                </div>
+                                <div class="col-md-8">
+                                    <nop-editor asp-for="OrderConsignmentTimeTo" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-md-offset-5">
+                            <button type="button" id="search" class="btn btn-primary btn-search">
+                                <i class="fa fa-line-chart"></i>
+                                @T("Admin.LogisticsReports.Orders.Statement.RunReport")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="grid"></div>
+
+                    <style scoped>
+                        #grid th { text-align: center; }
+                    </style>
+
+                    <script>
+                        $(function () {
+                            $("#grid").kendoGrid({
+                                dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: "@Html.Raw(Url.Action("StatementReport", "LogisticsReport"))",
+                                            type: "POST",
+                                            dataType: "json",
+                                            data: function () {
+                                                var data = {
+                                                    OrderConsignmentTimeFrom: $("#@(Html.IdFor(x => x.OrderConsignmentTimeFrom))").val(),
+                                                    OrderConsignmentTimeTo: $("#@(Html.IdFor(x => x.OrderConsignmentTimeTo))").val(),
+                                                    ConsigneeName: $("#@(Html.IdFor(x => x.ConsigneeName))").val(),
+                                                    OrderStatuses: $("#@(Html.IdFor(x => x.OrderStatuses))").val(),
+                                                    PaymentStatuses: $("#@(Html.IdFor(x => x.PaymentStatuses))").val(),
+                                                    ShippingStatuses: $("#@(Html.IdFor(x => x.ShippingStatuses))").val()
+                                                };
+                                                addAntiForgeryToken(data);
+                                                return data;
+                                            }
+                                        }
+                                    },
+                                    schema: {
+                                        data: "Data",
+                                        total: "Total",
+                                        errors: "Errors",
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                ConsignmentTime: { type: "date" }
+                                            }
+                                        }
+                                    },
+                                    error: function (e) {
+                                        display_kendoui_grid_error(e);
+                                        this.cancelChanges();
+                                    },
+                                    pageSize: @(Model.PageSize),
+                                    serverPaging: true,
+                                    serverFiletering: true,
+                                    serverSorting: true
+                                },
+                                pageable: {
+                                    refresh: true,
+                                    pageSizes: [@(Model.AvailablePageSizes)],
+                                    @await Html.PartialAsync("_GridPagerMessages")
+                                },
+                                editable: {
+                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                    mode: "inline"
+                                },
+                                scrollable: false,
+                                columns: [
+                                    {
+                                        field: "SerialNum",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.SerialNum")",
+                                        attributes: { style: "text-align: center" },
+                                        width: 100
+                                    },
+                                    {
+                                        field: "ConsignmentTime",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.ConsignmentTime")",
+                                        attributes: { style: "text-align: center" },
+                                        width: 100,
+                                        format: "{0:yyyy-MM-dd}"
+                                    },
+                                    {
+                                        field: "Consignee",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Consignee")",
+                                        template: "#=(null == Consignee ? '-' : Consignee.Name)#"
+                                    },
+                                    {
+                                        field: "Receivable",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Receivable")",
+                                        width: 150,
+                                        attributes: { style: "text-align: right" },
+                                        format: "{0:##,#.##}"
+                                    },
+                                    {
+                                        field: "Receipts",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Receipts")",
+                                        width: 150,
+                                        attributes: { style: "text-align: right" },
+                                        format: "{0:##,#.##}"
+                                    },
+                                    {
+                                        field: "Balance",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Balance")",
+                                        width: 150,
+                                        attributes: { style: "text-align: right" },
+                                        format: "{0:##,#.##}"
+                                    },
+                                    {
+                                        field: "PaymentStatusName",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.PaymentStatus")",
+                                        width: 100,
+                                        attributes: { style: "text-align: center" },
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (PaymentStatus == 20) {# red #} #' +
+                                            '# if (PaymentStatus == 1 || PaymentStatus == 99) {# yellow #} #' +
+                                            '# if (PaymentStatus == 10) {# green #} #' +
+                                            '# if (PaymentStatus == 15) {# blue #} #' +
+                                            '">#=PaymentStatusName#</span>'
+                                    },
+                                    {
+                                        field: "OrderStatusName",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.OrderStatus")",
+                                        width: 100,
+                                        attributes: { style: "text-align: center" },
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (OrderStatus == 1) {# yellow #} #' +
+                                            '# if (OrderStatus == 20) {# red #} #' +
+                                            '# if (OrderStatus == 10) {# blue #} #' +
+                                            '# if (OrderStatus == 5) {# green #} #' +
+                                            '">#=OrderStatusName#</span>'
+                                    },
+                                    {
+                                        field: "ShippingStatusName",
+                                        title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.ShippingStatus")",
+                                        width: 100,
+                                        attributes: { style: "text-align: center" },
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (ShippingStatus == 1) {# yellow #} #' +
+                                            '# if (ShippingStatus == 5) {# green #} #' +
+                                            '# if (ShippingStatus == 10) {# blue #} #' +
+                                            '">#=ShippingStatusName#</span>'
+                                    }
+                                ]
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#search").click(function () {
+                                var grid = $("#grid").data("kendoGrid");
+                                grid.dataSource.page(1);
+
+                                return false;
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

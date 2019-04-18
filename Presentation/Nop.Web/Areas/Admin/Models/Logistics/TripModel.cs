@@ -1,5 +1,6 @@
 ﻿using FluentValidation.Attributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Nop.Core.Domain.Logistics;
 using Nop.Web.Areas.Admin.Validators.Logistics;
 using Nop.Web.Framework.Models;
 using Nop.Web.Framework.Mvc.ModelBinding;
@@ -47,9 +48,19 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public virtual IList<SelectListItem> AvailableDrivers { get; set; }
 
-        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.ShippingTime")]
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.ShippingStatus")]
+        public ShippingStatus ShippingStatus { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.ShippingStatus")]
+        public string ShippingStatusName { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.StartAt")]
         [UIHint("DateNullable")]
-        public DateTime? ShippingTime { get; set; }
+        public DateTime? StartAt { get; set; }
+
+        [NopResourceDisplayName("Admin.Logistics.Trip.Fields.EndAt")]
+        [UIHint("DateNullable")]
+        public DateTime? EndAt { get; set; }
 
         public virtual ConsignmentOrderSearchModel ConsignmentOrderSearchModel { get; set; }
 

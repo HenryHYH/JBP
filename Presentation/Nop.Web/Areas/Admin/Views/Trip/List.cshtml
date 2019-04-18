@@ -91,7 +91,8 @@
                                         model: {
                                             id: "Id",
                                             fields: {
-                                                ShippingTime: { type: "date" }
+                                                StartAt: { type: "date" },
+                                                EndAt: { type: "date" }
                                             }
                                         }
                                     },
@@ -119,13 +120,29 @@
                                         attributes: { style: "text-align: center" }
                                     },
                                     {
-                                        field: "ShippingTime",
-                                        title: "@T("Admin.Logistics.Trip.Fields.ShippingTime")",
+                                        field: "StartAt",
+                                        title: "@T("Admin.Logistics.Trip.Fields.StartAt")",
                                         width: 200,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
                                         headerAttributes: { style: "text-align: center" },
                                         format: "{0:yyyy-MM-dd}"
+                                    },
+                                    {
+                                        field: "EndAt",
+                                        title: "@T("Admin.Logistics.Trip.Fields.EndAt")",
+                                        width: 200,
+                                        type: "date",
+                                        attributes: { style: "text-align: center" },
+                                        headerAttributes: { style: "text-align: center" },
+                                        format: "{0:yyyy-MM-dd}"
+                                    },
+                                    {
+                                        field: "ShippingStatusName",
+                                        title: "@T("Admin.Logistics.Trip.Fields.ShippingStatus")",
+                                        width: 80,
+                                        attributes: { style: "text-align: center" },
+                                        headerAttributes: { style: "text-align: center" }
                                     },
                                     {
                                         field: "CarId",

@@ -73,11 +73,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 Data = list.Select(x =>
                 {
                     var modelItem = x.ToModel<ConsignmentOrderModel>();
-
-                    modelItem.ShipmentMethodName = localizationService.GetLocalizedEnum(modelItem.ShipmentMethod);
-                    modelItem.OrderStatusName = localizationService.GetLocalizedEnum(modelItem.OrderStatus);
-                    modelItem.PaymentStatusName = localizationService.GetLocalizedEnum(modelItem.PaymentStatus);
-                    modelItem.CTime = dateTimeHelper.ConvertToUserTime(modelItem.CTime, DateTimeKind.Utc);
+                    PrepareModel(ref modelItem);
 
                     return modelItem;
                 }),
@@ -102,9 +98,7 @@ namespace Nop.Web.Areas.Admin.Factories
                     SerialNum = CommonHelper.GenerateSerialNumber()
                 };
 
-            model.ShipmentMethodName = localizationService.GetLocalizedEnum(model.ShipmentMethod);
-            model.OrderStatusName = localizationService.GetLocalizedEnum(model.OrderStatus);
-            model.PaymentStatusName = localizationService.GetLocalizedEnum(model.PaymentStatus);
+            PrepareModel(ref model);
 
             return model;
         }
@@ -153,6 +147,21 @@ namespace Nop.Web.Areas.Admin.Factories
         }
 
         #endregion
+
+        #endregion
+
+        #region Utilities
+
+        protected virtual void PrepareModel(ref ConsignmentOrderModel model)
+        {
+            if (null == model)
+                throw new ArgumentNullException(nameof(model));
+
+            model.ShipmentMethodName = localizationService.GetLocalizedEnum(model.ShipmentMethod);
+            model.OrderStatusName = localizationService.GetLocalizedEnum(model.OrderStatus);
+            model.PaymentStatusName = localizationService.GetLocalizedEnum(model.PaymentStatus);
+            model.CTime = dateTimeHelper.ConvertToUserTime(model.CTime, DateTimeKind.Utc);
+        }
 
         #endregion
     }

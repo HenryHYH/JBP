@@ -1282,6 +1282,7 @@ namespace Nop.Web.Areas.Admin.Infrastructure.Mapper
             CreateMap<Car, ReportCarModel>();
             CreateMap<FeeCategory, ReportFeeCategoryModel>();
             CreateMap<Trip, ReportTripModel>();
+            CreateMap<ConsignmentOrder, ReportStatementModel>();
         }
 
         #endregion

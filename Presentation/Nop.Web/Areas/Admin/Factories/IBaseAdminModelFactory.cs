@@ -280,5 +280,11 @@ namespace Nop.Web.Areas.Admin.Factories
         void PrepareFeeCategories(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
 
         void PrepareStatisticsFrequency(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareLogisticsOrderStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareLogisticsPaymentStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
+
+        void PrepareLogisticsShippingStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null);
     }
 }

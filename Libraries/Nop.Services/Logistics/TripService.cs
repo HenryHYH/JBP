@@ -84,6 +84,8 @@ namespace Nop.Services.Logistics
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
 
+            entity.ShippingStatus = GetShippingStatus(entity);
+
             repository.Insert(entity);
 
             eventPublisher.EntityInserted(entity);
@@ -94,6 +96,7 @@ namespace Nop.Services.Logistics
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
 
+            entity.ShippingStatus = GetShippingStatus(entity);
             entity.UTime = DateTime.UtcNow;
 
             repository.Update(entity);
@@ -144,9 +147,9 @@ namespace Nop.Services.Logistics
             var query = repository.Table.Where(x => !x.Deleted);
 
             if (tripShippingTimeFrom.HasValue)
-                query = query.Where(x => x.ShippingTime >= tripShippingTimeFrom.Value.Date);
+                query = query.Where(x => x.EndAt >= tripShippingTimeFrom.Value.Date);
             if (tripShippingTimeTo.HasValue)
-                query = query.Where(x => x.ShippingTime < tripShippingTimeTo.Value.Date.AddDays(1));
+                query = query.Where(x => x.EndAt < tripShippingTimeTo.Value.Date.AddDays(1));
             if (orderConsignmentTimeFrom.HasValue)
                 query = query.Where(x => x.Orders.Any(y => y.CTime >= orderConsignmentTimeFrom.Value.Date));
             if (orderConsignmentTimeTo.HasValue)
@@ -191,6 +194,23 @@ namespace Nop.Services.Logistics
         }
 
         #endregion
+
+        #endregion
+
+        #region Utilities
+
+        protected virtual ShippingStatus GetShippingStatus(Trip entity)
+        {
+            if (null == entity)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.EndAt.HasValue)
+                return ShippingStatus.已完成;
+            else if (entity.StartAt.HasValue)
+                return ShippingStatus.进行中;
+
+            return ShippingStatus.未开始;
+        }
 
         #endregion
     }

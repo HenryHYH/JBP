@@ -1,4 +1,5 @@
-﻿using Nop.Services.Logistics;
+﻿using Nop.Services.Localization;
+using Nop.Services.Logistics;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Logistics;
 using System;
@@ -11,8 +12,9 @@ namespace Nop.Web.Areas.Admin.Factories
         #region Fields
 
         private readonly IBaseAdminModelFactory baseAdminModelFactory;
+        private readonly ILocalizationService localizationService;
         private readonly ITripService tripService;
-        private readonly IFeeService feeService;
+        private readonly IConsignmentOrderService consignmentOrderService;
 
         #endregion
 
@@ -20,12 +22,14 @@ namespace Nop.Web.Areas.Admin.Factories
 
         public LogisticsReportModelFactory(
             IBaseAdminModelFactory baseAdminModelFactory,
+            ILocalizationService localizationService,
             ITripService tripService,
-            IFeeService feeService)
+            IConsignmentOrderService consignmentOrderService)
         {
             this.baseAdminModelFactory = baseAdminModelFactory;
+            this.localizationService = localizationService;
             this.tripService = tripService;
-            this.feeService = feeService;
+            this.consignmentOrderService = consignmentOrderService;
         }
 
         #endregion
@@ -101,6 +105,85 @@ namespace Nop.Web.Areas.Admin.Factories
                                 Fees = x.Select(f => new ReportFeeModel { Id = f.CategoryId, Name = f.Category, Type = f.FeeType, Amount = f.Amount })
                                         .ToDictionary(k => k.Id, v => v)
                             }),
+                Total = list.TotalCount
+            };
+
+            return model;
+        }
+
+        public virtual ReportStatementSearchModel PrepareReportStatementSearchModel(ReportStatementSearchModel model = null)
+        {
+            if (null == model)
+                model = new ReportStatementSearchModel();
+
+            baseAdminModelFactory.PrepareLogisticsOrderStatus(model.AvailableOrderStatuses);
+            if (model.AvailableOrderStatuses.Any())
+            {
+                if (model.OrderStatuses?.Any() ?? false)
+                {
+                    var statuses = model.OrderStatuses.Select(x => x.ToString());
+                    model.AvailableOrderStatuses.Where(x => statuses.Contains(x.Value)).ToList()
+                        .ForEach(x => x.Selected = true);
+                }
+                else
+                    model.AvailableOrderStatuses.FirstOrDefault().Selected = true;
+            }
+            baseAdminModelFactory.PrepareLogisticsPaymentStatus(model.AvailablePaymentStatuses);
+            if (model.AvailablePaymentStatuses.Any())
+            {
+                if (model.PaymentStatuses?.Any() ?? false)
+                {
+                    var statuses = model.PaymentStatuses.Select(x => x.ToString());
+                    model.AvailablePaymentStatuses.Where(x => statuses.Contains(x.Value)).ToList()
+                        .ForEach(x => x.Selected = true);
+                }
+                else
+                    model.AvailablePaymentStatuses.FirstOrDefault().Selected = true;
+            }
+            baseAdminModelFactory.PrepareLogisticsShippingStatus(model.AvailableShippingStatuses);
+            if (model.AvailableShippingStatuses.Any())
+            {
+                if (model.ShippingStatuses?.Any() ?? false)
+                {
+                    var statuses = model.ShippingStatuses.Select(x => x.ToString());
+                    model.AvailableShippingStatuses.Where(x => statuses.Contains(x.Value)).ToList()
+                        .ForEach(x => x.Selected = true);
+                }
+                else
+                    model.AvailableShippingStatuses.FirstOrDefault().Selected = true;
+            }
+
+            return model;
+        }
+
+        public virtual ReportStatementListModel PrepareReportStatementListModel(ReportStatementSearchModel searchModel)
+        {
+            if (null == searchModel)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            var list = consignmentOrderService.GetStatistics(
+                                                pageIndex: searchModel.Page - 1,
+                                                pageSize: searchModel.PageSize,
+                                                consigneeName: searchModel.ConsigneeName,
+                                                orderConsignmentTimeFrom: searchModel.OrderConsignmentTimeFrom,
+                                                orderConsignmentTimeTo: searchModel.OrderConsignmentTimeTo,
+                                                orderStatuses: (searchModel.OrderStatuses?.Contains(0) ?? false) ? null : searchModel.OrderStatuses,
+                                                paymentStatuses: (searchModel.PaymentStatuses?.Contains(0) ?? false) ? null : searchModel.PaymentStatuses,
+                                                shippingStatuses: (searchModel.ShippingStatuses?.Contains(0) ?? false) ? null : searchModel.ShippingStatuses);
+
+            var model = new ReportStatementListModel
+            {
+                Data = list.Select(x =>
+                {
+                    var modelItem = x.ToModel<ReportStatementModel>();
+
+                    modelItem.ShippingStatus = x.Trip?.ShippingStatus;
+                    modelItem.ShippingStatusName = modelItem.ShippingStatus.HasValue ? localizationService.GetLocalizedEnum(modelItem.ShippingStatus.Value) : string.Empty;
+                    modelItem.PaymentStatusName = localizationService.GetLocalizedEnum(modelItem.PaymentStatus);
+                    modelItem.OrderStatusName = localizationService.GetLocalizedEnum(modelItem.OrderStatus);
+
+                    return modelItem;
+                }),
                 Total = list.TotalCount
             };
 

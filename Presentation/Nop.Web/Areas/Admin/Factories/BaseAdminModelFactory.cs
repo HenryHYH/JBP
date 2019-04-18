@@ -6,7 +6,6 @@ using Nop.Core.Domain.Gdpr;
 using Nop.Core.Domain.Logging;
 using Nop.Core.Domain.Logistics;
 using Nop.Core.Domain.Orders;
-using Nop.Core.Domain.Shipping;
 using Nop.Core.Domain.Tax;
 using Nop.Core.Plugins;
 using Nop.Services;
@@ -231,7 +230,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             //prepare available shipping statuses
-            var availableStatusItems = ShippingStatus.NotYetShipped.ToSelectList(false);
+            var availableStatusItems = Core.Domain.Shipping.ShippingStatus.NotYetShipped.ToSelectList(false);
             foreach (var statusItem in availableStatusItems)
             {
                 items.Add(statusItem);
@@ -944,6 +943,42 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(items));
 
             var list = StatisticsFrequency.Monthly.ToSelectList(true);
+            foreach (var item in list)
+                items.Add(item);
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareLogisticsOrderStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = Core.Domain.Logistics.OrderStatus.已完成.ToSelectList(true);
+            foreach (var item in list)
+                items.Add(item);
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareLogisticsPaymentStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = PaymentStatus.未支付.ToSelectList(true);
+            foreach (var item in list)
+                items.Add(item);
+
+            PrepareDefaultItem(items, withSpecialDefaultItem, defaultItemText);
+        }
+
+        public virtual void PrepareLogisticsShippingStatus(IList<SelectListItem> items, bool withSpecialDefaultItem = true, string defaultItemText = null)
+        {
+            if (null == items)
+                throw new ArgumentNullException(nameof(items));
+
+            var list = ShippingStatus.未开始.ToSelectList(true);
             foreach (var item in list)
                 items.Add(item);
 

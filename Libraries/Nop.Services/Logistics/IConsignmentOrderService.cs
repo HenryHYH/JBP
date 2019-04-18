@@ -1,5 +1,6 @@
 ﻿using Nop.Core;
 using Nop.Core.Domain.Logistics;
+using System;
 using System.Collections.Generic;
 
 namespace Nop.Services.Logistics
@@ -35,5 +36,15 @@ namespace Nop.Services.Logistics
         void DeleteGoods(Goods entity);
 
         void DeleteGoods(ICollection<Goods> goods);
+
+        IPagedList<ConsignmentOrder> GetStatistics(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            string consigneeName = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null,
+            IList<int> shippingStatuses = null);
     }
 }

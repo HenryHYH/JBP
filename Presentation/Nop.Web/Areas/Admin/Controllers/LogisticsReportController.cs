@@ -70,6 +70,27 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
 
+        public virtual IActionResult StatementReport()
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedView();
+
+            var model = logisticsReportModelFactory.PrepareReportStatementSearchModel();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual IActionResult StatementReport(ReportStatementSearchModel searchModel)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedKendoGridJson();
+
+            var model = logisticsReportModelFactory.PrepareReportStatementListModel(searchModel);
+
+            return Json(model);
+        }
+
         #endregion
     }
 }

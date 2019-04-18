@@ -151,6 +151,39 @@ namespace Nop.Services.Logistics
             Update(entity);
         }
 
+        public virtual IPagedList<ConsignmentOrder> GetStatistics(
+            int pageIndex = 0,
+            int pageSize = int.MaxValue,
+            string consigneeName = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null,
+            IList<int> shippingStatuses = null)
+        {
+            var query = repository.Table.Where(x => !x.Deleted);
+
+            if (!string.IsNullOrWhiteSpace(consigneeName))
+            {
+                consigneeName = consigneeName.Trim();
+                query = query.Where(x => x.Consignee.Name.Contains(consigneeName));
+            }
+            if (orderConsignmentTimeFrom.HasValue)
+                query = query.Where(x => x.ConsignmentTime >= orderConsignmentTimeFrom.Value);
+            if (orderConsignmentTimeTo.HasValue)
+                query = query.Where(x => x.ConsignmentTime < orderConsignmentTimeTo.Value.AddDays(1));
+            if (orderStatuses?.Any() ?? false)
+                query = query.Where(x => orderStatuses.Contains((int)x.OrderStatus));
+            if (paymentStatuses?.Any() ?? false)
+                query = query.Where(x => paymentStatuses.Contains((int)x.PaymentStatus));
+            if (shippingStatuses?.Any() ?? false)
+                query = query.Where(x => shippingStatuses.Contains((int)x.Trip.ShippingStatus));
+
+            query = query.OrderByDescending(x => x.ConsignmentTime);
+
+            return new PagedList<ConsignmentOrder>(query, pageIndex, pageSize);
+        }
+
         #region Goods
 
         public virtual void InsertGoods(Goods entity)

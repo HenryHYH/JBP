@@ -70,7 +70,7 @@ namespace Nop.Web.Areas.Admin.Factories
                 Data = list.Select(x =>
                 {
                     var modelItem = x.ToModel<TripModel>();
-                    modelItem.CTime = dateTimeHelper.ConvertToUserTime(modelItem.CTime, DateTimeKind.Utc);
+                    PrepareModel(ref modelItem);
 
                     return modelItem;
                 }),
@@ -95,6 +95,7 @@ namespace Nop.Web.Areas.Admin.Factories
                     SerialNum = CommonHelper.GenerateSerialNumber()
                 };
 
+            PrepareModel(ref model);
             baseAdminModelFactory.PrepareCars(model.AvailableCars, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
             baseAdminModelFactory.PrepareDrivers(model.AvailableDrivers, defaultItemText: localizationService.GetResource("Admin.Common.Select"));
             baseAdminModelFactory.PrepareFeeCategories(model.AvaliableFeeCategories, withSpecialDefaultItem: false);
@@ -173,6 +174,19 @@ namespace Nop.Web.Areas.Admin.Factories
         }
 
         #endregion
+
+        #endregion
+
+        #region Utilities
+
+        protected virtual void PrepareModel(ref TripModel model)
+        {
+            if (null == model)
+                throw new ArgumentNullException(nameof(model));
+
+            model.CTime = dateTimeHelper.ConvertToUserTime(model.CTime, DateTimeKind.Utc);
+            model.ShippingStatusName = localizationService.GetLocalizedEnum(model.ShippingStatus);
+        }
 
         #endregion
     }
