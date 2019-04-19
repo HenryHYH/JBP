@@ -190,6 +190,26 @@ namespace Nop.Web.Areas.Admin.Factories
             return model;
         }
 
+        public virtual ReportStatementAggrModel PrepareReportStatementAggrModel(ReportStatementSearchModel searchModel)
+        {
+            if (null == searchModel)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            var aggr = consignmentOrderService.GetAggregates(
+                                                consigneeName: searchModel.ConsigneeName,
+                                                orderConsignmentTimeFrom: searchModel.OrderConsignmentTimeFrom,
+                                                orderConsignmentTimeTo: searchModel.OrderConsignmentTimeTo,
+                                                orderStatuses: (searchModel.OrderStatuses?.Contains(0) ?? false) ? null : searchModel.OrderStatuses,
+                                                paymentStatuses: (searchModel.PaymentStatuses?.Contains(0) ?? false) ? null : searchModel.PaymentStatuses,
+                                                shippingStatuses: (searchModel.ShippingStatuses?.Contains(0) ?? false) ? null : searchModel.ShippingStatuses);
+
+            return new ReportStatementAggrModel
+            {
+                Receivable = aggr.Receivable,
+                Receipts = aggr.Receipts
+            };
+        }
+
         #endregion
     }
 }

@@ -46,5 +46,13 @@ namespace Nop.Services.Logistics
             IList<int> orderStatuses = null,
             IList<int> paymentStatuses = null,
             IList<int> shippingStatuses = null);
+
+        OrderStatementAggregate GetAggregates(
+            string consigneeName = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null,
+            IList<int> shippingStatuses = null);
     }
 }

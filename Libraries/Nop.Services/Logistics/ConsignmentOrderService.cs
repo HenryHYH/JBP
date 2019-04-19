@@ -184,6 +184,42 @@ namespace Nop.Services.Logistics
             return new PagedList<ConsignmentOrder>(query, pageIndex, pageSize);
         }
 
+        public virtual OrderStatementAggregate GetAggregates(
+            string consigneeName = null,
+            DateTime? orderConsignmentTimeFrom = null,
+            DateTime? orderConsignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null,
+            IList<int> shippingStatuses = null)
+        {
+            var query = repository.Table.Where(x => !x.Deleted);
+
+            if (!string.IsNullOrWhiteSpace(consigneeName))
+            {
+                consigneeName = consigneeName.Trim();
+                query = query.Where(x => x.Consignee.Name.Contains(consigneeName));
+            }
+            if (orderConsignmentTimeFrom.HasValue)
+                query = query.Where(x => x.ConsignmentTime >= orderConsignmentTimeFrom.Value);
+            if (orderConsignmentTimeTo.HasValue)
+                query = query.Where(x => x.ConsignmentTime < orderConsignmentTimeTo.Value.AddDays(1));
+            if (orderStatuses?.Any() ?? false)
+                query = query.Where(x => orderStatuses.Contains((int)x.OrderStatus));
+            if (paymentStatuses?.Any() ?? false)
+                query = query.Where(x => paymentStatuses.Contains((int)x.PaymentStatus));
+            if (shippingStatuses?.Any() ?? false)
+                query = query.Where(x => shippingStatuses.Contains((int)x.Trip.ShippingStatus));
+
+            var list = query.GroupBy(x => true)
+                            .Select(x => new OrderStatementAggregate
+                            {
+                                Receivable = x.Sum(y => y.Receivable),
+                                Receipts = x.Sum(y => y.Receipts)
+                            });
+
+            return list.FirstOrDefault() ?? new OrderStatementAggregate();
+        }
+
         #region Goods
 
         public virtual void InsertGoods(Goods entity)

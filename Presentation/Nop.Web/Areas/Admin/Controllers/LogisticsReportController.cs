@@ -91,6 +91,17 @@ namespace Nop.Web.Areas.Admin.Controllers
             return Json(model);
         }
 
+        [HttpPost]
+        public virtual IActionResult StatementAggregates(ReportStatementSearchModel searchModel)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedKendoGridJson();
+
+            var model = logisticsReportModelFactory.PrepareReportStatementAggrModel(searchModel);
+
+            return Json(model);
+        }
+
         #endregion
     }
 }

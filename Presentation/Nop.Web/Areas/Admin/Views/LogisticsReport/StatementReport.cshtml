@@ -147,6 +147,7 @@
                                     mode: "inline"
                                 },
                                 scrollable: false,
+                                dataBound: onDataBound,
                                 columns: [
                                     {
                                         field: "SerialNum",
@@ -171,21 +172,24 @@
                                         title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Receivable")",
                                         width: 150,
                                         attributes: { style: "text-align: right" },
-                                        format: "{0:##,#.##}"
+                                        template: "#=(null == Receivable ? '-' : kendo.toString(Receivable, '\\#,\\#.\\#\\#'))#",
+                                        footerTemplate: "<div class=\"pull-right\"><strong><span id=\"aggr-receivable\">0</span></strong></div>"
                                     },
                                     {
                                         field: "Receipts",
                                         title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Receipts")",
                                         width: 150,
                                         attributes: { style: "text-align: right" },
-                                        format: "{0:##,#.##}"
+                                        template: "#=(null == Receipts ? '-' : kendo.toString(Receipts, '\\#,\\#.\\#\\#'))#",
+                                        footerTemplate: "<div class=\"pull-right\"><strong><span id=\"aggr-receipts\">0</span></strong></div>"
                                     },
                                     {
                                         field: "Balance",
                                         title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.Balance")",
                                         width: 150,
                                         attributes: { style: "text-align: right" },
-                                        format: "{0:##,#.##}"
+                                        format: "{0:#,#.##}",
+                                        footerTemplate: "<div class=\"pull-right\"><strong><span id=\"aggr-balance\">0</span></strong></div>"
                                     },
                                     {
                                         field: "PaymentStatusName",
@@ -228,6 +232,32 @@
                                 ]
                             });
                         });
+
+                        function onDataBound(e) {
+                            var postData = {
+                                OrderConsignmentTimeFrom: $("#@(Html.IdFor(x => x.OrderConsignmentTimeFrom))").val(),
+                                OrderConsignmentTimeTo: $("#@(Html.IdFor(x => x.OrderConsignmentTimeTo))").val(),
+                                ConsigneeName: $("#@(Html.IdFor(x => x.ConsigneeName))").val(),
+                                OrderStatuses: $("#@(Html.IdFor(x => x.OrderStatuses))").val(),
+                                PaymentStatuses: $("#@(Html.IdFor(x => x.PaymentStatuses))").val(),
+                                ShippingStatuses: $("#@(Html.IdFor(x => x.ShippingStatuses))").val()
+                            };
+                            addAntiForgeryToken(postData);
+
+                            $.ajax({
+                                cache: false,
+                                type: "POST",
+                                url: "@(Url.Action("StatementAggregates", "LogisticsReport"))",
+                                data: postData,
+                                success: function (data) {
+                                    if (data) {
+                                        $("#aggr-receivable").text(kendo.toString(data["Receivable"], "#,#.##"));
+                                        $("#aggr-receipts").text(kendo.toString(data["Receipts"], "#,#.##"));
+                                        $("#aggr-balance").text(kendo.toString(data["Balance"], "#,#.##"));
+                                    }
+                                }
+                            });
+                        }
                     </script>
 
                     <script>

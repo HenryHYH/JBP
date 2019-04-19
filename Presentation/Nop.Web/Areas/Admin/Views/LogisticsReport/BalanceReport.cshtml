@@ -125,19 +125,22 @@
                                         field: "Balance",
                                         title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Balance")",
                                         attributes: { style: "text-align: center" },
-                                        locked: true
+                                        locked: true,
+                                        format: "{0:#,#.##}"
                                     },
                                     {
                                         field: "Income",
                                         title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Income")",
                                         attributes: { style: "text-align: center" },
-                                        locked: true
+                                        locked: true,
+                                        format: "{0:#,#.##}"
                                     },
                                     {
                                         field: "Expense",
                                         title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Expense")",
                                         attributes: { style: "text-align: center" },
-                                        locked: true
+                                        locked: true,
+                                        format: "{0:#,#.##}"
                                     },
                                     @for (int i = 0, iMax = Model.AvailableFeeCategories.Count; i < iMax; i++)
                                     {
@@ -147,7 +150,7 @@
                                     {
                                         title: "@(text)",
                                         attributes: { style: "text-align: center" },
-                                        template: "#=Fees[@(value)].Amount#"
+                                        template: "#=(null == Fees[@(value)].Amount ? '-' : kendo.toString(Fees[@(value)].Amount, '\\#,\\#.\\#\\#'))#"
                                     }
                                         </text>
                                         @if (i != iMax - 1) { <text>,</text> }

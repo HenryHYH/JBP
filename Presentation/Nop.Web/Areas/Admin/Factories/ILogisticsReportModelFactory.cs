@@ -15,5 +15,7 @@ namespace Nop.Web.Areas.Admin.Factories
         ReportStatementSearchModel PrepareReportStatementSearchModel(ReportStatementSearchModel model = null);
 
         ReportStatementListModel PrepareReportStatementListModel(ReportStatementSearchModel searchModel);
+
+        ReportStatementAggrModel PrepareReportStatementAggrModel(ReportStatementSearchModel searchModel);
     }
 }
