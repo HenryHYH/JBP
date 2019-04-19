@@ -2423,6 +2423,17 @@ namespace Nop.Services.ExportImport
                             if (!string.IsNullOrWhiteSpace(value))
                                 e.SerialNum = value;
                         }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime"),
+                        (e, p) =>
+                        {
+                            var value = p.DateTimeNullable;
+                            if (value.HasValue)
+                                e.ConsignmentTime = value.Value;
+                            else
+                                e.ConsignmentTime = DateTime.Now.Date;
+                        }
                     }
                 };
                 var goodsDataConverter = new Dictionary<string, Action<Goods, PropertyByName<Goods>>>
@@ -2465,7 +2476,8 @@ namespace Nop.Services.ExportImport
                     {
                         ShipmentMethod = ShipmentMethod.Highway,
                         CTime = DateTime.UtcNow,
-                        SerialNum = CommonHelper.GenerateSerialNumber()
+                        SerialNum = CommonHelper.GenerateSerialNumber(),
+                        PaymentStatus = PaymentStatus.δ֪
                     };
 
                     foreach (var property in metadata.Manager.GetProperties)
@@ -2525,6 +2537,24 @@ namespace Nop.Services.ExportImport
                             var value = p.StringValue;
                             if (!string.IsNullOrWhiteSpace(value))
                                 e.SerialNum = value;
+                        }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.Trip.Fields.StartAt"),
+                        (e, p) =>
+                        {
+                            var value = p.DateTimeNullable;
+                            if (value.HasValue)
+                                e.StartAt = value.Value;
+                        }
+                    },
+                    {
+                        _localizationService.GetResource("Admin.Logistics.Trip.Fields.EndAt"),
+                        (e, p) =>
+                        {
+                            var value = p.DateTimeNullable;
+                            if (value.HasValue)
+                                e.EndAt = value.Value;
                         }
                     },
                     {

@@ -111,6 +111,8 @@ namespace Nop.Services.Logistics
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
 
+            entity.PaymentStatus = GetPaymentStatus(entity);
+
             repository.Insert(entity);
 
             eventPublisher.EntityInserted(entity);
@@ -122,6 +124,7 @@ namespace Nop.Services.Logistics
                 throw new ArgumentNullException(nameof(entity));
 
             entity.UTime = DateTime.UtcNow;
+            entity.PaymentStatus = GetPaymentStatus(entity);
 
             repository.Update(entity);
 
@@ -251,6 +254,35 @@ namespace Nop.Services.Logistics
         }
 
         #endregion
+
+        #endregion
+
+        #region Utilities
+
+        protected virtual PaymentStatus GetPaymentStatus(ConsignmentOrder entity)
+        {
+            if (null == entity)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.PaymentStatus == PaymentStatus.已取消)
+                return PaymentStatus.已取消;
+
+            if (entity.Receivable.HasValue && entity.Receipts.HasValue)
+            {
+                if (entity.Receivable.Value <= entity.Receipts.Value)
+                    return PaymentStatus.已付全款;
+                else if (entity.Receipts.Value > 0)
+                    return PaymentStatus.部分支付;
+                else
+                    return PaymentStatus.未支付;
+            }
+            else if (entity.Receivable.HasValue)
+                return PaymentStatus.未支付;
+            else if (entity.Receipts.HasValue)
+                return PaymentStatus.已付全款;
+
+            return PaymentStatus.未知;
+        }
 
         #endregion
     }

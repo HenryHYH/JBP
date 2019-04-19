@@ -122,7 +122,7 @@
                                     {
                                         field: "StartAt",
                                         title: "@T("Admin.Logistics.Trip.Fields.StartAt")",
-                                        width: 200,
+                                        width: 150,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
                                         headerAttributes: { style: "text-align: center" },
@@ -131,7 +131,7 @@
                                     {
                                         field: "EndAt",
                                         title: "@T("Admin.Logistics.Trip.Fields.EndAt")",
-                                        width: 200,
+                                        width: 150,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
                                         headerAttributes: { style: "text-align: center" },
@@ -142,7 +142,13 @@
                                         title: "@T("Admin.Logistics.Trip.Fields.ShippingStatus")",
                                         width: 80,
                                         attributes: { style: "text-align: center" },
-                                        headerAttributes: { style: "text-align: center" }
+                                        headerAttributes: { style: "text-align: center" },
+                                        template:
+                                            '<span class="grid-report-item ' +
+                                            '# if (ShippingStatus == 1) {# yellow #} #' +
+                                            '# if (ShippingStatus == 5) {# green #} #' +
+                                            '# if (ShippingStatus == 10) {# blue #} #' +
+                                            '">#=ShippingStatusName#</span>'
                                     },
                                     {
                                         field: "CarId",

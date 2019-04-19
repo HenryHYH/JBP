@@ -161,7 +161,7 @@
                                     {
                                         field: "ConsignmentTime",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime")",
-                                        width: 200,
+                                        width: 150,
                                         type: "date",
                                         attributes: { style: "text-align: center" },
                                         format: "{0:yyyy-MM-dd}"
@@ -195,10 +195,10 @@
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Payment")",
                                         template:
                                             '<span class="grid-report-item ' +
-                                            '# if (PaymentStatus == -1) {# red #} #' +
-                                            '# if (PaymentStatus == 0 || PaymentStatus == -2) {# yellow #} #' +
-                                            '# if (PaymentStatus == 1) {# green #} #' +
-                                            '# if (PaymentStatus == 2) {# blue #} #' +
+                                            '# if (PaymentStatus == 20) {# red #} #' +
+                                            '# if (PaymentStatus == 1 || PaymentStatus == 99) {# yellow #} #' +
+                                            '# if (PaymentStatus == 10) {# green #} #' +
+                                            '# if (PaymentStatus == 15) {# blue #} #' +
                                             '">#=PaymentStatusName#</span>' +
                                             "(@T("Admin.Logistics.ConsignmentOrder.Fields.Receipts"): #=(null == Receipts ? '-' : Receipts)# / " +
                                             "@T("Admin.Logistics.ConsignmentOrder.Fields.Receivable"): #=(null == Receivable ? '-' : Receivable)#)"
@@ -210,10 +210,10 @@
                                         attributes: { style: "text-align: center" },
                                         template:
                                             '<span class="grid-report-item ' +
-                                            '# if (OrderStatus == 0) {# yellow #} #' +
-                                            '# if (OrderStatus == -1) {# red #} #' +
-                                            '# if (OrderStatus == 2) {# blue #} #' +
-                                            '# if (OrderStatus == 1) {# green #} #' +
+                                            '# if (OrderStatus == 1) {# yellow #} #' +
+                                            '# if (OrderStatus == 20) {# red #} #' +
+                                            '# if (OrderStatus == 10) {# blue #} #' +
+                                            '# if (OrderStatus == 5) {# green #} #' +
                                             '">#=OrderStatusName#</span>'
                                     },
                                     {

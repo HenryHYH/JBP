@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Nop.Services.ExportImport.Help
 {
@@ -123,7 +123,15 @@ namespace Nop.Services.ExportImport.Help
         /// <summary>
         /// Converted property value to DateTime?
         /// </summary>
-        public DateTime? DateTimeNullable => PropertyValue == null ? null : DateTime.FromOADate(DoubleValue) as DateTime?;
+        public DateTime? DateTimeNullable
+        {
+            get
+            {
+                if (PropertyValue == null || !DateTime.TryParse(StringValue, out DateTime dt))
+                    return default;
+                return dt;
+            }
+        }
 
         /// <summary>
         /// To string
@@ -180,7 +188,7 @@ namespace Nop.Services.ExportImport.Help
 
             return Convert.ToInt32(DropDownElements.FirstOrDefault(ev => ev.Text.Trim() == name.ToString().Trim())?.Value ?? id.ToString());
         }
-        
+
         /// <summary>
         /// Elements for a drop-down cell
         /// </summary>
