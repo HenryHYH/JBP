@@ -6,6 +6,7 @@ using Nop.Data;
 using Nop.Services.Common;
 using Nop.Services.Events;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nop.Services.Logistics
@@ -69,6 +70,25 @@ namespace Nop.Services.Logistics
             var list = new PagedList<Trip>(query, pageIndex, pageSize);
 
             return list;
+        }
+
+        public virtual IList<Trip> Get(int[] ids)
+        {
+            if (null == ids || !ids.Any())
+                return new List<Trip>();
+
+            var list = repository.Table.Where(x => !x.Deleted)
+                            .Where(x => ids.Contains(x.Id))
+                            .ToList();
+            var sortedList = new List<Trip>();
+            foreach (var id in ids)
+            {
+                var item = list.Find(x => x.Id == id);
+                if (null != item)
+                    sortedList.Add(item);
+            }
+
+            return sortedList;
         }
 
         public virtual Trip Get(int id)

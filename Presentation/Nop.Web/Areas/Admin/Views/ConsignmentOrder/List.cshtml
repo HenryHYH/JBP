@@ -127,147 +127,147 @@
                         </style>
 
                         <script>
-                        $(function () {
-                            $("#grid").kendoGrid({
-                                dataSource: {
-                                    type: "json",
-                                    transport: {
-                                        read: {
-                                            url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
-                                            type: "POST",
-                                            dataType: "json",
-                                            data: function () {
-                                                var data = {
-                                                    SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
-                                                    SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
-                                                    SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
-                                                    SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
-                                                    SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
-                                                };
-                                                addAntiForgeryToken(data);
-                                                return data;
+                            $(function () {
+                                $("#grid").kendoGrid({
+                                    dataSource: {
+                                        type: "json",
+                                        transport: {
+                                            read: {
+                                                url: "@Html.Raw(Url.Action("List", "ConsignmentOrder"))",
+                                                type: "POST",
+                                                dataType: "json",
+                                                data: function () {
+                                                    var data = {
+                                                        SearchShipmentMethod: $("#@Html.IdFor(x => x.SearchShipmentMethod)").val(),
+                                                        SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
+                                                        SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
+                                                        SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
+                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
+                                                    };
+                                                    addAntiForgeryToken(data);
+                                                    return data;
+                                                }
                                             }
-                                        }
-                                    },
-                                    schema: {
-                                        data: "Data",
-                                        total: "Total",
-                                        errors:"Errors",
-                                        model: {
-                                            id: "Id",
-                                            fields: {
-                                                ConsignmentTime: { type: "date" }
+                                        },
+                                        schema: {
+                                            data: "Data",
+                                            total: "Total",
+                                            errors:"Errors",
+                                            model: {
+                                                id: "Id",
+                                                fields: {
+                                                    ConsignmentTime: { type: "date" }
+                                                }
                                             }
+                                        },
+                                        error: function (e) {
+                                            display_kendoui_grid_error(e);
+                                            this.cancelChanges();
+                                        },
+                                        pageSize: @(Model.PageSize),
+                                        serverPaging: true,
+                                        serverFiltering: true,
+                                        serverSorting: true
+                                    },
+                                    pageable: {
+                                        refresh: true,
+                                        pageSizes: [@(Model.AvailablePageSizes)],
+                                        @await Html.PartialAsync("_GridPagerMessages")
+                                    },
+                                    scrollable: false,
+                                    dataBound: onDataBound,
+                                    columns: [
+                                        {
+                                            field: "Id",
+                                            headerTemplate: "<input id='mastercheckbox' type='checkbox' />",
+                                            headerAttributes: { style: "text-align: center" },
+                                            attributes: { style: "text-align: center" },
+                                            template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />",
+                                            width: 50
+                                        },
+                                        {
+                                            field: "SerialNum",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")",
+                                            width: 200,
+                                            attributes: { style: "text-align: center" }
+                                        },
+                                        {
+                                            field: "ConsignmentTime",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime")",
+                                            width: 150,
+                                            type: "date",
+                                            attributes: { style: "text-align: center" },
+                                            format: "{0:yyyy-MM-dd}"
+                                        },
+                                        {
+                                            field: "ConsignorId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
+                                            template:
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignor.Name ? '-' : Consignor.Name)#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignor.Address ? '-' : Consignor.Address)#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignor.Phone ? '-' : Consignor.Phone)#"
+                                        },
+                                        {
+                                            field: "ConsigneeId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
+                                            template:
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignee.Name ? '-' : Consignee.Name)#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignee.Address ? '-' : Consignee.Address)#<br />" +
+                                                "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignee.Phone ? '-' : Consignee.Phone)#"
+                                        },
+                                        {
+                                            field: "StartPoint",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
+                                        },
+                                        {
+                                            field: "Terminal",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
+                                        },
+                                        {
+                                            field: "PaymentStatus",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Payment")",
+                                            template:
+                                                '<span class="grid-report-item ' +
+                                                '# if (PaymentStatus == 20) {# red #} #' +
+                                                '# if (PaymentStatus == 1 || PaymentStatus == 99) {# yellow #} #' +
+                                                '# if (PaymentStatus == 10) {# green #} #' +
+                                                '# if (PaymentStatus == 15) {# blue #} #' +
+                                                '">#=PaymentStatusName#</span>' +
+                                                "(@T("Admin.Logistics.ConsignmentOrder.Fields.Receipts"): #=(null == Receipts ? '-' : Receipts)# / " +
+                                                "@T("Admin.Logistics.ConsignmentOrder.Fields.Receivable"): #=(null == Receivable ? '-' : Receivable)#)"
+                                        },
+                                        {
+                                            field: "OrderStatusName",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus")",
+                                            width: 100,
+                                            attributes: { style: "text-align: center" },
+                                            template:
+                                                '<span class="grid-report-item ' +
+                                                '# if (OrderStatus == 1) {# yellow #} #' +
+                                                '# if (OrderStatus == 20) {# red #} #' +
+                                                '# if (OrderStatus == 10) {# blue #} #' +
+                                                '# if (OrderStatus == 5) {# green #} #' +
+                                                '">#=OrderStatusName#</span>'
+                                        },
+                                        {
+                                            field: "TripId",
+                                            title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
+                                            template:
+                                                "# if (null != Trip) {# " +
+                                                "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : '-'#<br />" +
+                                                "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : '-'#" +
+                                                " #} else {# #} #"
+                                        },
+                                        {
+                                            field: "Id",
+                                            title: "@T("Admin.Common.Edit")",
+                                            width: 50,
+                                            attributes: { style: "text-align:center" },
+                                            template: '<a class="btn btn-default" href="Edit/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
                                         }
-                                    },
-                                    error: function (e) {
-                                        display_kendoui_grid_error(e);
-                                        this.cancelChanges();
-                                    },
-                                    pageSize: @(Model.PageSize),
-                                    serverPaging: true,
-                                    serverFiltering: true,
-                                    serverSorting: true
-                                },
-                                pageable: {
-                                    refresh: true,
-                                    pageSizes: [@(Model.AvailablePageSizes)],
-                                    @await Html.PartialAsync("_GridPagerMessages")
-                                },
-                                scrollable: false,
-                                dataBound: onDataBound,
-                                columns: [
-                                    {
-                                        field: "Id",
-                                        headerTemplate: "<input id='mastercheckbox' type='checkbox' />",
-                                        headerAttributes: { style: "text-align: center" },
-                                        attributes: { style: "text-align: center" },
-                                        template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />",
-                                        width: 50
-                                    },
-                                    {
-                                        field: "SerialNum",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")",
-                                        width: 200,
-                                        attributes: { style: "text-align: center" }
-                                    },
-                                    {
-                                        field: "ConsignmentTime",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime")",
-                                        width: 150,
-                                        type: "date",
-                                        attributes: { style: "text-align: center" },
-                                        format: "{0:yyyy-MM-dd}"
-                                    },
-                                    {
-                                        field: "ConsignorId",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignor")",
-                                        template:
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignor.Name ? '-' : Consignor.Name)#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignor.Address ? '-' : Consignor.Address)#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignor.Phone ? '-' : Consignor.Phone)#"
-                                    },
-                                    {
-                                        field: "ConsigneeId",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Consignee")",
-                                        template:
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Name"): #=(null == Consignee.Name ? '-' : Consignee.Name)#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Address"): #=(null == Consignee.Address ? '-' : Consignee.Address)#<br />" +
-                                            "@T("Admin.Logistics.ConsignmentUser.Fields.Phone"): #=(null == Consignee.Phone ? '-' : Consignee.Phone)#"
-                                    },
-                                    {
-                                        field: "StartPoint",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.StartPoint")"
-                                    },
-                                    {
-                                        field: "Terminal",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Terminal")"
-                                    },
-                                    {
-                                        field: "PaymentStatus",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Payment")",
-                                        template:
-                                            '<span class="grid-report-item ' +
-                                            '# if (PaymentStatus == 20) {# red #} #' +
-                                            '# if (PaymentStatus == 1 || PaymentStatus == 99) {# yellow #} #' +
-                                            '# if (PaymentStatus == 10) {# green #} #' +
-                                            '# if (PaymentStatus == 15) {# blue #} #' +
-                                            '">#=PaymentStatusName#</span>' +
-                                            "(@T("Admin.Logistics.ConsignmentOrder.Fields.Receipts"): #=(null == Receipts ? '-' : Receipts)# / " +
-                                            "@T("Admin.Logistics.ConsignmentOrder.Fields.Receivable"): #=(null == Receivable ? '-' : Receivable)#)"
-                                    },
-                                    {
-                                        field: "OrderStatusName",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus")",
-                                        width: 100,
-                                        attributes: { style: "text-align: center" },
-                                        template:
-                                            '<span class="grid-report-item ' +
-                                            '# if (OrderStatus == 1) {# yellow #} #' +
-                                            '# if (OrderStatus == 20) {# red #} #' +
-                                            '# if (OrderStatus == 10) {# blue #} #' +
-                                            '# if (OrderStatus == 5) {# green #} #' +
-                                            '">#=OrderStatusName#</span>'
-                                    },
-                                    {
-                                        field: "TripId",
-                                        title: "@T("Admin.Logistics.ConsignmentOrder.Fields.Trip")",
-                                        template:
-                                            "# if (null != Trip) {# " +
-                                            "@T("Admin.Logistics.Car.Fields.License"): #=(null != Trip && null != Trip.Car) ? Trip.Car.License : '-'#<br />" +
-                                            "@T("Admin.Logistics.Driver.Fields.Name"): #=(null != Trip && null != Trip.Driver) ? Trip.Driver.Name : '-'#" +
-                                            " #} else {# #} #"
-                                    },
-                                    {
-                                        field: "Id",
-                                        title: "@T("Admin.Common.Edit")",
-                                        width: 50,
-                                        attributes: { style: "text-align:center" },
-                                        template: '<a class="btn btn-default" href="Edit/#=Id#"><i class="fa fa-pencil"></i>@T("Admin.Common.Edit")</a>'
-                                    }
-                                ]
+                                    ]
+                                });
                             });
-                        });
                         </script>
                     </div>
                 </div>

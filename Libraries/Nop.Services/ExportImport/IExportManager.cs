@@ -100,5 +100,7 @@ namespace Nop.Services.ExportImport
         byte[] ExportCustomerGdprInfoToXlsx(Customer customer, int storeId);
 
         byte[] ExportConsignmentOrdersToXlsx(IEnumerable<ConsignmentOrder> list);
+
+        byte[] ExportTripToXlsx(IEnumerable<Trip> list);
     }
 }

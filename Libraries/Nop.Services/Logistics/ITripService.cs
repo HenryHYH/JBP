@@ -2,6 +2,7 @@
 using Nop.Core.Domain.Logistics;
 using Nop.Services.Common;
 using System;
+using System.Collections.Generic;
 
 namespace Nop.Services.Logistics
 {
@@ -13,6 +14,8 @@ namespace Nop.Services.Logistics
             string carLicense = null,
             string driverName = null,
             string[] serialNums = null);
+
+        IList<Trip> Get(int[] ids);
 
         Trip Get(int id);
 

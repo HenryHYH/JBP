@@ -299,7 +299,7 @@ namespace Nop.Web.Areas.Admin.Controllers
                 return AccessDeniedView();
 
             var list = new List<ConsignmentOrder>();
-            if (!string.IsNullOrEmpty(selectedIds))
+            if (!string.IsNullOrWhiteSpace(selectedIds))
             {
                 var ids = selectedIds
                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Core.Domain.Logistics;
 using Nop.Services.ExportImport;
 using Nop.Services.Localization;
@@ -9,9 +10,11 @@ using Nop.Services.Security;
 using Nop.Web.Areas.Admin.Factories;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Logistics;
+using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nop.Web.Areas.Admin.Controllers
@@ -27,6 +30,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly ILocalizationService localizationService;
         private readonly IImportManager importManager;
         private readonly IConsignmentOrderFactory consignmentOrderFactory;
+        private readonly IExportManager exportManager;
 
         #endregion
 
@@ -39,7 +43,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             ICustomerActivityService customerActivityService,
             ILocalizationService localizationService,
             IImportManager importManager,
-            IConsignmentOrderFactory consignmentOrderFactory)
+            IConsignmentOrderFactory consignmentOrderFactory,
+            IExportManager exportManager)
         {
             this.permissionService = permissionService;
             this.tripFactory = tripFactory;
@@ -48,6 +53,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             this.localizationService = localizationService;
             this.importManager = importManager;
             this.consignmentOrderFactory = consignmentOrderFactory;
+            this.exportManager = exportManager;
         }
 
         #endregion
@@ -213,6 +219,59 @@ namespace Nop.Web.Areas.Admin.Controllers
                 SuccessNotification(localizationService.GetResource("Admin.Logistics.Trips.Imported"));
 
                 return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex);
+                return RedirectToAction("List");
+            }
+        }
+
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("exportexcel-all")]
+        public virtual IActionResult ExportExcelAll(TripSearchModel searchModel)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedView();
+
+            var list = tripService.GetAll(
+                carLicense: searchModel.SearchCarLicense,
+                driverName: searchModel.SearchDriverName);
+
+            try
+            {
+                var bytes = exportManager.ExportTripToXlsx(list);
+
+                return File(bytes, MimeTypes.TextXlsx, $"{localizationService.GetResource("Admin.Logistics.Trip")}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex);
+                return RedirectToAction("List");
+            }
+        }
+
+        [HttpPost]
+        public virtual IActionResult ExportExcelSelected(string selectedIds)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageTrips))
+                return AccessDeniedView();
+
+            var list = new List<Trip>();
+            if (!string.IsNullOrWhiteSpace(selectedIds))
+            {
+                var ids = selectedIds
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => int.Parse(x))
+                    .ToArray();
+                list.AddRange(tripService.Get(ids));
+            }
+
+            try
+            {
+                var bytes = exportManager.ExportTripToXlsx(list);
+
+                return File(bytes, MimeTypes.TextXlsx, $"{localizationService.GetResource("Admin.Logistics.Trip")}.xlsx");
             }
             catch (Exception ex)
             {

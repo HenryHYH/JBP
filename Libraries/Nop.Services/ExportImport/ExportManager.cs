@@ -20,6 +20,7 @@ using Nop.Services.Forums;
 using Nop.Services.Gdpr;
 using Nop.Services.Helpers;
 using Nop.Services.Localization;
+using Nop.Services.Logistics;
 using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
@@ -47,6 +48,7 @@ namespace Nop.Services.ExportImport
         #region Const
 
         protected const int GOODS_CELL_OFFSET = 2;
+        protected const int CONSIGNMENT_ORDER_CELL_OFFSET = 2;
 
         #endregion
 
@@ -85,6 +87,7 @@ namespace Nop.Services.ExportImport
         private readonly IWorkContext _workContext;
         private readonly OrderSettings _orderSettings;
         private readonly ProductEditorSettings _productEditorSettings;
+        private readonly IFeeService feeService;
 
         #endregion
 
@@ -122,7 +125,8 @@ namespace Nop.Services.ExportImport
             IVendorService vendorService,
             IWorkContext workContext,
             OrderSettings orderSettings,
-            ProductEditorSettings productEditorSettings)
+            ProductEditorSettings productEditorSettings,
+            IFeeService feeService)
         {
             this._addressSettings = addressSettings;
             this._catalogSettings = catalogSettings;
@@ -157,6 +161,7 @@ namespace Nop.Services.ExportImport
             this._workContext = workContext;
             this._orderSettings = orderSettings;
             this._productEditorSettings = productEditorSettings;
+            this.feeService = feeService;
         }
 
         #endregion
@@ -680,6 +685,66 @@ namespace Nop.Services.ExportImport
                 row++;
                 goodsManager.CurrentObject = goods;
                 goodsManager.WriteToXlsx(worksheet, row, GOODS_CELL_OFFSET, fWorksheet);
+                worksheet.Row(row).OutlineLevel = 1;
+                worksheet.Row(row).Collapsed = true;
+            }
+
+            return row + 1;
+        }
+
+        private PropertyManager<ConsignmentOrder> GetOrderManager()
+        {
+            var properties = new[]
+            {
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.SerialNum"), x => x.SerialNum),
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.ConsignmentTime"), x => x.ConsignmentTime.ToString("yyyy-MM-dd")),
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.StartPoint"), x => x.StartPoint),
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Terminal"), x => x.Terminal),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Name"), x => x.Consignor?.Name ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Address"), x => x.Consignor?.Address ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignor") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone"), x => x.Consignor?.Phone ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Name"), x => x.Consignee?.Name ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Address"), x => x.Consignee?.Address ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Consignee") +
+                    _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone"), x => x.Consignee?.Phone ?? string.Empty),
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"), x => (int)x.OrderStatus)
+                {
+                    DropDownElements = Core.Domain.Logistics.OrderStatus.未开始.ToSelectList()
+                },
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receivable"), x => x.Receivable),
+                new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receipts"), x => x.Receipts)
+            };
+
+            return new PropertyManager<ConsignmentOrder>(properties, _catalogSettings);
+        }
+
+        private int ExportConsignmentOrders(Trip item, PropertyManager<ConsignmentOrder> orderManager, ExcelWorksheet worksheet, int row, ExcelWorksheet fWorksheet)
+        {
+            var list = item.Orders.ToList();
+
+            if (!list.Any())
+                return row;
+
+            orderManager.WriteCaption(worksheet, row, CONSIGNMENT_ORDER_CELL_OFFSET);
+            worksheet.Row(row).OutlineLevel = 1;
+            worksheet.Row(row).Collapsed = true;
+
+            foreach (var order in list)
+            {
+                row++;
+                orderManager.CurrentObject = order;
+                orderManager.WriteToXlsx(worksheet, row, CONSIGNMENT_ORDER_CELL_OFFSET, fWorksheet);
                 worksheet.Row(row).OutlineLevel = 1;
                 worksheet.Row(row).Collapsed = true;
             }
@@ -2053,6 +2118,65 @@ namespace Nop.Services.ExportImport
             }
         }
 
-        #endregion
+        public virtual byte[] ExportTripToXlsx(IEnumerable<Trip> list)
+        {
+            var properties = new List<PropertyByName<Trip>>
+            {
+                new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.SerialNum"), x => x.SerialNum),
+                new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.StartAt"), x => x.StartAt?.ToString("yyy-MM-dd") ?? string.Empty),
+                new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.EndAt"), x => x.EndAt?.ToString("yyy-MM-dd") ?? string.Empty),
+                new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.ShippingStatus"), x => (int)x.ShippingStatus)
+                {
+                    DropDownElements = Core.Domain.Logistics.ShippingStatus.未开始.ToSelectList()
+                },
+                new PropertyByName<Trip>(
+                    _localizationService.GetResource("Admin.Logistics.Trip.Fields.Car") +
+                    _localizationService.GetResource("Admin.Logistics.Car.Fields.License"), x => x.Car?.License ?? string.Empty),
+                new PropertyByName<Trip>(
+                    _localizationService.GetResource("Admin.Logistics.Trip.Fields.Driver") +
+                    _localizationService.GetResource("Admin.Logistics.Driver.Fields.Name"), x => x.Driver?.Name ?? string.Empty)
+            };
+            var feeCategories = feeService.GetFeeCategories();
+            foreach (var category in feeCategories)
+            {
+                properties.Add(
+                    new PropertyByName<Trip>(
+                        category.Name,
+                        x => x.Fees.FirstOrDefault(y => y.CategoryId == category.Id)?.Amount
+                    ));
+            }
+
+            var orderManager = GetOrderManager();
+
+            using (var stream = new MemoryStream())
+            {
+                using (var xlPackage = new ExcelPackage(stream))
+                {
+                    var worksheet = xlPackage.Workbook.Worksheets.Add(_localizationService.GetResource("Admin.Logistics.Trip"));
+                    var fWorksheet = xlPackage.Workbook.Worksheets.Add("DataForTripsFilters");
+                    fWorksheet.Hidden = eWorkSheetHidden.VeryHidden;
+                    var fOrderWorksheet = xlPackage.Workbook.Worksheets.Add("DataForOrdersFilters");
+                    fOrderWorksheet.Hidden = eWorkSheetHidden.VeryHidden;
+
+                    var manager = new PropertyManager<Trip>(properties, _catalogSettings);
+                    manager.WriteCaption(worksheet);
+
+                    var row = 2;
+                    foreach (var item in list)
+                    {
+                        manager.CurrentObject = item;
+                        manager.WriteToXlsx(worksheet, row++, fWorksheet: fWorksheet);
+
+                        row = ExportConsignmentOrders(item, orderManager, worksheet, row, fOrderWorksheet);
+                    }
+
+                    xlPackage.Save();
+                }
+
+                return stream.ToArray();
+            }
+
+            #endregion
+        }
     }
 }
