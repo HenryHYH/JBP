@@ -84,6 +84,25 @@ namespace Nop.Services.Logistics
             return list;
         }
 
+        public virtual IList<ConsignmentOrder> Get(int[] ids)
+        {
+            if (null == ids || !ids.Any())
+                return new List<ConsignmentOrder>();
+
+            var list = repository.Table.Where(x => !x.Deleted)
+                            .Where(x => ids.Contains(x.Id))
+                            .ToList();
+            var sortedList = new List<ConsignmentOrder>();
+            foreach (var id in ids)
+            {
+                var item = list.Find(x => x.Id == id);
+                if (null != item)
+                    sortedList.Add(item);
+            }
+
+            return sortedList;
+        }
+
         public virtual ConsignmentOrder Get(int id)
         {
             if (id <= 0)

@@ -13,7 +13,7 @@ namespace Nop.Data.Mapping.Logistics
 
             builder.Property(x => x.CTime).IsRequired().HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.HasOne(x => x.Ordr)
+            builder.HasOne(x => x.Order)
                 .WithMany(x => x.Goods)
                 .HasForeignKey(x => x.OrderId)
                 .IsRequired();

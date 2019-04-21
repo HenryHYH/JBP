@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Nop.Core.Domain.Catalog;
+﻿using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Directory;
+using Nop.Core.Domain.Logistics;
 using Nop.Core.Domain.Messages;
 using Nop.Core.Domain.Orders;
+using System.Collections.Generic;
 
 namespace Nop.Services.ExportImport
 {
@@ -97,5 +98,7 @@ namespace Nop.Services.ExportImport
         /// <param name="storeId">Store identifier</param>
         /// <returns>Customer GDPR info</returns>
         byte[] ExportCustomerGdprInfoToXlsx(Customer customer, int storeId);
+
+        byte[] ExportConsignmentOrdersToXlsx(IEnumerable<ConsignmentOrder> list);
     }
 }

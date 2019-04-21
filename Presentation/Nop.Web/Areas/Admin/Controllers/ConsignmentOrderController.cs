@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Nop.Core;
 using Nop.Core.Domain.Logistics;
 using Nop.Services.ExportImport;
 using Nop.Services.Localization;
@@ -13,6 +14,7 @@ using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Nop.Web.Areas.Admin.Controllers
@@ -27,6 +29,7 @@ namespace Nop.Web.Areas.Admin.Controllers
         private readonly ICustomerActivityService customerActivityService;
         private readonly ILocalizationService localizationService;
         private readonly IImportManager importManager;
+        private readonly IExportManager exportManager;
 
         #endregion
 
@@ -38,7 +41,8 @@ namespace Nop.Web.Areas.Admin.Controllers
             IConsignmentOrderService consignmentOrderService,
             ICustomerActivityService customerActivityService,
             ILocalizationService localizationService,
-            IImportManager importManager)
+            IImportManager importManager,
+            IExportManager exportManager)
         {
             this.permissionService = permissionService;
             this.consignmentOrderFactory = consignmentOrderFactory;
@@ -46,6 +50,7 @@ namespace Nop.Web.Areas.Admin.Controllers
             this.customerActivityService = customerActivityService;
             this.localizationService = localizationService;
             this.importManager = importManager;
+            this.exportManager = exportManager;
         }
 
         #endregion
@@ -250,6 +255,64 @@ namespace Nop.Web.Areas.Admin.Controllers
                 SuccessNotification(localizationService.GetResource("Admin.Logistics.ConsignmentOrders.Imported"));
 
                 return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex);
+                return RedirectToAction("List");
+            }
+        }
+
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("exportexcel-all")]
+        public virtual IActionResult ExportExcelAll(ConsignmentOrderSearchModel searchModel)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageConsignmentOrders))
+                return AccessDeniedView();
+
+            var list = consignmentOrderService.GetAll(
+                shipmentMethod: searchModel.SearchShipmentMethod,
+                startPoint: searchModel.SearchStartPoint,
+                terminal: searchModel.SearchTerminal,
+                consignor: searchModel.SearchConsignor,
+                consignee: searchModel.SearchConsignee,
+                tripId: searchModel.TripId,
+                noRelatedTrip: searchModel.SearchNoRelatedTrip);
+
+            try
+            {
+                var bytes = exportManager.ExportConsignmentOrdersToXlsx(list);
+
+                return File(bytes, MimeTypes.TextXlsx, $"{localizationService.GetResource("Admin.Logistics.ConsignmentOrder")}.xlsx");
+            }
+            catch (Exception ex)
+            {
+                ErrorNotification(ex);
+                return RedirectToAction("List");
+            }
+        }
+
+        [HttpPost]
+        public virtual IActionResult ExportExcelSelected(string selectedIds)
+        {
+            if (!permissionService.Authorize(StandardPermissionProvider.ManageConsignmentOrders))
+                return AccessDeniedView();
+
+            var list = new List<ConsignmentOrder>();
+            if (!string.IsNullOrEmpty(selectedIds))
+            {
+                var ids = selectedIds
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => int.Parse(x))
+                    .ToArray();
+                list.AddRange(consignmentOrderService.Get(ids));
+            }
+
+            try
+            {
+                var bytes = exportManager.ExportConsignmentOrdersToXlsx(list);
+
+                return File(bytes, MimeTypes.TextXlsx, $"{localizationService.GetResource("Admin.Logistics.ConsignmentOrder")}.xlsx");
             }
             catch (Exception ex)
             {

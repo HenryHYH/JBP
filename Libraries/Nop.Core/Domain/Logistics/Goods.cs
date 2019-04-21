@@ -30,6 +30,6 @@ namespace Nop.Core.Domain.Logistics
         /// <summary>
         /// 订单
         /// </summary>
-        public virtual ConsignmentOrder Ordr { get; set; }
+        public virtual ConsignmentOrder Order { get; set; }
     }
 }

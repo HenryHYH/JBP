@@ -5,104 +5,128 @@
     Html.SetActiveMenuItemSystemName("ConsignmentOrder");
 }
 
-<nop-antiforgery-token />
-<div class="content-header clearfix">
-    <h1 class="pull-left">
-        @T("Admin.Logistics.ConsignmentOrder")
-    </h1>
-    <div class="pull-right">
-        <a asp-action="Create" class="btn bg-blue">
-            <i class="fa fa-plus-square"></i>
-            @T("Admin.Common.AddNew")
-        </a>
-        <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
-            <i class="fa fa-upload"></i>
-            @T("Admin.Common.Import")
-        </button>
+<form asp-controller="ConsignmentOrder" asp-action="List" method="post">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.Logistics.ConsignmentOrder")
+        </h1>
+        <div class="pull-right">
+            <a asp-action="Create" class="btn bg-blue">
+                <i class="fa fa-plus-square"></i>
+                @T("Admin.Common.AddNew")
+            </a>
+            <button type="button" name="importexcel" class="btn bg-olive" data-toggle="modal" data-target="#importexcel-window">
+                <i class="fa fa-upload"></i>
+                @T("Admin.Common.Import")
+            </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">
+                    <i class="fa fa-download"></i>
+                    @T("Admin.Common.Export")
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">&nbsp;</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <button type="submit" name="exportexcel-all">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" id="exportexcel-selected">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.Selected")
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="content">
-    <div class="form-horizontal">
-        <div class="panel-group">
-            <div class="panel panel-default panel-search">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchConsignor" />
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default panel-search">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchConsignor" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchConsignor" />
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchConsignor" />
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchStartPoint" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchStartPoint" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchStartPoint" />
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchConsignee" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchConsignee" />
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchStartPoint" />
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchTerminal" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchTerminal" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchConsignee" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchConsignee" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchTerminal" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="SearchTerminal" />
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchShipmentMethod" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="SearchShipmentMethod" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
-                                </div>
+                        <div class="row">
+                            <div class="col-md-7 col-md-offset-5">
+                                <button type="button" id="search" class="btn btn-primary btn-search">
+                                    <i class="fa fa-search"></i>
+                                    @T("Admin.Common.Search")
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-7 col-md-offset-5">
-                            <button type="button" id="search" class="btn btn-primary btn-search">
-                                <i class="fa fa-search"></i>
-                                @T("Admin.Common.Search")
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="grid"></div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="grid"></div>
 
-                    <style scoped>
-                        #grid th { text-align: center; }
-                    </style>
+                        <style scoped>
+                            #grid th { text-align: center; }
+                        </style>
 
-                    <script>
+                        <script>
                         $(function () {
                             $("#grid").kendoGrid({
                                 dataSource: {
@@ -151,7 +175,16 @@
                                     @await Html.PartialAsync("_GridPagerMessages")
                                 },
                                 scrollable: false,
+                                dataBound: onDataBound,
                                 columns: [
+                                    {
+                                        field: "Id",
+                                        headerTemplate: "<input id='mastercheckbox' type='checkbox' />",
+                                        headerAttributes: { style: "text-align: center" },
+                                        attributes: { style: "text-align: center" },
+                                        template: "<input type='checkbox' value='#=Id#' class='checkboxGroups' />",
+                                        width: 50
+                                    },
                                     {
                                         field: "SerialNum",
                                         title: "@T("Admin.Logistics.ConsignmentOrder.Fields.SerialNum")",
@@ -235,34 +268,77 @@
                                 ]
                             });
                         });
-                    </script>
-
-                    <script>
-                        $(function () {
-                            $("#search").click(function () {
-                                var grid = $("#grid").data("kendoGrid");
-                                grid.dataSource.page(1);
-                                return false;
-                            });
-
-                            $([
-                                "#@Html.IdFor(x => x.SearchStartPoint)",
-                                "#@Html.IdFor(x => x.SearchTerminal)",
-                                "#@Html.IdFor(x => x.SearchConsignor)",
-                                "#@Html.IdFor(x => x.SearchConsignee)"
-                            ].join(",")).keydown(function (event) {
-                                if (event.keyCode === 13) {
-                                    $("#search").click();
-                                    return false;
-                                }
-                            });
-                        });
-                    </script>
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        var selectedIds = [];
+
+        $(function () {
+            $("#search").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.dataSource.page(1);
+
+                $(".checkboxGroups").attr("checked", false).change();
+                selectedIds = [];
+
+                return false;
+            });
+
+            $([
+                "#@Html.IdFor(x => x.SearchStartPoint)",
+                "#@Html.IdFor(x => x.SearchTerminal)",
+                "#@Html.IdFor(x => x.SearchConsignor)",
+                "#@Html.IdFor(x => x.SearchConsignee)"
+            ].join(",")).keydown(function (event) {
+                if (event.keyCode === 13) {
+                    $("#search").click();
+                    return false;
+                }
+            });
+
+            $("#mastercheckbox").click(function () {
+                $(".checkboxGroups").attr("checked", $(this).is(":checked")).change();
+            });
+
+            $("#grid").on("change", "input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]", function (e) {
+                var $check = $(this);
+                var checked = $.inArray($check.val(), selectedIds);
+                if ($check.is(":checked") == true) {
+                    if (-1 == checked) {
+                        selectedIds.push($check.val());
+                    }
+                } else if (checked > -1) {
+                    selectedIds = $.grep(selectedIds, function (item, index) {
+                        return item != $check.val();
+                    });
+                }
+
+                updateMasterCheckbox();
+            });
+        });
+
+        function onDataBound(e) {
+            $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").each(function () {
+                var currentId = $(this).val();
+                var checked = $.inArray(currentId, selectedIds);
+                $(this).attr("checked", checked > -1);
+            });
+
+            updateMasterCheckbox();
+        }
+
+        function updateMasterCheckbox() {
+            var numChkBoxes = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]").length;
+            var numChkBoxesChecked = $("#grid input[type=checkbox][id!=mastercheckbox][class=checkboxGroups]:checked").length;
+            $("#mastercheckbox").attr("checked", numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+        }
+    </script>
+</form>
 
 <div id="importexcel-window" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="importexcel-window-title">
     <div class="modal-dialog">
@@ -305,3 +381,19 @@
         </div>
     </div>
 </div>
+
+<form asp-controller="ConsignmentOrder" asp-action="ExportExcelSelected" method="post" id="export-excel-selected-form">
+    <input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
+<script>
+    $(function () {
+        $("#exportexcel-selected").click(function (e) {
+            e.preventDefault();
+            var ids = selectedIds.join(",");
+            $("#export-excel-selected-form #selectedIds").val(ids);
+            $("#export-excel-selected-form").submit();
+            return false;
+        });
+    });
+</script>

@@ -19,6 +19,8 @@ namespace Nop.Services.Logistics
             bool? noRelatedTrip = null,
             string[] serialNums = null);
 
+        IList<ConsignmentOrder> Get(int[] ids);
+
         ConsignmentOrder Get(int id);
 
         string[] GetNotExistings(string[] serialNums);
