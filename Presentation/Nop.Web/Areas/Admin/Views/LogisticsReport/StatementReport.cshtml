@@ -153,7 +153,8 @@
                                         field: "SerialNum",
                                         title: "@T("Admin.LogisticsReports.Orders.ReportStatementModel.Fields.SerialNum")",
                                         attributes: { style: "text-align: center" },
-                                        width: 100
+                                        width: 100,
+                                        template: '<a class="btn btn-link" href="/Admin/ConsignmentOrder/Edit/#=Id#" target="_blank">#=SerialNum#</a>'
                                     },
                                     {
                                         field: "ConsignmentTime",
