@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FluentValidation.AspNetCore;
+﻿using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +27,9 @@ using Nop.Web.Framework.Mvc.ModelBinding;
 using Nop.Web.Framework.Mvc.Routing;
 using Nop.Web.Framework.Themes;
 using StackExchange.Profiling.Storage;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace Nop.Web.Framework.Infrastructure.Extensions
 {
@@ -176,7 +177,7 @@ namespace Nop.Web.Framework.Infrastructure.Extensions
             }
             else
             {
-                var dataProtectionKeysPath = CommonHelper.DefaultFileProvider.MapPath("~/App_Data/DataProtectionKeys");
+                var dataProtectionKeysPath = CommonHelper.DefaultFileProvider.MapPath(Path.Combine("~/App_Data", "DataProtectionKeys"));
                 var dataProtectionKeysFolder = new System.IO.DirectoryInfo(dataProtectionKeysPath);
 
                 //configure the data protection system to persist keys to the specified directory

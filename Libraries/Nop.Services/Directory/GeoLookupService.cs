@@ -1,11 +1,12 @@
 ﻿//This product includes GeoLite2 data created by MaxMind, available from http://www.maxmind.com
 
-using System;
 using MaxMind.GeoIP2;
 using MaxMind.GeoIP2.Exceptions;
 using MaxMind.GeoIP2.Responses;
 using Nop.Core.Infrastructure;
 using Nop.Services.Logging;
+using System;
+using System.IO;
 
 namespace Nop.Services.Directory
 {
@@ -47,7 +48,7 @@ namespace Nop.Services.Directory
             try
             {
                 //This product includes GeoLite2 data created by MaxMind, available from http://www.maxmind.com
-                var databasePath = _fileProvider.MapPath("~/App_Data/GeoLite2-Country.mmdb");
+                var databasePath = _fileProvider.MapPath(Path.Combine("~/App_Data", "GeoLite2-Country.mmdb"));
                 var reader = new DatabaseReader(databasePath);
                 var omni = reader.Country(ipAddress);
                 return omni;

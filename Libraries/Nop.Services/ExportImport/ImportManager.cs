@@ -45,7 +45,7 @@ namespace Nop.Services.ExportImport
         //it's quite fast hash (to cheaply distinguish between objects)
         private const string IMAGE_HASH_ALGORITHM = "SHA1";
 
-        private const string UPLOADS_TEMP_PATH = "~/App_Data/TempUploads";
+        private static string UPLOADS_TEMP_PATH = Path.Combine("~/App_Data", "TempUploads");
 
         private const int GOODS_CELL_NUM_OFFSET = 2;
 

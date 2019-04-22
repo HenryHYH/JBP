@@ -10,12 +10,12 @@ namespace Nop.Core.Plugins
         /// <summary>
         /// Gets the path to file that contained (in previous versions) installed plugin system names
         /// </summary>
-        public static string ObsoleteInstalledPluginsFilePath => "~/App_Data/InstalledPlugins.txt";
+        public static string ObsoleteInstalledPluginsFilePath => System.IO.Path.Combine("~/App_Data", "InstalledPlugins.txt");
 
         /// <summary>
         /// Gets the path to file that contains installed plugin system names
         /// </summary>
-        public static string InstalledPluginsFilePath => "~/App_Data/installedPlugins.json";
+        public static string InstalledPluginsFilePath => System.IO.Path.Combine("~/App_Data", "installedPlugins.json");
 
         /// <summary>
         /// Gets the path to plugins folder
@@ -30,7 +30,7 @@ namespace Nop.Core.Plugins
         /// <summary>
         /// Gets the path to plugins shadow copies folder
         /// </summary>
-        public static string ShadowCopyPath => "~/Plugins/bin";
+        public static string ShadowCopyPath => System.IO.Path.Combine("~/Plugins", "bin");
 
         /// <summary>
         /// Gets the path to plugins refs folder
@@ -65,7 +65,7 @@ namespace Nop.Core.Plugins
         /// <summary>
         /// Gets the path to temp directory with uploads
         /// </summary>
-        public static string UploadsTempPath => "~/App_Data/TempUploads";
+        public static string UploadsTempPath => System.IO.Path.Combine("~/App_Data", "TempUploads");
 
         /// <summary>
         /// Gets the name of the file containing information about the uploaded items

@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Nop.Core;
 using Nop.Core.Http;
 using Nop.Core.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace Nop.Web.Infrastructure.Installation
 {
@@ -20,7 +21,7 @@ namespace Nop.Web.Infrastructure.Installation
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INopFileProvider _fileProvider;
-        
+
         private IList<InstallationLanguage> _availableLanguages;
 
         #endregion
@@ -35,7 +36,7 @@ namespace Nop.Web.Infrastructure.Installation
         }
 
         #endregion
-        
+
         #region Methods
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace Nop.Web.Infrastructure.Installation
                 return _availableLanguages;
 
             _availableLanguages = new List<InstallationLanguage>();
-            foreach (var filePath in _fileProvider.EnumerateFiles(_fileProvider.MapPath("~/App_Data/Localization/Installation/"), "*.xml"))
+            foreach (var filePath in _fileProvider.EnumerateFiles(_fileProvider.MapPath(Path.Combine("~/App_Data", "Localization", "Installation")), "*.xml"))
             {
                 var xmlDocument = new XmlDocument();
                 xmlDocument.Load(filePath);

@@ -1,10 +1,5 @@
 ﻿// RTL Support provided by Credo inc (www.credo.co.il  ||   info@credo.co.il)
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Nop.Core;
@@ -28,6 +23,11 @@ using Nop.Services.Orders;
 using Nop.Services.Payments;
 using Nop.Services.Stores;
 using Nop.Services.Vendors;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace Nop.Services.Common
 {
@@ -144,7 +144,7 @@ namespace Nop.Services.Common
             if (fontFileName == null)
                 throw new ArgumentNullException(nameof(fontFileName));
 
-            var fontPath = _fileProvider.Combine(_fileProvider.MapPath("~/App_Data/Pdf/"), fontFileName);
+            var fontPath = _fileProvider.Combine(_fileProvider.MapPath(Path.Combine("~/App_Data", "Pdf")), fontFileName);
             var baseFont = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             var font = new Font(baseFont, 10, Font.NORMAL);
             return font;

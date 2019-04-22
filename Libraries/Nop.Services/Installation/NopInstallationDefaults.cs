@@ -1,4 +1,6 @@
-﻿namespace Nop.Services.Installation
+﻿using System.IO;
+
+namespace Nop.Services.Installation
 {
     /// <summary>
     /// Represents default values related to installation services
@@ -8,7 +10,7 @@
         /// <summary>
         /// Gets a path to the localization resources file
         /// </summary>
-        public static string LocalizationResourcesPath => "~/App_Data/Localization/";
+        public static string LocalizationResourcesPath => Path.Combine("~/App_Data", "Localization");
 
         /// <summary>
         /// Gets a localization resources file extension
@@ -18,12 +20,12 @@
         /// <summary>
         /// Gets a path to the installation required data file
         /// </summary>
-        public static string RequiredDataPath => "~/App_Data/Install/Fast/create_required_data.sql";
+        public static string RequiredDataPath => Path.Combine("~/App_Data", "Install", "Fast", "create_required_data.sql");
 
         /// <summary>
         /// Gets a path to the installation sample data file
         /// </summary>
-        public static string SampleDataPath => "~/App_Data/Install/Fast/create_sample_data.sql";
+        public static string SampleDataPath => Path.Combine("~/App_Data", "Install", "Fast", "create_sample_data.sql");
 
         /// <summary>
         /// Gets a path to the installation sample images
