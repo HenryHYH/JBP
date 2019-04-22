@@ -188,7 +188,7 @@ namespace Nop.Services.Logistics
             return new PagedList<Trip>(query, pageIndex, pageSize);
         }
 
-        public virtual IPagedList<BalanceReport> StatisticsBalance(
+        public virtual IPagedList<GroupBalanceReport> StatisticsBalance(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             StatisticsFrequency frequency = StatisticsFrequency.Daily,
@@ -210,7 +210,17 @@ namespace Nop.Services.Logistics
                                                 pTotalRecords).ToList();
 
             var totalRecords = pTotalRecords.Value != DBNull.Value ? Convert.ToInt32(pTotalRecords.Value) : 0;
-            return new PagedList<BalanceReport>(list, pageIndex, pageSize, totalRecords);
+
+            var group = list.GroupBy(x => x.StatisticsTime)
+                            .Select(x => new GroupBalanceReport
+                            {
+                                StatisticsTime = x.Key,
+                                Fees = x.Select(f => new BalanceReportFee { CategoryId = f.CategoryId, Name = f.Category, Type = f.FeeType, Amount = f.Amount })
+                                        .ToDictionary(k => k.CategoryId, v => v)
+                            })
+                            .ToList();
+
+            return new PagedList<GroupBalanceReport>(group, pageIndex, pageSize, totalRecords);
         }
 
         #endregion

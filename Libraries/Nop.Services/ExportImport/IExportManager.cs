@@ -102,5 +102,7 @@ namespace Nop.Services.ExportImport
         byte[] ExportConsignmentOrdersToXlsx(IEnumerable<ConsignmentOrder> list);
 
         byte[] ExportTripToXlsx(IEnumerable<Trip> list);
+
+        byte[] ExportLogisticsBalanceReportToXlsx(IEnumerable<GroupBalanceReport> list);
     }
 }

@@ -37,7 +37,7 @@ namespace Nop.Services.Logistics
             string driverName = null,
             string carLicense = null);
 
-        IPagedList<BalanceReport> StatisticsBalance(
+        IPagedList<GroupBalanceReport> StatisticsBalance(
             int pageIndex = 0,
             int pageSize = int.MaxValue,
             StatisticsFrequency frequency = StatisticsFrequency.Daily,

@@ -98,13 +98,17 @@ namespace Nop.Web.Areas.Admin.Factories
 
             var model = new ReportBalanceListModel
             {
-                Data = list.GroupBy(x => x.StatisticsTime)
-                            .Select(x => new ReportBalanceModel
-                            {
-                                StatisticsTime = x.Key,
-                                Fees = x.Select(f => new ReportFeeModel { Id = f.CategoryId, Name = f.Category, Type = f.FeeType, Amount = f.Amount })
-                                        .ToDictionary(k => k.Id, v => v)
-                            }),
+                Data = list.Select(x => new ReportBalanceModel
+                {
+                    StatisticsTime = x.StatisticsTime,
+                    Fees = x.Fees.ToDictionary(k => k.Key, v => new ReportFeeModel
+                    {
+                        Id = v.Value.CategoryId,
+                        Name = v.Value.Name,
+                        Type = v.Value.Type,
+                        Amount = v.Value.Amount
+                    })
+                }),
                 Total = list.TotalCount
             };
 

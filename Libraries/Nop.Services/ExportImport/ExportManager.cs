@@ -2178,5 +2178,55 @@ namespace Nop.Services.ExportImport
 
             #endregion
         }
+
+        public virtual byte[] ExportLogisticsBalanceReportToXlsx(IEnumerable<GroupBalanceReport> list)
+        {
+            var properties = new List<PropertyByName<GroupBalanceReport>>
+            {
+                new PropertyByName<GroupBalanceReport>(_localizationService.GetResource("Admin.LogisticsReports.ReportBalanceModel.Fields.StatisticsTime"), x => x.StatisticsTime),
+                new PropertyByName<GroupBalanceReport>(_localizationService.GetResource("Admin.LogisticsReports.ReportBalanceModel.Fields.Balance"), x => x.Balance),
+                new PropertyByName<GroupBalanceReport>(_localizationService.GetResource("Admin.LogisticsReports.ReportBalanceModel.Fields.Income"), x => x.Income),
+                new PropertyByName<GroupBalanceReport>(_localizationService.GetResource("Admin.LogisticsReports.ReportBalanceModel.Fields.Expense"), x => x.Expense)
+            };
+            var feeCategories = feeService.GetFeeCategories();
+            foreach (var category in feeCategories)
+            {
+                properties.Add(
+                    new PropertyByName<GroupBalanceReport>(
+                        category.Name,
+                        x =>
+                        {
+                            if (x.Fees.TryGetValue(category.Id, out BalanceReportFee fee))
+                                return fee.Amount;
+                            else
+                                return default(decimal?);
+                        }
+                    ));
+            }
+
+            using (var stream = new MemoryStream())
+            {
+                using (var xlPackage = new ExcelPackage(stream))
+                {
+                    var worksheet = xlPackage.Workbook.Worksheets.Add(_localizationService.GetResource("Admin.LogisticsReports.Trips.Balance"));
+                    var fWorksheet = xlPackage.Workbook.Worksheets.Add("DataForBalanceFilters");
+                    fWorksheet.Hidden = eWorkSheetHidden.VeryHidden;
+
+                    var manager = new PropertyManager<GroupBalanceReport>(properties, _catalogSettings);
+                    manager.WriteCaption(worksheet);
+
+                    var row = 2;
+                    foreach (var item in list)
+                    {
+                        manager.CurrentObject = item;
+                        manager.WriteToXlsx(worksheet, row++, fWorksheet: fWorksheet);
+                    }
+
+                    xlPackage.Save();
+                }
+
+                return stream.ToArray();
+            }
+        }
     }
 }

@@ -5,173 +5,191 @@
     Html.SetActiveMenuItemSystemName("BalanceReport");
 }
 
-<nop-antiforgery-token />
-<div class="content-header clearfix">
-    <h1 class="pull-left">
-        @T("Admin.LogisticsReports.Trips.Balance")
-    </h1>
-    <div class="pull-right">
-        &nbsp;
+<form asp-controller="LogisticsReport" asp-action="BalanceReport" method="post">
+    <div class="content-header clearfix">
+        <h1 class="pull-left">
+            @T("Admin.LogisticsReports.Trips.Balance")
+        </h1>
+        <div class="pull-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success">
+                    <i class="fa fa-download"></i>
+                    @T("Admin.Common.Export")
+                </button>
+                <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="caret"></span>
+                    <span class="sr-only">&nbsp;</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li>
+                        <button type="submit" name="exportexcel-all">
+                            <i class="fa fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="content">
-    <div class="form-horizontal">
-        <div class="panel-group">
-            <div class="panel panel-default panel-search">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="TripShippingTimeFrom" />
+    <div class="content">
+        <div class="form-horizontal">
+            <div class="panel-group">
+                <div class="panel panel-default panel-search">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="TripShippingTimeFrom" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="TripShippingTimeFrom" />
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="TripShippingTimeFrom" />
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="TripShippingTimeTo" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="TripShippingTimeTo" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="TripShippingTimeTo" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-editor asp-for="TripShippingTimeTo" />
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="Frequency" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="Frequency" asp-items="Model.AvailableStatisticsFrequencies" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="form-group">
-                                <div class="col-md-4">
-                                    <nop-label asp-for="Frequency" />
-                                </div>
-                                <div class="col-md-8">
-                                    <nop-select asp-for="Frequency" asp-items="Model.AvailableStatisticsFrequencies" />
-                                </div>
+                        <div class="row">
+                            <div class="col-md-7 col-md-offset-5">
+                                <button type="button" id="search" class="btn btn-primary btn-search">
+                                    <i class="fa fa-line-chart"></i>
+                                    @T("Admin.LogisticsReports.Trips.Balance.RunReport")
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-7 col-md-offset-5">
-                            <button type="button" id="search" class="btn btn-primary btn-search">
-                                <i class="fa fa-line-chart"></i>
-                                @T("Admin.LogisticsReports.Trips.Balance.RunReport")
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div id="grid"></div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div id="grid"></div>
 
-                    <style scoped>
-                        #grid th { text-align: center; }
-                    </style>
+                        <style scoped>
+                            #grid th { text-align: center; }
+                        </style>
 
-                    <script>
-                        $(function () {
-                            $("#grid").kendoGrid({
-                                dataSource: {
-                                    type: "json",
-                                    transport: {
-                                        read: {
-                                            url: "@Html.Raw(Url.Action("BalanceReport", "LogisticsReport"))",
-                                            type: "POST",
-                                            dataType: "json",
-                                            data: function () {
-                                                var data = {
-                                                    TripShippingTimeFrom: $("#@(Html.IdFor(x => x.TripShippingTimeFrom))").val(),
-                                                    TripShippingTimeTo: $("#@(Html.IdFor(x => x.TripShippingTimeTo))").val(),
-                                                    Frequency: $("#@(Html.IdFor(x => x.Frequency))").val()
-                                                };
-                                                addAntiForgeryToken(data);
-                                                return data;
+                        <script>
+                            $(function () {
+                                $("#grid").kendoGrid({
+                                    dataSource: {
+                                        type: "json",
+                                        transport: {
+                                            read: {
+                                                url: "@Html.Raw(Url.Action("BalanceReport", "LogisticsReport"))",
+                                                type: "POST",
+                                                dataType: "json",
+                                                data: function () {
+                                                    var data = {
+                                                        TripShippingTimeFrom: $("#@(Html.IdFor(x => x.TripShippingTimeFrom))").val(),
+                                                        TripShippingTimeTo: $("#@(Html.IdFor(x => x.TripShippingTimeTo))").val(),
+                                                        Frequency: $("#@(Html.IdFor(x => x.Frequency))").val()
+                                                    };
+                                                    addAntiForgeryToken(data);
+                                                    return data;
+                                                }
                                             }
+                                        },
+                                        schema: {
+                                            data: "Data",
+                                            total: "Total",
+                                            errors: "Errors"
+                                        },
+                                        error: function (e) {
+                                            display_kendoui_grid_error(e);
+                                            this.cancelChanges();
+                                        },
+                                        pageSize: @(Model.PageSize),
+                                        serverPaging: true,
+                                        serverFiletering: true,
+                                        serverSorting: true
+                                    },
+                                    pageable: {
+                                        refresh: true,
+                                        pageSizes: [@(Model.AvailablePageSizes)],
+                                        @await Html.PartialAsync("_GridPagerMessages")
+                                    },
+                                    editable: {
+                                        confirmation: "@T("Admin.Common.DeleteConfirmation")",
+                                        mode: "inline"
+                                    },
+                                    scrollable: false,
+                                    columns: [
+                                        {
+                                            field: "StatisticsTime",
+                                            title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.StatisticsTime")",
+                                            attributes: { style: "text-align: center" },
+                                            locked: true
+                                        },
+                                        {
+                                            field: "Balance",
+                                            title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Balance")",
+                                            attributes: { style: "text-align: center" },
+                                            locked: true,
+                                            format: "{0:#,#.##}"
+                                        },
+                                        {
+                                            field: "Income",
+                                            title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Income")",
+                                            attributes: { style: "text-align: center" },
+                                            locked: true,
+                                            format: "{0:#,#.##}"
+                                        },
+                                        {
+                                            field: "Expense",
+                                            title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Expense")",
+                                            attributes: { style: "text-align: center" },
+                                            locked: true,
+                                            format: "{0:#,#.##}"
+                                        },
+                                        @for (int i = 0, iMax = Model.AvailableFeeCategories.Count; i < iMax; i++)
+                                        {
+                                            var text = Model.AvailableFeeCategories[i].Text;
+                                            var value = Model.AvailableFeeCategories[i].Value;
+                                            <text>
+                                        {
+                                            title: "@(text)",
+                                            attributes: { style: "text-align: center" },
+                                            template: "#=(null == Fees[@(value)].Amount ? '-' : kendo.toString(Fees[@(value)].Amount, '\\#,\\#.\\#\\#'))#"
                                         }
-                                    },
-                                    schema: {
-                                        data: "Data",
-                                        total: "Total",
-                                        errors: "Errors"
-                                    },
-                                    error: function (e) {
-                                        display_kendoui_grid_error(e);
-                                        this.cancelChanges();
-                                    },
-                                    pageSize: @(Model.PageSize),
-                                    serverPaging: true,
-                                    serverFiletering: true,
-                                    serverSorting: true
-                                },
-                                pageable: {
-                                    refresh: true,
-                                    pageSizes: [@(Model.AvailablePageSizes)],
-                                    @await Html.PartialAsync("_GridPagerMessages")
-                                },
-                                editable: {
-                                    confirmation: "@T("Admin.Common.DeleteConfirmation")",
-                                    mode: "inline"
-                                },
-                                scrollable: false,
-                                columns: [
-                                    {
-                                        field: "StatisticsTime",
-                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.StatisticsTime")",
-                                        attributes: { style: "text-align: center" },
-                                        locked: true
-                                    },
-                                    {
-                                        field: "Balance",
-                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Balance")",
-                                        attributes: { style: "text-align: center" },
-                                        locked: true,
-                                        format: "{0:#,#.##}"
-                                    },
-                                    {
-                                        field: "Income",
-                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Income")",
-                                        attributes: { style: "text-align: center" },
-                                        locked: true,
-                                        format: "{0:#,#.##}"
-                                    },
-                                    {
-                                        field: "Expense",
-                                        title: "@T("Admin.LogisticsReports.ReportBalanceModel.Fields.Expense")",
-                                        attributes: { style: "text-align: center" },
-                                        locked: true,
-                                        format: "{0:#,#.##}"
-                                    },
-                                    @for (int i = 0, iMax = Model.AvailableFeeCategories.Count; i < iMax; i++)
-                                    {
-                                        var text = Model.AvailableFeeCategories[i].Text;
-                                        var value = Model.AvailableFeeCategories[i].Value;
-                                        <text>
-                                    {
-                                        title: "@(text)",
-                                        attributes: { style: "text-align: center" },
-                                        template: "#=(null == Fees[@(value)].Amount ? '-' : kendo.toString(Fees[@(value)].Amount, '\\#,\\#.\\#\\#'))#"
-                                    }
-                                        </text>
-                                        @if (i != iMax - 1) { <text>,</text> }
-                                    }
-                                ]
+                                            </text>
+                                            @if (i != iMax - 1) { <text>,</text> }
+                                        }
+                                    ]
+                                });
                             });
-                        });
-                    </script>
-
-                    <script>
-                        $(function () {
-                            $("#search").click(function () {
-                                var grid = $("#grid").data("kendoGrid");
-                                grid.dataSource.page(1);
-
-                                return false;
-                            });
-                        });
-                    </script>
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        $(function () {
+            $("#search").click(function () {
+                var grid = $("#grid").data("kendoGrid");
+                grid.dataSource.page(1);
+
+                return false;
+            });
+        });
+    </script>
+</form>
