@@ -13,7 +13,13 @@ namespace Nop.Services.Logistics
             int pageSize = int.MaxValue,
             string carLicense = null,
             string driverName = null,
-            string[] serialNums = null);
+            string[] serialNums = null,
+            string serialNum = null,
+            IList<int> shippingStatuses = null,
+            DateTime? startAtFrom = null,
+            DateTime? startAtTo = null,
+            DateTime? endAtFrom = null,
+            DateTime? endAtTo = null);
 
         IList<Trip> Get(int[] ids);
 

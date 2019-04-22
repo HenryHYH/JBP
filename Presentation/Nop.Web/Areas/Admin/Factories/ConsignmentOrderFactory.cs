@@ -46,6 +46,8 @@ namespace Nop.Web.Areas.Admin.Factories
                 throw new ArgumentNullException(nameof(searchModel));
 
             baseAdminModelFactory.PrepareShipmentMethods(searchModel.AvailableShipmentMethods);
+            baseAdminModelFactory.PrepareLogisticsOrderStatus(searchModel.AvailableOrderStatuses);
+            baseAdminModelFactory.PrepareLogisticsPaymentStatus(searchModel.AvailablePaymentStatuses);
 
             searchModel.SetGridPageSize();
 
@@ -66,7 +68,12 @@ namespace Nop.Web.Areas.Admin.Factories
                 consignor: searchModel.SearchConsignor,
                 consignee: searchModel.SearchConsignee,
                 tripId: searchModel.TripId,
-                noRelatedTrip: searchModel.SearchNoRelatedTrip);
+                noRelatedTrip: searchModel.SearchNoRelatedTrip,
+                serialNum: searchModel.SearchSerialNum,
+                consignmentTimeFrom: searchModel.SearchConsignmentTimeFrom,
+                consignmentTimeTo: searchModel.SearchConsignmentTimeTo,
+                orderStatuses: (searchModel.SearchOrderStatuses?.Contains(0) ?? false) ? null : searchModel.SearchOrderStatuses,
+                paymentStatuses: (searchModel.SearchPaymentStatuses?.Contains(0) ?? false) ? null : searchModel.SearchPaymentStatuses);
 
             var model = new ConsignmentOrderListModel
             {

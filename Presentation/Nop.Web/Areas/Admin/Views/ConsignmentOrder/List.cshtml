@@ -55,26 +55,36 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="col-md-4">
+                                        <nop-label asp-for="SearchOrderStatuses" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="SearchOrderStatuses" asp-items="Model.AvailableOrderStatuses" asp-multiple="true" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchPaymentStatuses" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="SearchPaymentStatuses" asp-items="Model.AvailablePaymentStatuses" asp-multiple="true" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchSerialNum" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchSerialNum" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
                                         <nop-label asp-for="SearchConsignor" />
                                     </div>
                                     <div class="col-md-8">
                                         <nop-editor asp-for="SearchConsignor" />
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <div class="col-md-4">
-                                        <nop-label asp-for="SearchStartPoint" />
-                                    </div>
-                                    <div class="col-md-8">
-                                        <nop-editor asp-for="SearchStartPoint" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchConsignee" />
@@ -87,22 +97,42 @@
                             <div class="col-md-7">
                                 <div class="form-group">
                                     <div class="col-md-4">
-                                        <nop-label asp-for="SearchTerminal" />
+                                        <nop-label asp-for="SearchConsignmentTimeFrom" />
                                     </div>
                                     <div class="col-md-8">
-                                        <nop-editor asp-for="SearchTerminal" />
+                                        <nop-editor asp-for="SearchConsignmentTimeFrom" />
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchConsignmentTimeTo" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchConsignmentTimeTo" />
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchShipmentMethod" />
                                     </div>
                                     <div class="col-md-8">
                                         <nop-select asp-for="SearchShipmentMethod" asp-items="Model.AvailableShipmentMethods" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchStartPoint" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchStartPoint" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchTerminal" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchTerminal" />
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +172,12 @@
                                                         SearchStartPoint: $("#@Html.IdFor(x => x.SearchStartPoint)").val(),
                                                         SearchTerminal: $("#@Html.IdFor(x => x.SearchTerminal)").val(),
                                                         SearchConsignor: $("#@Html.IdFor(x => x.SearchConsignor)").val(),
-                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val()
+                                                        SearchConsignee: $("#@Html.IdFor(x => x.SearchConsignee)").val(),
+                                                        SearchSerialNum: $("#@Html.IdFor(x => x.SearchSerialNum)").val(),
+                                                        SearchConsignmentTimeFrom: $("#@Html.IdFor(x => x.SearchConsignmentTimeFrom)").val(),
+                                                        SearchConsignmentTimeTo: $("#@Html.IdFor(x => x.SearchConsignmentTimeTo)").val(),
+                                                        SearchPaymentStatuses: $("#@Html.IdFor(x => x.SearchPaymentStatuses)").val(),
+                                                        SearchOrderStatuses: $("#@Html.IdFor(x => x.SearchOrderStatuses)").val()
                                                     };
                                                     addAntiForgeryToken(data);
                                                     return data;
@@ -293,7 +328,10 @@
                 "#@Html.IdFor(x => x.SearchStartPoint)",
                 "#@Html.IdFor(x => x.SearchTerminal)",
                 "#@Html.IdFor(x => x.SearchConsignor)",
-                "#@Html.IdFor(x => x.SearchConsignee)"
+                "#@Html.IdFor(x => x.SearchConsignee)",
+                "#@Html.IdFor(x => x.SearchSerialNum)",
+                "#@Html.IdFor(x => x.SearchConsignmentTimeFrom)",
+                "#@Html.IdFor(x => x.SearchConsignmentTimeTo)"
             ].join(",")).keydown(function (event) {
                 if (event.keyCode === 13) {
                     $("#search").click();

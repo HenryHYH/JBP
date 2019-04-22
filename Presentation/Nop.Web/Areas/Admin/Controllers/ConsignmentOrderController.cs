@@ -277,7 +277,12 @@ namespace Nop.Web.Areas.Admin.Controllers
                 consignor: searchModel.SearchConsignor,
                 consignee: searchModel.SearchConsignee,
                 tripId: searchModel.TripId,
-                noRelatedTrip: searchModel.SearchNoRelatedTrip);
+                noRelatedTrip: searchModel.SearchNoRelatedTrip,
+                serialNum: searchModel.SearchSerialNum,
+                consignmentTimeFrom: searchModel.SearchConsignmentTimeFrom,
+                consignmentTimeTo: searchModel.SearchConsignmentTimeTo,
+                orderStatuses: (searchModel.SearchOrderStatuses?.Contains(0) ?? false) ? null : searchModel.SearchOrderStatuses,
+                paymentStatuses: (searchModel.SearchPaymentStatuses?.Contains(0) ?? false) ? null : searchModel.SearchPaymentStatuses);
 
             try
             {

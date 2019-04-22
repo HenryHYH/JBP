@@ -17,7 +17,12 @@ namespace Nop.Services.Logistics
             string consignee = null,
             int? tripId = null,
             bool? noRelatedTrip = null,
-            string[] serialNums = null);
+            string[] serialNums = null,
+            string serialNum = null,
+            DateTime? consignmentTimeFrom = null,
+            DateTime? consignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null);
 
         IList<ConsignmentOrder> Get(int[] ids);
 

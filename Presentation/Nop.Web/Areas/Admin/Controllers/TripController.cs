@@ -236,7 +236,13 @@ namespace Nop.Web.Areas.Admin.Controllers
 
             var list = tripService.GetAll(
                 carLicense: searchModel.SearchCarLicense,
-                driverName: searchModel.SearchDriverName);
+                driverName: searchModel.SearchDriverName,
+                serialNum: searchModel.SearchSerialNum,
+                shippingStatuses: (searchModel.SearchShippingStatuses?.Contains(0) ?? false) ? null : searchModel.SearchShippingStatuses,
+                startAtFrom: searchModel.SearchStartAtFrom,
+                startAtTo: searchModel.SearchStartAtTo,
+                endAtFrom: searchModel.SearchEndAtFrom,
+                endAtTo: searchModel.SearchEndAtTo);
 
             try
             {

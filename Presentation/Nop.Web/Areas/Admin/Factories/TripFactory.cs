@@ -49,6 +49,7 @@ namespace Nop.Web.Areas.Admin.Factories
             if (null == searchModel)
                 throw new ArgumentNullException(nameof(searchModel));
 
+            baseAdminModelFactory.PrepareLogisticsShippingStatus(searchModel.AvailableShippingStatuses);
             searchModel.SetGridPageSize();
 
             return searchModel;
@@ -63,7 +64,13 @@ namespace Nop.Web.Areas.Admin.Factories
                 pageIndex: searchModel.Page - 1,
                 pageSize: searchModel.PageSize,
                 carLicense: searchModel.SearchCarLicense,
-                driverName: searchModel.SearchDriverName);
+                driverName: searchModel.SearchDriverName,
+                serialNum: searchModel.SearchSerialNum,
+                shippingStatuses: (searchModel.SearchShippingStatuses?.Contains(0) ?? false) ? null : searchModel.SearchShippingStatuses,
+                startAtFrom: searchModel.SearchStartAtFrom,
+                startAtTo: searchModel.SearchStartAtTo,
+                endAtFrom: searchModel.SearchEndAtFrom,
+                endAtTo: searchModel.SearchEndAtTo);
 
             var model = new TripListModel
             {

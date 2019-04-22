@@ -48,7 +48,13 @@ namespace Nop.Services.Logistics
             int pageSize = int.MaxValue,
             string carLicense = null,
             string driverName = null,
-            string[] serialNums = null)
+            string[] serialNums = null,
+            string serialNum = null,
+            IList<int> shippingStatuses = null,
+            DateTime? startAtFrom = null,
+            DateTime? startAtTo = null,
+            DateTime? endAtFrom = null,
+            DateTime? endAtTo = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
@@ -62,8 +68,20 @@ namespace Nop.Services.Logistics
                 driverName = driverName.Trim();
                 query = query.Where(x => x.Driver.Name.Contains(driverName));
             }
-            if (null != serialNums && serialNums.Any())
+            if (serialNums?.Any() ?? false)
                 query = query.Where(x => serialNums.Contains(x.SerialNum));
+            if (!string.IsNullOrWhiteSpace(serialNum))
+                query = query.Where(x => x.SerialNum.Contains(serialNum));
+            if (shippingStatuses?.Any() ?? false)
+                query = query.Where(x => shippingStatuses.Contains((int)x.ShippingStatus));
+            if (startAtFrom.HasValue)
+                query = query.Where(x => x.StartAt >= startAtFrom.Value);
+            if (startAtTo.HasValue)
+                query = query.Where(x => x.StartAt < startAtTo.Value.AddDays(1));
+            if (endAtFrom.HasValue)
+                query = query.Where(x => x.EndAt >= endAtFrom.Value);
+            if (endAtTo.HasValue)
+                query = query.Where(x => x.EndAt < endAtTo.Value.AddDays(1));
 
             query = query.OrderByDescending(x => x.UTime ?? x.CTime);
 

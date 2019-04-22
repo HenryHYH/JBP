@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Moq;
+﻿using Moq;
 using Nop.Core;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
@@ -25,6 +21,7 @@ using Nop.Services.ExportImport.Help;
 using Nop.Services.Forums;
 using Nop.Services.Gdpr;
 using Nop.Services.Helpers;
+using Nop.Services.Logistics;
 using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
@@ -36,6 +33,10 @@ using Nop.Services.Vendors;
 using Nop.Tests;
 using NUnit.Framework;
 using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Nop.Services.Tests.ExportImport
 {
@@ -74,6 +75,7 @@ namespace Nop.Services.Tests.ExportImport
         private AddressSettings _addressSettings;
         private Mock<ICurrencyService> _currencyService;
         private Mock<IUrlRecordService> _urlRecordService;
+        private Mock<IFeeService> _feeSerivce;
 
         [SetUp]
         public new void SetUp()
@@ -110,15 +112,16 @@ namespace Nop.Services.Tests.ExportImport
             _addressSettings = new AddressSettings();
             _currencyService = new Mock<ICurrencyService>();
             _urlRecordService = new Mock<IUrlRecordService>();
+            _feeSerivce = new Mock<IFeeService>();
 
             var nopEngine = new Mock<NopEngine>();
-            
+
             var picture = new Picture
             {
                 Id = 1,
                 SeoFilename = "picture"
             };
-            
+
             _authenticationService.Setup(p => p.GetAuthenticatedCustomer()).Returns(GetTestCustomer());
             _pictureService.Setup(p => p.GetPictureById(1)).Returns(picture);
             _pictureService.Setup(p => p.GetThumbLocalPath(picture, 0, true)).Returns(@"c:\temp\picture.png");
@@ -136,7 +139,7 @@ namespace Nop.Services.Tests.ExportImport
             nopEngine.Setup(x => x.ServiceProvider).Returns(serviceProvider);
 
             EngineContext.Replace(nopEngine.Object);
-           
+
             _exportManager = new ExportManager(_addressSettings,
                 _catalogSettings,
                 _customerSettings,
@@ -168,7 +171,9 @@ namespace Nop.Services.Tests.ExportImport
                 _urlRecordService.Object,
                 _vendorService.Object,
                 serviceProvider.WorkContext.Object,
-                _orderSettings, _productEditorSettings);
+                _orderSettings,
+                _productEditorSettings,
+                _feeSerivce.Object);
         }
 
         [OneTimeTearDown]
@@ -539,7 +544,7 @@ namespace Nop.Services.Tests.ExportImport
                 "ReturnRequests", "BillingAddress", "ShippingAddress", "Addresses", "AdminComment",
                 "EmailToRevalidate", "HasShoppingCartItems", "RequireReLogin", "FailedLoginAttempts",
                 "CannotLoginUntilDateUtc", "Deleted", "IsSystemAccount", "SystemName", "LastIpAddress",
-                "LastLoginDateUtc", "LastActivityDateUtc", "RegisteredInStoreId", "BillingAddressId", "ShippingAddressId", 
+                "LastLoginDateUtc", "LastActivityDateUtc", "RegisteredInStoreId", "BillingAddressId", "ShippingAddressId",
                 "CustomerCustomerRoleMappings", "CustomerAddressMappings" };
 
             AreAllObjectPropertiesPresent(customer, manager, ignore.ToArray());
@@ -744,7 +749,7 @@ namespace Nop.Services.Tests.ExportImport
 
             manager.ReadFromXlsx(worksheet, 2);
             var product = products.First();
-            
+
             AreAllObjectPropertiesPresent(product, manager, ignore.ToArray());
             PropertiesShouldEqual(product, manager, replacePairse);
         }

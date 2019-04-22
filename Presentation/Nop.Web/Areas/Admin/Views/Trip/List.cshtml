@@ -55,6 +55,30 @@
                             <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="col-md-4">
+                                        <nop-label asp-for="SearchShippingStatuses" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-select asp-for="SearchShippingStatuses" asp-items="Model.AvailableShippingStatuses" asp-multiple="true" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchStartAtFrom" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchStartAtFrom" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchStartAtTo" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchStartAtTo" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
                                         <nop-label asp-for="SearchCarLicense" />
                                     </div>
                                     <div class="col-md-8">
@@ -63,6 +87,30 @@
                                 </div>
                             </div>
                             <div class="col-md-7">
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchSerialNum" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchSerialNum" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchEndAtFrom" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchEndAtFrom" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-4">
+                                        <nop-label asp-for="SearchEndAtTo" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <nop-editor asp-for="SearchEndAtTo" />
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <div class="col-md-4">
                                         <nop-label asp-for="SearchDriverName" />
@@ -101,7 +149,13 @@
                                                 data: function () {
                                                     var data = {
                                                         SearchCarLicense: $("#@Html.IdFor(x => x.SearchCarLicense)").val(),
-                                                        SearchDriverName: $("#@Html.IdFor(x => x.SearchDriverName)").val()
+                                                        SearchDriverName: $("#@Html.IdFor(x => x.SearchDriverName)").val(),
+                                                        SearchSerialNum: $("#@Html.IdFor(x => x.SearchSerialNum)").val(),
+                                                        SearchShippingStatuses: $("#@Html.IdFor(x => x.SearchShippingStatuses)").val(),
+                                                        SearchStartAtFrom: $("#@Html.IdFor(x => x.SearchStartAtFrom)").val(),
+                                                        SearchStartAtTo: $("#@Html.IdFor(x => x.SearchStartAtTo)").val(),
+                                                        SearchEndAtFrom: $("#@Html.IdFor(x => x.SearchEndAtFrom)").val(),
+                                                        SearchEndAtTo: $("#@Html.IdFor(x => x.SearchEndAtTo)").val()
                                                     };
                                                     addAntiForgeryToken(data);
                                                     return data;
@@ -227,7 +281,12 @@
 
             $([
                 "#@Html.IdFor(x => x.SearchCarLicense)",
-                "#@Html.IdFor(x => x.SearchDriverName)"
+                "#@Html.IdFor(x => x.SearchDriverName)",
+                "#@Html.IdFor(x => x.SearchStartAtFrom)",
+                "#@Html.IdFor(x => x.SearchStartAtTo)",
+                "#@Html.IdFor(x => x.SearchEndAtFrom)",
+                "#@Html.IdFor(x => x.SearchEndAtTo)",
+                "#@Html.IdFor(x => x.SearchSerialNum)"
             ].join(",")).keydown(function (event) {
                 if (event.keyCode === 13) {
                     $("#search").click();

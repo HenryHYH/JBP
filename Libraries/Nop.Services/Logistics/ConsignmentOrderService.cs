@@ -44,7 +44,12 @@ namespace Nop.Services.Logistics
             string consignee = null,
             int? tripId = null,
             bool? noRelatedTrip = null,
-            string[] serialNums = null)
+            string[] serialNums = null,
+            string serialNum = null,
+            DateTime? consignmentTimeFrom = null,
+            DateTime? consignmentTimeTo = null,
+            IList<int> orderStatuses = null,
+            IList<int> paymentStatuses = null)
         {
             var query = repository.Table.Where(x => !x.Deleted);
 
@@ -74,8 +79,18 @@ namespace Nop.Services.Logistics
                 query = query.Where(x => x.TripId == tripId.Value);
             if (noRelatedTrip.HasValue && noRelatedTrip.Value)
                 query = query.Where(x => null == x.TripId || 0 == x.TripId);
-            if (null != serialNums && serialNums.Any())
+            if (serialNums?.Any() ?? false)
                 query = query.Where(x => serialNums.Contains(x.SerialNum));
+            if (!string.IsNullOrWhiteSpace(serialNum))
+                query = query.Where(x => x.SerialNum.Contains(serialNum));
+            if (consignmentTimeFrom.HasValue)
+                query = query.Where(x => x.ConsignmentTime >= consignmentTimeFrom.Value);
+            if (consignmentTimeTo.HasValue)
+                query = query.Where(x => x.ConsignmentTime < consignmentTimeTo.Value.AddDays(1));
+            if (orderStatuses?.Any() ?? false)
+                query = query.Where(x => orderStatuses.Contains((int)x.OrderStatus));
+            if (paymentStatuses?.Any() ?? false)
+                query = query.Where(x => paymentStatuses.Contains((int)x.PaymentStatus));
 
             query = query.OrderByDescending(x => x.UTime ?? x.CTime);
 
