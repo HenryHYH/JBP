@@ -2,8 +2,8 @@
 {
     public enum ShippingStatus
     {
-        未开始 = 1,
-        已完成 = 5,
-        进行中 = 10
+        NotYetShipped = 1,
+        Delivered = 5,
+        Shipped = 10
     }
 }

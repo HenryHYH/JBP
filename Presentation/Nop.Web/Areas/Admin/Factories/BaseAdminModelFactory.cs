@@ -954,7 +954,7 @@ namespace Nop.Web.Areas.Admin.Factories
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
 
-            var list = Core.Domain.Logistics.OrderStatus.已完成.ToSelectList(false);
+            var list = Core.Domain.Logistics.OrderStatus.Pending.ToSelectList(false);
             foreach (var item in list)
                 items.Add(item);
 
@@ -966,7 +966,7 @@ namespace Nop.Web.Areas.Admin.Factories
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
 
-            var list = PaymentStatus.未支付.ToSelectList(false);
+            var list = PaymentStatus.Pending.ToSelectList(false);
             foreach (var item in list)
                 items.Add(item);
 
@@ -978,7 +978,7 @@ namespace Nop.Web.Areas.Admin.Factories
             if (null == items)
                 throw new ArgumentNullException(nameof(items));
 
-            var list = ShippingStatus.未开始.ToSelectList(false);
+            var list = ShippingStatus.NotYetShipped.ToSelectList(false);
             foreach (var item in list)
                 items.Add(item);
 

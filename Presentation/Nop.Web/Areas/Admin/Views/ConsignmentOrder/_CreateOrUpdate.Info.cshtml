@@ -141,21 +141,21 @@
                             <div class="form-text-row">@Model.OrderStatusName</div>
                         </div>
                         <div class="input-group-btn">
-                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.进行中))
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.Processing))
                             {
                                 <button type="submit" name="StartOrder" id="StartOrder" class="btn bg-blue" style="margin-right:3px;">
                                     @T("Admin.Logistics.ConsignmentOrder.OrderStatus.StartOrder")
                                 </button>
                                 <nop-action-confirmation asp-button-id="StartOrder" />
                             }
-                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.已完成))
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.Complete))
                             {
                                 <button type="submit" name="CompleteOrder" id="CompleteOrder" class="btn bg-green" style="margin-right:3px;">
                                     @T("Admin.Logistics.ConsignmentOrder.OrderStatus.CompleteOrder")
                                 </button>
                                 <nop-action-confirmation asp-button-id="CompleteOrder" />
                             }
-                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.已取消))
+                            @if (nextAvailableOrderStatus.Contains(Nop.Core.Domain.Logistics.OrderStatus.Cancelled))
                             {
                                 <button type="submit" name="CancelOrder" id="CancelOrder" class="btn bg-red" style="margin-right:3px;">
                                     @T("Admin.Logistics.ConsignmentOrder.OrderStatus.CancelOrder")

@@ -720,7 +720,7 @@ namespace Nop.Services.ExportImport
                     _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone"), x => x.Consignee?.Phone ?? string.Empty),
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"), x => (int)x.OrderStatus)
                 {
-                    DropDownElements = Core.Domain.Logistics.OrderStatus.未开始.ToSelectList()
+                    DropDownElements = Core.Domain.Logistics.OrderStatus.Pending.ToSelectList()
                 },
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receivable"), x => x.Receivable),
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receipts"), x => x.Receipts)
@@ -2084,7 +2084,7 @@ namespace Nop.Services.ExportImport
                     _localizationService.GetResource("Admin.Logistics.ConsignmentUser.Fields.Phone"), x => x.Consignee?.Phone ?? string.Empty),
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"), x => (int)x.OrderStatus)
                 {
-                    DropDownElements = Core.Domain.Logistics.OrderStatus.未开始.ToSelectList()
+                    DropDownElements = Core.Domain.Logistics.OrderStatus.Pending.ToSelectList()
                 },
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receivable"), x => x.Receivable),
                 new PropertyByName<ConsignmentOrder>(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.Receipts"), x => x.Receipts)
@@ -2127,7 +2127,7 @@ namespace Nop.Services.ExportImport
                 new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.EndAt"), x => x.EndAt?.ToString("yyy-MM-dd") ?? string.Empty),
                 new PropertyByName<Trip>(_localizationService.GetResource("Admin.Logistics.Trip.Fields.ShippingStatus"), x => (int)x.ShippingStatus)
                 {
-                    DropDownElements = Core.Domain.Logistics.ShippingStatus.未开始.ToSelectList()
+                    DropDownElements = Core.Domain.Logistics.ShippingStatus.NotYetShipped.ToSelectList()
                 },
                 new PropertyByName<Trip>(
                     _localizationService.GetResource("Admin.Logistics.Trip.Fields.Car") +

@@ -253,11 +253,11 @@ namespace Nop.Services.Logistics
                 throw new ArgumentNullException(nameof(entity));
 
             if (entity.EndAt.HasValue)
-                return ShippingStatus.已完成;
+                return ShippingStatus.Delivered;
             else if (entity.StartAt.HasValue)
-                return ShippingStatus.进行中;
+                return ShippingStatus.Shipped;
 
-            return ShippingStatus.未开始;
+            return ShippingStatus.NotYetShipped;
         }
 
         #endregion

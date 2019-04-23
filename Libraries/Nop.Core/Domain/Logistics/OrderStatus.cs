@@ -2,9 +2,9 @@
 {
     public enum OrderStatus
     {
-        已取消 = 20,
-        未开始 = 1,
-        已完成 = 5,
-        进行中 = 10
+        Cancelled = 20,
+        Pending = 1,
+        Complete = 5,
+        Processing = 10
     }
 }

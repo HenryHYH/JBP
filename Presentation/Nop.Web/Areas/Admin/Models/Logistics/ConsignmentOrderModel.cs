@@ -16,10 +16,10 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         private static readonly IDictionary<OrderStatus, IList<OrderStatus>> NEXT_AVAIABLE_STATUS = new Dictionary<OrderStatus, IList<OrderStatus>>
         {
-            { OrderStatus.未开始, new[] { OrderStatus.进行中, OrderStatus.已取消 } },
-            { OrderStatus.进行中, new[] { OrderStatus.已完成, OrderStatus.已取消 } },
-            { OrderStatus.已完成, new[] { OrderStatus.已取消 } },
-            { OrderStatus.已取消, new OrderStatus[] { } }
+            { OrderStatus.Pending, new[] { OrderStatus.Processing, OrderStatus.Cancelled } },
+            { OrderStatus.Processing, new[] { OrderStatus.Complete, OrderStatus.Cancelled } },
+            { OrderStatus.Complete, new[] { OrderStatus.Cancelled } },
+            { OrderStatus.Cancelled, new OrderStatus[] { } }
         };
 
         #endregion
@@ -28,7 +28,7 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
 
         public ConsignmentOrderModel()
         {
-            OrderStatus = OrderStatus.未开始;
+            OrderStatus = OrderStatus.Pending;
             GoodsSearchModel = new GoodsSearchModel();
         }
 
@@ -121,13 +121,13 @@ namespace Nop.Web.Areas.Admin.Models.Logistics
         public virtual PaymentStatus GetPaymentStatus()
         {
             if (!Receivable.HasValue || !Receipts.HasValue)
-                return PaymentStatus.未知;
+                return PaymentStatus.Unknown;
             if (0 == Receivable.Value || Receivable.Value <= Receipts.Value)
-                return PaymentStatus.已付全款;
+                return PaymentStatus.Paid;
             if (0 == Receipts.Value)
-                return PaymentStatus.未支付;
+                return PaymentStatus.Pending;
             else
-                return PaymentStatus.部分支付;
+                return PaymentStatus.PartiallyPaid;
         }
 
         #endregion

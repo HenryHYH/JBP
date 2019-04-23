@@ -1171,7 +1171,7 @@ namespace Nop.Services.ExportImport
             var manager = new PropertyManager<ConsignmentOrder>(properties, _catalogSettings);
             // 下拉
             manager.SetSelectList(_localizationService.GetResource("Admin.Logistics.ConsignmentOrder.Fields.OrderStatus"),
-                                    OrderStatus.未开始.ToSelectList());
+                                    OrderStatus.Pending.ToSelectList());
 
             var goodsProperties = new[]
             {
@@ -2477,7 +2477,7 @@ namespace Nop.Services.ExportImport
                         ShipmentMethod = ShipmentMethod.Highway,
                         CTime = DateTime.UtcNow,
                         SerialNum = CommonHelper.GenerateSerialNumber(),
-                        PaymentStatus = PaymentStatus.未知
+                        PaymentStatus = PaymentStatus.Unknown
                     };
 
                     foreach (var property in metadata.Manager.GetProperties)

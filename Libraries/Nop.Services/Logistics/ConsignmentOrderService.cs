@@ -298,24 +298,24 @@ namespace Nop.Services.Logistics
             if (null == entity)
                 throw new ArgumentNullException(nameof(entity));
 
-            if (entity.PaymentStatus == PaymentStatus.已取消)
-                return PaymentStatus.已取消;
+            if (entity.PaymentStatus == PaymentStatus.Cancelled)
+                return PaymentStatus.Cancelled;
 
             if (entity.Receivable.HasValue && entity.Receipts.HasValue)
             {
                 if (entity.Receivable.Value <= entity.Receipts.Value)
-                    return PaymentStatus.已付全款;
+                    return PaymentStatus.Paid;
                 else if (entity.Receipts.Value > 0)
-                    return PaymentStatus.部分支付;
+                    return PaymentStatus.PartiallyPaid;
                 else
-                    return PaymentStatus.未支付;
+                    return PaymentStatus.Pending;
             }
             else if (entity.Receivable.HasValue)
-                return PaymentStatus.未支付;
+                return PaymentStatus.Pending;
             else if (entity.Receipts.HasValue)
-                return PaymentStatus.已付全款;
+                return PaymentStatus.Paid;
 
-            return PaymentStatus.未知;
+            return PaymentStatus.Unknown;
         }
 
         #endregion

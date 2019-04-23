@@ -177,19 +177,19 @@ namespace Nop.Web.Areas.Admin.Controllers
         [HttpPost, ActionName("Edit"), FormValueRequired("StartOrder")]
         public virtual IActionResult StartOrder(int id)
         {
-            return ChangeOrderStatus(id, OrderStatus.进行中);
+            return ChangeOrderStatus(id, OrderStatus.Processing);
         }
 
         [HttpPost, ActionName("Edit"), FormValueRequired("CompleteOrder")]
         public virtual IActionResult CompleteOrder(int id)
         {
-            return ChangeOrderStatus(id, OrderStatus.已完成);
+            return ChangeOrderStatus(id, OrderStatus.Complete);
         }
 
         [HttpPost, ActionName("Edit"), FormValueRequired("CancelOrder")]
         public virtual IActionResult CancelOrder(int id)
         {
-            return ChangeOrderStatus(id, OrderStatus.已取消);
+            return ChangeOrderStatus(id, OrderStatus.Cancelled);
         }
 
         protected virtual IActionResult ChangeOrderStatus(int id, OrderStatus orderStatus)

@@ -2,10 +2,10 @@
 {
     public enum PaymentStatus
     {
-        未知 = 99,
-        已取消 = 20,
-        未支付 = 1,
-        已付全款 = 10,
-        部分支付 = 15
+        Unknown = 99,
+        Cancelled = 20,
+        Pending = 1,
+        Paid = 10,
+        PartiallyPaid = 15
     }
 }
