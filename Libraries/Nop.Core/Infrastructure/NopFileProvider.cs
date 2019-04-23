@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,8 +7,6 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
 
 namespace Nop.Core.Infrastructure
 {
@@ -19,7 +19,7 @@ namespace Nop.Core.Infrastructure
         /// Initializes a new instance of a NopFileProvider
         /// </summary>
         /// <param name="hostingEnvironment">Hosting environment</param>
-        public NopFileProvider(IHostingEnvironment hostingEnvironment) 
+        public NopFileProvider(IHostingEnvironment hostingEnvironment)
             : base(File.Exists(hostingEnvironment.WebRootPath) ? Path.GetDirectoryName(hostingEnvironment.WebRootPath) : hostingEnvironment.WebRootPath)
         {
             var path = hostingEnvironment.ContentRootPath ?? string.Empty;
@@ -86,7 +86,7 @@ namespace Nop.Core.Infrastructure
             {
             }
         }
-        
+
         /// <summary>
         ///  Depth-first recursive delete, with handling for descendant directories open in Windows Explorer.
         /// </summary>
@@ -435,10 +435,10 @@ namespace Nop.Core.Infrastructure
         /// <returns>The physical path. E.g. "c:\inetpub\wwwroot\bin"</returns>
         public virtual string MapPath(string path)
         {
-            path = path.Replace("~/", string.Empty).TrimStart('/').Replace('/', '\\');
+            path = path.Replace("~/", string.Empty).TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
             return Path.Combine(BaseDirectory ?? string.Empty, path);
         }
-        
+
         /// <summary>
         /// Reads the contents of the file into a byte array
         /// </summary>
